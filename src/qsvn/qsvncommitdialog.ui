@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QSVNCommitDialog</class>
+ <widget class="QDialog" name="QSVNCommitDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>313</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Enter Log Message - </string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="commitTo_label">
+     <property name="text">
+      <string>Commit to:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QLabel" name="commitURL_label">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="message_groupBox">
+     <property name="title">
+      <string>Message:</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout" columnstretch="1,1">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="rescentMessage_pushButton">
+        <property name="text">
+         <string>&amp;Rescent message</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QPlainTextEdit" name="message_plainTextEdit"/>
+      </item>
+      <item row="0" column="1">
+       <spacer name="message_horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>372</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="changes_groupBox">
+     <property name="title">
+      <string>Changes made (double-click for details):</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0" colspan="2">
+       <widget class="QListWidget" name="changes_listWidget"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="showUnversioned_checkBox">
+        <property name="text">
+         <string>Show unversioned files</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="selectedTotal_label">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="selectDeselect_checkBox">
+        <property name="text">
+         <string>Select / deselect all</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="keepLoks_checkBox">
+     <property name="text">
+      <string>Keep locks</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>rescentMessage_pushButton</tabstop>
+  <tabstop>message_plainTextEdit</tabstop>
+  <tabstop>changes_listWidget</tabstop>
+  <tabstop>showUnversioned_checkBox</tabstop>
+  <tabstop>selectDeselect_checkBox</tabstop>
+  <tabstop>keepLoks_checkBox</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

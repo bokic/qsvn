@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QSVNRepoBrowserDialog</class>
+ <widget class="QDialog" name="QSVNRepoBrowserDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>664</width>
+    <height>527</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Repository Browser</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_Top" stretch="0,0,0,1,0,0,0">
+     <item>
+      <widget class="QPushButton" name="pushButton_Prev">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Previous URL</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qresource.qrc">
+         <normaloff>:/icons/arrow_left</normaloff>:/icons/arrow_left</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Next">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Next URL</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qresource.qrc">
+         <normaloff>:/icons/arrow_right</normaloff>:/icons/arrow_right</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_URL">
+       <property name="text">
+        <string>&amp;URL:</string>
+       </property>
+       <property name="buddy">
+        <cstring>comboBox_URL</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QExtComboBox" name="comboBox_URL">
+       <property name="toolTip">
+        <string>Svn URL</string>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Up">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>CD Up</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qresource.qrc">
+         <normaloff>:/icons/arrow_up</normaloff>:/icons/arrow_up</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_Revision">
+       <property name="text">
+        <string>&amp;Revision:</string>
+       </property>
+       <property name="buddy">
+        <cstring>pushButton_Head</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Head">
+       <property name="toolTip">
+        <string>Change Revision</string>
+       </property>
+       <property name="text">
+        <string>HEAD</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QTreeWidget" name="treeWidget_Files">
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QTableWidget" name="tableWidget_Files">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="verticalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
+      <property name="horizontalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
+      <property name="showGrid">
+       <bool>false</bool>
+      </property>
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>21</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>File</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Extension</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Revision</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Author</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Size</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Date</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Lock</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_Bottom" stretch="1,0,0">
+     <item>
+      <widget class="QLabel" name="label_Hint">
+       <property name="text">
+        <string>Hint: Press F5 to refresh the selectes subtree and Ctrl-F5 to load all children too</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Ok">
+       <property name="text">
+        <string>&amp;OK</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Help">
+       <property name="text">
+        <string>&amp;Help</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QExtComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qextcombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>pushButton_Prev</tabstop>
+  <tabstop>pushButton_Next</tabstop>
+  <tabstop>comboBox_URL</tabstop>
+  <tabstop>pushButton_Up</tabstop>
+  <tabstop>pushButton_Head</tabstop>
+  <tabstop>treeWidget_Files</tabstop>
+  <tabstop>tableWidget_Files</tabstop>
+  <tabstop>pushButton_Ok</tabstop>
+  <tabstop>pushButton_Help</tabstop>
+ </tabstops>
+ <resources>
+  <include location="qresource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>pushButton_Ok</sender>
+   <signal>clicked()</signal>
+   <receiver>QSVNRepoBrowserDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>523</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>539</x>
+     <y>519</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
