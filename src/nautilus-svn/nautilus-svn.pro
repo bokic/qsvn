@@ -11,7 +11,9 @@ INCLUDEPATH += /usr/include/gtk-3.0 \
                /usr/include/cairo \
                /usr/include/gdk-pixbuf-2.0 \
                /usr/include/atk-1.0 \
-               /usr/include/nautilus/libnautilus-extension
+               /usr/include/nautilus/libnautilus-extension \
+               /usr/include/apr-1.0 \
+               /usr/include/subversion-1
 
 SOURCES = svn-module.c svn-extension.c
 HEADERS = svn-extension.h

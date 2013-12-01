@@ -181,8 +181,14 @@ svn_error_t * QSvn::log_msg_func3(const char **log_msg,
                                   void *baton,
                                   apr_pool_t * pool)
 {
+    Q_UNUSED(log_msg);
+    Q_UNUSED(tmp_file);
+    Q_UNUSED(commit_items);
+    Q_UNUSED(pool);
+
     QSvn *svn = (QSvn *)baton;
 
+    Q_UNUSED(svn);
     Q_UNIMPLEMENTED();
 
     /*log_msg_baton3 *lmb = (log_msg_baton3 *) baton;
@@ -199,8 +205,12 @@ void QSvn::notify_func2(void *baton,
                         const svn_wc_notify_t *notify,
                         apr_pool_t * pool)
 {
+    Q_UNUSED(notify);
+    Q_UNUSED(pool);
+
     QSvn *svn = (QSvn *)baton;
 
+    Q_UNUSED(svn);
     Q_UNIMPLEMENTED();
 }
 
@@ -210,8 +220,14 @@ svn_error_t * QSvn::conflict_func2(svn_wc_conflict_result_t **result,
                                    apr_pool_t *result_pool,
                                    apr_pool_t *scratch_pool)
 {
+    Q_UNUSED(result);
+    Q_UNUSED(description);
+    Q_UNUSED(result_pool);
+    Q_UNUSED(scratch_pool);
+
     QSvn *svn = (QSvn *)baton;
 
+    Q_UNUSED(svn);
     Q_UNIMPLEMENTED();
 
     return SVN_NO_ERROR;
