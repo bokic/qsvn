@@ -9,7 +9,6 @@ nautilus_module_initialize(GTypeModule *module)
 {
     svn_extension_register_type(module);
     type_list[0] = SVN_TYPE_EXTENSION;
-    sleep(3);
 }
 
 void
