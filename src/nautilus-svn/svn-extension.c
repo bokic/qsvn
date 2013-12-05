@@ -47,7 +47,7 @@ svn_extension_are_items_under_svn(GList *files)
  	apr_pool_t *scratch_pool = NULL;
  	guint items;
 
-	if ((files == NULL)||((items = g_list_length(files)) == 0))
+	if ((files == NULL)||((items = g_list_length (files)) == 0))
 	{
 		return FALSE;
 	}
@@ -65,8 +65,8 @@ svn_extension_are_items_under_svn(GList *files)
 
 	g_free (local_abspath); local_abspath = NULL;
 
-	apr_pool_destroy(scratch_pool);
-	apr_pool_destroy(result_pool);
+	apr_pool_destroy (scratch_pool);
+	apr_pool_destroy (result_pool);
 
 	return (error == NULL);
 }
@@ -74,7 +74,29 @@ svn_extension_are_items_under_svn(GList *files)
 static void
 svn_extension_checkout_callback(GtkWidget *widget, GList *files)
 {
+	gchar *command = NULL, *path = NULL;
+	NautilusFileInfo *file_info = NULL;
+	GError *error = NULL;
+	GString *str = NULL;
 
+	str = g_string_new ("qsvn checkout");
+
+	if ((files != NULL)||(g_list_length (files) > 0))
+	{
+		file_info = g_list_nth_data (files, 0);
+
+		path = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
+
+		g_string_append_printf (str, " \"%s\"", path);
+
+		g_free (path); path = NULL;
+	}
+
+	command = g_string_free (str, FALSE); str = NULL;
+
+	g_spawn_command_line_async (command, &error);
+
+	g_free (command); command = NULL;
 }
 
 static void
@@ -87,7 +109,7 @@ svn_extension_update_callback(GtkWidget *widget, GList *files)
 	guint lcount, c;
 
 
-	if ((files == NULL)||((lcount = g_list_length(files)) == 0))
+	if ((files == NULL)||((lcount = g_list_length (files)) == 0))
 	{
 		return;
 	}
@@ -98,17 +120,15 @@ svn_extension_update_callback(GtkWidget *widget, GList *files)
 
 	for (c = 0; c < lcount; c++)
 	{
-		str = g_string_append (str, " \"");
-
 		file_info = g_list_nth_data (files, c);
 
 		path = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
 
+		str = g_string_append (str, " \"");
 		str = g_string_append (str, path);
+		str = g_string_append (str, "\"");
 
 		g_free (path); path = NULL;
-
-		str = g_string_append (str, "\"");
 	}
 
 	command = g_string_free (str, FALSE); str = NULL;
@@ -128,7 +148,7 @@ svn_extension_commit_callback(GtkWidget *widget, GList *files)
 	guint lcount, c;
 
 
-	if ((files == NULL)||((lcount = g_list_length(files)) == 0))
+	if ((files == NULL)||((lcount = g_list_length (files)) == 0))
 	{
 		return;
 	}
@@ -191,7 +211,7 @@ svn_extension_get_operation_type(GList *files)
 {
 	guint items;
 
-	if ((files == NULL)||((items = g_list_length(files)) == 0))
+	if ((files == NULL)||((items = g_list_length (files)) == 0))
 	{
 		return G_SVN_EXTENSION_OPERATION_NO_FILES;
 	}

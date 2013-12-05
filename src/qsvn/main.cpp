@@ -1,3 +1,4 @@
+#include "qsvncheckoutdialog.h"
 #include "qsvncommitdialog.h"
 #include "qsvnupdatedialog.h"
 #include "qsvnrepobrowserdialog.h"
@@ -29,16 +30,25 @@ void registerClasses()
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc < 2)
     {
-        printf("Usage qsvn <commit, update, browse>\n");
+        printf("Usage qsvn <checkout, commit, update, browse>\n");
 
         return -1;
     }
 
     registerClasses();
 
-    if (strcmp(argv[1], "commit") == 0)
+    if (strcmp(argv[1], "checkout") == 0)
+    {
+        QApplication a(argc, argv);
+        if (!setAppSettings()) return -1;
+        QSVNCheckoutDialog w;
+        w.show();
+
+        return a.exec();
+    }
+    else if (strcmp(argv[1], "commit") == 0)
     {
         QApplication a(argc, argv);
         if (!setAppSettings()) return -1;

@@ -17,6 +17,9 @@ public:
     explicit QSVNRepoBrowserDialog(QWidget *parent = 0);
     ~QSVNRepoBrowserDialog();
 
+    void setURL(const QString &url);
+    QString URL();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -39,6 +42,7 @@ private:
 
     Ui::QSVNRepoBrowserDialog *ui;
     QSVNThread m_thread;
+    bool m_threadStarted;
     QHash<QString, QRepoBrowserResult> m_cachedFolders;
 };
 
