@@ -16,6 +16,12 @@
   <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,0,0" columnstretch="1,0,0,0">
    <item row="0" column="0" colspan="4">
     <widget class="QTableWidget" name="tableWidget">
+     <property name="showGrid">
+      <bool>false</bool>
+     </property>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
      <column>
       <property name="text">
        <string>Action</string>
@@ -34,10 +40,10 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="4">
-    <widget class="QLabel" name="label2"/>
+    <widget class="QLabel" name="label1"/>
    </item>
    <item row="2" column="0" colspan="4">
-    <widget class="QLabel" name="label1"/>
+    <widget class="QLabel" name="label2"/>
    </item>
    <item row="3" column="1">
     <widget class="QPushButton" name="pushButton_ShowLog">
@@ -67,7 +73,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="progress"/>
+    <widget class="QLabel" name="label3"/>
    </item>
   </layout>
  </widget>

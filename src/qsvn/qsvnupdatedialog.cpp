@@ -17,7 +17,6 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
     m_revision.kind = svn_opt_revision_head;
 
     connect(&m_thread, &QThread::started, this, &QSVNUpdateDialog::workerStarted);
-    connect(&m_thread, &QThread::finished, this, &QSVNUpdateDialog::workerFinished);
 }
 
 QSVNUpdateDialog::~QSVNUpdateDialog()
@@ -98,18 +97,11 @@ void QSVNUpdateDialog::workerStarted()
     }
 }
 
-void QSVNUpdateDialog::workerFinished()
-{
-    Q_UNIMPLEMENTED();
-
-    //close();
-}
-
 void QSVNUpdateDialog::svnProgress(int progress, int total)
 {
     Q_UNUSED(total);
 
-    ui->progress->setText(tr("Progress: %1 bytes.").arg(progress));
+    ui->label1->setText(tr("%1 bytes.").arg(progress));
 }
 
 void QSVNUpdateDialog::svnNotify(svn_wc_notify_t notify)
@@ -147,15 +139,13 @@ void QSVNUpdateDialog::svnFinished(bool result)
 {
     Q_UNUSED(result);
 
-    ui->progress->setText(tr("Finished."));
-
     ui->pushButton_OK->setEnabled(true);
     ui->pushButton_Cancel->setEnabled(false);
+    ui->pushButton_ShowLog->setEnabled(true);
 }
 
 void QSVNUpdateDialog::svnError(QString text)
 {
-    Q_UNUSED(text);
-
-    Q_UNIMPLEMENTED();
+    ui->label2->setText(text);
+    ui->label2->setStyleSheet("background: red");
 }
