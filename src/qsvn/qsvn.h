@@ -51,11 +51,13 @@ signals:
     void finished(bool result);
     void repoBrowserResult(QRepoBrowserResult items);
     void logMsg();
+    void notify(svn_wc_notify_t notify);
     void progress(int progress, int total);
 
 public slots:
     void repoBrowser(QString url, svn_opt_revision_t revision, bool recursion);
     void update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t depth, bool depthIsSticky, bool ignoreExternals, bool allowUnverObstructions, bool addsAsModification, bool makeParents);
+    void checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions);
     void cancel();
 
 private:

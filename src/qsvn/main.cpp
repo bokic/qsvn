@@ -26,6 +26,8 @@ void registerClasses()
 {
     qRegisterMetaType<QRepoBrowserResult>("QRepoBrowserResult");
     qRegisterMetaType<svn_opt_revision_t>("svn_opt_revision_t");
+    qRegisterMetaType<svn_wc_notify_t>("svn_wc_notify_t");
+    qRegisterMetaType<svn_depth_t>("svn_depth_t");
 }
 
 int main(int argc, char *argv[])
@@ -44,7 +46,18 @@ int main(int argc, char *argv[])
         QApplication a(argc, argv);
         if (!setAppSettings()) return -1;
         QSVNCheckoutDialog w;
-        w.show();
+        QSVNUpdateDialog ud;
+
+        if (argc > 2)
+        {
+            w.setTargetDir(QString::fromUtf8(argv[2]));
+        }
+
+        if (w.exec() == QDialog::Accepted)
+        {
+            ud.setOperationCheckout(w);
+            ud.show();
+        }
 
         return a.exec();
     }
@@ -69,7 +82,8 @@ int main(int argc, char *argv[])
             urls.append(QString::fromUtf8(argv[c]));
         }
 
-        QSVNUpdateDialog w(urls);
+        QSVNUpdateDialog w;
+        w.setOperationUpdate(urls);
         w.show();
 
         return a.exec();
@@ -86,7 +100,8 @@ int main(int argc, char *argv[])
             urls.append(QString::fromUtf8(argv[c]));
         }
 
-        QSVNUpdateDialog w(urls);
+        QSVNUpdateDialog w;
+        w.setOperationUpdate(urls);
         w.show();
 
         return a.exec();

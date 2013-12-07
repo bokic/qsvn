@@ -39,9 +39,6 @@
    <item row="2" column="0" colspan="4">
     <widget class="QLabel" name="label1"/>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label3"/>
-   </item>
    <item row="3" column="1">
     <widget class="QPushButton" name="pushButton_ShowLog">
      <property name="enabled">
@@ -69,8 +66,44 @@
      </property>
     </widget>
    </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="progress"/>
+   </item>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_OK</sender>
+   <signal>clicked()</signal>
+   <receiver>QSVNUpdateDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>407</x>
+     <y>284</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>371</x>
+     <y>284</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_Cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>QSVNUpdateDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>519</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>536</x>
+     <y>269</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -3,6 +3,9 @@
 
 #include <QDialog>
 
+#include <svn_opt.h>
+
+
 namespace Ui {
 class QSVNCheckoutDialog;
 }
@@ -16,6 +19,14 @@ public:
     ~QSVNCheckoutDialog();
 
     void loadSettings();
+    void setTargetDir(const QString &dir);
+
+    QString ui_url() const;
+    QString ui_path() const;
+    svn_opt_revision_t ui_revision() const;
+    svn_depth_t ui_depth() const;
+    svn_boolean_t ui_include_externals() const;
+    svn_boolean_t ui_allow_unver() const;
 
 private slots:
     void on_pushButton_URL_clicked();

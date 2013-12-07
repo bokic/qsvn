@@ -170,6 +170,27 @@ void QSvn::update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t
     emit finished(err == nullptr);
 }
 
+void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions)
+{
+    svn_error_t *err;
+    svn_revnum_t result_rev;
+
+    cancelOperation = false;
+
+    err = svn_client_checkout3(&result_rev,
+                               url.toUtf8().constData(),
+                               path.toUtf8().constData(),
+                               &peg_revision,
+                               &revision,
+                               depth,
+                               ignore_externals,
+                               allow_unver_obstructions,
+                               ctx,
+                               pool);
+
+    emit finished(err == nullptr);
+}
+
 void QSvn::cancel()
 {
     cancelOperation = true;
@@ -210,8 +231,10 @@ void QSvn::notify_func2(void *baton,
 
     QSvn *svn = (QSvn *)baton;
 
-    Q_UNUSED(svn);
-    Q_UNIMPLEMENTED();
+    if (svn)
+    {
+        emit svn->notify(*notify);
+    }
 }
 
 svn_error_t * QSvn::conflict_func2(svn_wc_conflict_result_t **result,
@@ -237,12 +260,7 @@ svn_error_t * QSvn::cancel_func(void *baton)
 {
     QSvn *svn = (QSvn *)baton;
 
-    if (svn == nullptr)
-    {
-        return SVN_NO_ERROR;
-    }
-
-    if (svn->cancelOperation)
+    if ((svn)&&(svn->cancelOperation))
     {
         return svn_error_create(SVN_ERR_CANCELLED, NULL, tr("User has canceled the operation.").toUtf8().constData());
     }
@@ -259,10 +277,8 @@ void QSvn::progress_func(apr_off_t progress,
 
     QSvn *svn = (QSvn *)baton;
 
-    if (svn == nullptr)
+    if (svn)
     {
-        return;
+        emit svn->progress((int)progress, (int)total);
     }
-
-    emit svn->progress((int)progress, (int)total);
 }
