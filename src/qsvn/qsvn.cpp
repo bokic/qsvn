@@ -93,6 +93,11 @@ void QSvn::init()
     svn_auth_open (&ctx->auth_baton, providers, pool);
 }
 
+void QSvn::cancel()
+{
+    cancelOperation = true;
+}
+
 void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 {
     QRepoBrowserResult ret;
@@ -103,11 +108,23 @@ void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 
     cancelOperation = false;
 
+    // TODO: Replace svn_client_ls call with svn_client_list2
     svn_error_t *err = svn_client_ls (&dirents,
                                       l_url,
                                       &revision,
                                       recursion,
                                       ctx, pool);
+
+    /*svn_error_t *err = svn_client_list2(l_url,
+                                        &revision,
+                                        &revision,
+                                        svn_depth_infinity,
+                                        SVN_DIRENT_ALL,
+                                        FALSE,
+                                        NULL,
+                                        this,
+                                        ctx, pool);*/
+
 
     //emit repoBrowserResult(QSvnFSList(pool, dirents), QSvnError(err, QObject::tr("svn_client_ls call failed.")));
 
@@ -189,11 +206,6 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
                                pool);
 
     emit finished(err == nullptr);
-}
-
-void QSvn::cancel()
-{
-    cancelOperation = true;
 }
 
 svn_error_t * QSvn::log_msg_func3(const char **log_msg,

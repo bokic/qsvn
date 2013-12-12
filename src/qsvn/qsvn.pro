@@ -10,6 +10,9 @@ SOURCES     += main.cpp qsvncheckoutdialog.cpp qsvncommitdialog.cpp qsvnupdatedi
 HEADERS     +=          qsvncheckoutdialog.h   qsvncommitdialog.h   qsvnupdatedialog.h   qsvnrepobrowserdialog.h   qsvnselectrevisiondialog.h   qextcombobox.h   qsvn.h   qsvnthread.h
 FORMS       +=          qsvncheckoutdialog.ui  qsvncommitdialog.ui  qsvnupdatedialog.ui  qsvnrepobrowserdialog.ui  qsvnselectrevisiondialog.ui
 
+SOURCES     += helpers.cpp
+HEADERS     += helpers.h
+
 RESOURCES   += qresource.qrc
 
 INCLUDEPATH += /usr/include/subversion-1 /usr/include/apr-1.0

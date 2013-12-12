@@ -1,7 +1,9 @@
 #include "qsvnupdatedialog.h"
 #include "ui_qsvnupdatedialog.h"
 #include "qsvncheckoutdialog.h"
+#include "helpers.h"
 
+#include <QCloseEvent>
 #include <QtDebug>
 
 
@@ -68,28 +70,41 @@ void QSVNUpdateDialog::setOperationCheckout(const QSVNCheckoutDialog &dlg)
     }
 }
 
+void QSVNUpdateDialog::closeEvent(QCloseEvent *event)
+{
+    if (!event->isAccepted())
+    {
+        m_thread.m_worker->cancel();
+
+        event->ignore();
+    }
+    else
+    {
+        event->accept();
+    }
+}
+
 void QSVNUpdateDialog::workerStarted()
 {
+    //connect(m_thread.m_worker, &QSvn::update, this, &QSVNRepoBrowserDialog::workerResult);
+    //connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::workerError);
+    connect(this, &QSVNUpdateDialog::update, m_thread.m_worker, &QSvn::update);
+    connect(this, &QSVNUpdateDialog::checkout, m_thread.m_worker, &QSvn::checkout);
+
+    // Notify signals
+    connect(m_thread.m_worker, &QSvn::progress, this, &QSVNUpdateDialog::svnProgress, Qt::BlockingQueuedConnection);
+    connect(m_thread.m_worker, &QSvn::notify, this, &QSVNUpdateDialog::svnNotify, Qt::BlockingQueuedConnection);
+    connect(m_thread.m_worker, &QSvn::finished, this, &QSVNUpdateDialog::svnFinished, Qt::BlockingQueuedConnection);
+    connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::svnError, Qt::BlockingQueuedConnection);
+
     switch(m_operation)
     {
     case QSVNOperationCommit:
         break;
     case QSVNOperationUpdate:
-        //connect(m_thread.m_worker, &QSvn::update, this, &QSVNRepoBrowserDialog::workerResult);
-        //connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::workerError);
-        connect(this, &QSVNUpdateDialog::update, m_thread.m_worker, &QSvn::update);
-
         emit update(m_paths, m_revision, m_depth, true, true, true, true, true);
         break;
-    case QSVNOperationUpdateToRevision:
-        break;
     case QSVNOperationCheckout:
-        connect(this, &QSVNUpdateDialog::checkout, m_thread.m_worker, &QSvn::checkout);
-        connect(m_thread.m_worker, &QSvn::progress, this, &QSVNUpdateDialog::svnProgress, Qt::BlockingQueuedConnection);
-        connect(m_thread.m_worker, &QSvn::notify, this, &QSVNUpdateDialog::svnNotify, Qt::BlockingQueuedConnection);
-        connect(m_thread.m_worker, &QSvn::finished, this, &QSVNUpdateDialog::svnFinished, Qt::BlockingQueuedConnection);
-        connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::svnError, Qt::BlockingQueuedConnection);
-
         emit checkout(m_url, m_path, m_peg_revision, m_revision, m_depth, m_ignore_externals, m_allow_unver_obstructions);
         break;
     default:
@@ -99,38 +114,75 @@ void QSVNUpdateDialog::workerStarted()
 
 void QSVNUpdateDialog::svnProgress(int progress, int total)
 {
-    Q_UNUSED(total);
-
-    ui->label1->setText(tr("%1 bytes.").arg(progress));
+    if (total == -1)
+    {
+        ui->label1->setText(bytesToString(progress));
+    }
 }
 
 void QSVNUpdateDialog::svnNotify(svn_wc_notify_t notify)
 {
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, new QTableWidgetItem());
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, new QTableWidgetItem());
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, new QTableWidgetItem());
+    int newRow;
 
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 0));
+    newRow = ui->tableWidget->rowCount();
+
+    ui->tableWidget->insertRow(newRow);
+    ui->tableWidget->setItem(newRow, 0, new QTableWidgetItem());
+    ui->tableWidget->setItem(newRow, 1, new QTableWidgetItem());
+    ui->tableWidget->setItem(newRow, 2, new QTableWidgetItem());
+
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(newRow, 0));
 
     switch(notify.action)
     {
-    case svn_wc_notify_update_started:
-        ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 0)->setText(tr("checkout"));
-        break;
     case svn_wc_notify_update_add:
-        ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 0)->setText(tr("add"));
-        ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 1)->setText(QString::fromUtf8(notify.path));
-        break;
-    case svn_wc_notify_update_update:
-        ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 0)->setText(tr("update"));
-        ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 1)->setText(QString::fromUtf8(notify.path));
+        ui->tableWidget->item(newRow, 0)->setText(tr("add"));
+        ui->tableWidget->item(newRow, 1)->setText(QString::fromUtf8(notify.path));
         break;
     case svn_wc_notify_update_completed:
-        ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 0)->setText(tr("done"));
+        ui->tableWidget->item(newRow, 0)->setText(tr("completed"));
+        break;
+    case svn_wc_notify_update_delete:
+        ui->tableWidget->item(newRow, 0)->setText(tr("delete"));
+        ui->tableWidget->item(newRow, 1)->setText(QString::fromUtf8(notify.path));
+        break;
+    case svn_wc_notify_update_external:
+        ui->tableWidget->item(newRow, 0)->setText(tr("external"));
+        break;
+    case svn_wc_notify_update_external_removed:
+        ui->tableWidget->item(newRow, 0)->setText(tr("external removed"));
+        break;
+    case svn_wc_notify_update_replace:
+        ui->tableWidget->item(newRow, 0)->setText(tr("replace"));
+        ui->tableWidget->item(newRow, 1)->setText(QString::fromUtf8(notify.path));
+        break;
+    case svn_wc_notify_update_shadowed_add:
+        ui->tableWidget->item(newRow, 0)->setText(tr("shadowed add"));
+        break;
+    case svn_wc_notify_update_shadowed_delete:
+        ui->tableWidget->item(newRow, 0)->setText(tr("shadowed delete"));
+        break;
+    case svn_wc_notify_update_shadowed_update:
+        ui->tableWidget->item(newRow, 0)->setText(tr("shadowed update"));
+        break;
+    case svn_wc_notify_update_skip_access_denied:
+        ui->tableWidget->item(newRow, 0)->setText(tr("skip access denied"));
+        break;
+    case svn_wc_notify_update_skip_obstruction:
+        ui->tableWidget->item(newRow, 0)->setText(tr("skip obstruction"));
+        break;
+    case svn_wc_notify_update_skip_working_only:
+        ui->tableWidget->item(newRow, 0)->setText(tr("skip working only"));
+        break;
+    case svn_wc_notify_update_started:
+        ui->tableWidget->item(newRow, 0)->setText(tr("started"));
+        break;
+    case svn_wc_notify_update_update:
+        ui->tableWidget->item(newRow, 0)->setText(tr("update"));
+        ui->tableWidget->item(newRow, 1)->setText(QString::fromUtf8(notify.path));
         break;
     default:
-        ui->tableWidget->item(ui->tableWidget->rowCount() - 1, 0)->setText(tr("???"));
+        ui->tableWidget->item(newRow, 0)->setText(tr("-- unimplemented action --")); // TODO: Implement missing action types.
         break;
     }
 }
