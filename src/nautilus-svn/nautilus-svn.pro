@@ -2,7 +2,7 @@ TEMPLATE = lib
 VERSION = 1.0.0
 CONFIG = debug_and_release
 
-TARGET = libnautilus-svn
+TARGET = nautilus-svn
 
 INCLUDEPATH += /usr/include/gtk-3.0 \
                /usr/include/glib-2.0 \

@@ -198,6 +198,25 @@ svn_extension_repo_browse_callback(GtkWidget *widget, GList *files)
 	g_free (command); command = NULL;
 }
 
+static void
+svn_extension_updatetorevision_callback(GtkWidget *widget, GList *files)
+{
+	gchar *command = NULL;
+	GError *error = NULL;
+	GString *str = NULL;
+
+
+	str = g_string_new ("qsvn");
+
+	g_string_append (str, " update-to-revision");
+
+	command = g_string_free (str, FALSE); str = NULL;
+
+	g_spawn_command_line_async (command, &error);
+
+	g_free (command); command = NULL;
+}
+
 static GList *
 svn_extension_get_background_items (NautilusMenuProvider  *provider,
 					GtkWidget             *window,
@@ -343,10 +362,28 @@ svn_extension_create_menu_one_file_under_svn(GList *files)
 
 	submenu = nautilus_menu_new ();
 
+    ////////////////////////////////////////////////////////////////////////////
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::showlog",
+                                  "Show log",
+                                  "showlog...",
+                                  "svn-showlog");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_showlog_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    nautilus_menu_append_item (submenu, nautilus_menu_item_new ("NautilusSVN::sub_separator1", "-", "", ""));
+
 	//<!---
 	item = nautilus_menu_item_new ("NautilusSVN::repo-browser",
-                                  "Repo-browser...",
-                                  "Repository browse",
+                                  "Repository browser",
+                                  "repo-browser...",
                                   "svn-repo-browser");
 
 	g_signal_connect (item,
@@ -357,6 +394,310 @@ svn_extension_create_menu_one_file_under_svn(GList *files)
 	nautilus_menu_append_item (submenu, item);
 	//--->
 
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::checkformodifications",
+                                  "Check for modifications",
+                                  "check for modifications...",
+                                  "svn-checkformodifications");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_checkformodifications_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::revisiongraph",
+                                  "Revision graph",
+                                  "revision graph...",
+                                  "svn-revisiongraph");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_revisiongraph_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    nautilus_menu_append_item (submenu, nautilus_menu_item_new ("NautilusSVN::sub_separator2", "-", "", ""));
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::resolve",
+                                  "Resolve...",
+                                  "resolve...",
+                                  "svn-resolve");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_resolve_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::updatetorevision",
+                                  "Update to revision...",
+                                  "update to revision...",
+                                  "svn-updatetorevision");
+
+    g_signal_connect (item,
+                      "activate",
+                      G_CALLBACK (svn_extension_updatetorevision_callback),
+                      nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::revert",
+                                  "Revert...",
+                                  "revert...",
+                                  "svn-revert");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_revert_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::cleanup",
+                                  "Cleanup...",
+                                  "cleanup...",
+                                  "svn-cleanup");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_cleanup_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::getlock",
+                                  "Get lock...",
+                                  "get lock...",
+                                  "svn-getlock");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_getlock_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::releaselock",
+                                  "Release lock...",
+                                  "release lock...",
+                                  "svn-releaselock");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_releaselock_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    nautilus_menu_append_item (submenu, nautilus_menu_item_new ("NautilusSVN::sub_separator3", "-", "", ""));
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::branchtag",
+                                  "Branch/tag...",
+                                  "branch/tag...",
+                                  "svn-branchtag");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_branchtag_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::switch",
+                                  "Switch...",
+                                  "switch...",
+                                  "svn-switch");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_switch_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::merge",
+                                  "Merge...",
+                                  "merge...",
+                                  "svn-merge");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_merge_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::export",
+                                  "Export...",
+                                  "export...",
+                                  "svn-export");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_export_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::relocate",
+                                  "Relocate...",
+                                  "relocate...",
+                                  "svn-relocate");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_relocate_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    nautilus_menu_append_item (submenu, nautilus_menu_item_new ("NautilusSVN::sub_separator4", "-", "", ""));
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::add",
+                                  "Add...",
+                                  "add...",
+                                  "svn-add");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_add_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::ignorelist",
+                                  "Unversion and add to ignore list",
+                                  "unversion and add to ignore list...",
+                                  "svn-ignorelist");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_createpatch_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    nautilus_menu_append_item (submenu, nautilus_menu_item_new ("NautilusSVN::sub_separator5", "-", "", ""));
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::createpatch",
+                                  "Create patch...",
+                                  "create patch...",
+                                  "svn-createpatch");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_createpatch_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::applypatch",
+                                  "Apply patch...",
+                                  "apply patch...",
+                                  "svn-applypatch");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_applypatch_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::properties",
+                                  "Properties",
+                                  "properties...",
+                                  "svn-properties");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_properties_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    nautilus_menu_append_item (submenu, nautilus_menu_item_new ("NautilusSVN::sub_separator6", "-", "", ""));
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::settings",
+                                  "Settings",
+                                  "settings...",
+                                  "svn-settings");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_settings_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::help",
+                                  "Help",
+                                  "help...",
+                                  "svn-help");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_help_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
+    //<!---
+    item = nautilus_menu_item_new ("NautilusSVN::about",
+                                  "About",
+                                  "about...",
+                                  "svn-about");
+
+    //g_signal_connect (item,
+    //                  "activate",
+    //                  G_CALLBACK (svn_extension_about_callback),
+    //                  nautilus_file_info_list_copy (files));
+
+    nautilus_menu_append_item (submenu, item);
+    //--->
+
 	item = nautilus_menu_item_new ("NautilusSVN::submenu1",
 	                               "QSVN",
 	                               "qsvn",
@@ -365,6 +706,8 @@ svn_extension_create_menu_one_file_under_svn(GList *files)
 	nautilus_menu_item_set_submenu (item, submenu);
 
 	items = g_list_append (items, item);
+
+    ////////////////////////////////////////////////////////////////////////////
 
 	items = g_list_append (items, nautilus_menu_item_new ("NautilusSVN::separator2", "-", "", ""));
 
