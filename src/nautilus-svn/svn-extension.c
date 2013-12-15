@@ -46,6 +46,7 @@ svn_extension_are_items_under_svn(GList *files)
  	apr_pool_t *result_pool = NULL;
  	apr_pool_t *scratch_pool = NULL;
  	guint items;
+ 	gboolean ret;
 
 	if ((files == NULL)||((items = g_list_length (files)) == 0))
 	{
@@ -61,14 +62,23 @@ svn_extension_are_items_under_svn(GList *files)
 
 	local_abspath = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
 
-	error = svn_wc_status3 (&status, ctx, local_abspath, result_pool, scratch_pool);
+	if (local_abspath)
+	{
+		error = svn_wc_status3 (&status, ctx, local_abspath, result_pool, scratch_pool);
 
-	g_free (local_abspath); local_abspath = NULL;
+		g_free (local_abspath); local_abspath = NULL;
+
+		ret = (error == NULL);
+	}
+	else
+	{
+		ret = FALSE;
+	}
 
 	apr_pool_destroy (scratch_pool);
 	apr_pool_destroy (result_pool);
 
-	return (error == NULL);
+	return ret;
 }
 
 static void
