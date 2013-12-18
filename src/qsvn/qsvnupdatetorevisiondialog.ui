@@ -15,13 +15,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="revision_groupBox">
      <property name="title">
       <string>Revision</string>
      </property>
      <layout class="QGridLayout" name="gridLayout" columnstretch="1,1">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="head_radioButton">
         <property name="text">
          <string>HEAD revision</string>
         </property>
@@ -31,49 +31,74 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="showlog_pushButton">
         <property name="text">
          <string>Show log</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="revision_radioButton">
         <property name="text">
          <string>Revision</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="revision_lineEdit"/>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="depth_groupBox">
      <property name="title">
       <string>Update Depth</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="depth_comboBox">
         <item>
          <property name="text">
           <string>Working copy</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Fully recursive</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Immediate children, including folders</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Only file children</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Only this item</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Exclude</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="items_pushButton">
         <property name="text">
          <string>Choose items...</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="sticky_checkBox">
         <property name="text">
          <string>Make depth sticky</string>
         </property>
@@ -83,13 +108,13 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="misc_groupBox">
      <property name="title">
       <string>Misc</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QCheckBox" name="checkBox_2">
+       <widget class="QCheckBox" name="omit_checkBox">
         <property name="text">
          <string>Omit externals</string>
         </property>
@@ -131,14 +156,14 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>radioButton</tabstop>
-  <tabstop>radioButton_2</tabstop>
-  <tabstop>pushButton</tabstop>
-  <tabstop>lineEdit</tabstop>
-  <tabstop>comboBox</tabstop>
-  <tabstop>pushButton_2</tabstop>
-  <tabstop>checkBox</tabstop>
-  <tabstop>checkBox_2</tabstop>
+  <tabstop>head_radioButton</tabstop>
+  <tabstop>revision_radioButton</tabstop>
+  <tabstop>showlog_pushButton</tabstop>
+  <tabstop>revision_lineEdit</tabstop>
+  <tabstop>depth_comboBox</tabstop>
+  <tabstop>items_pushButton</tabstop>
+  <tabstop>sticky_checkBox</tabstop>
+  <tabstop>omit_checkBox</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>

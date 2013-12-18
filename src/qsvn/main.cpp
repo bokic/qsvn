@@ -2,6 +2,7 @@
 #include "qsvncommitdialog.h"
 #include "qsvnupdatedialog.h"
 #include "qsvnrepobrowserdialog.h"
+#include "qsvnupdatetorevisiondialog.h"
 #include "qsvn.h"
 
 #include <QApplication>
@@ -32,21 +33,27 @@ void registerClasses()
 
 int main(int argc, char *argv[])
 {
+    QDialog *dlg;
+
     if (argc < 2)
     {
-        printf("Usage qsvn <checkout, commit, update, browse>\n");
+        printf("Usage qsvn <browse, checkout, commit, update, update-to-revision>\n");
 
         return -1;
     }
 
     registerClasses();
 
-    if (strcmp(argv[1], "checkout") == 0)
+    QApplication a(argc, argv);
+    if (!setAppSettings()) return -1;
+
+    if (strcmp(argv[1], "browse") == 0)
     {
-        QApplication a(argc, argv);
-        if (!setAppSettings()) return -1;
+        dlg = new QSVNRepoBrowserDialog();
+    }
+    else if (strcmp(argv[1], "checkout") == 0)
+    {
         QSVNCheckoutDialog w;
-        QSVNUpdateDialog ud;
 
         if (argc > 2)
         {
@@ -55,68 +62,59 @@ int main(int argc, char *argv[])
 
         if (w.exec() == QDialog::Accepted)
         {
-            ud.setOperationCheckout(w);
-            ud.show();
+            dlg = new QSVNUpdateDialog();
+            ((QSVNUpdateDialog *)dlg)->setOperationCheckout(w);
         }
-
-        return a.exec();
+        else
+        {
+            return 0;
+        }
     }
     else if (strcmp(argv[1], "commit") == 0)
     {
-        QApplication a(argc, argv);
-        if (!setAppSettings()) return -1;
-        QSVNCommitDialog w;
-        w.show();
-
-        return a.exec();
+        dlg = new QSVNCommitDialog();
     }
     else if (strcmp(argv[1], "update") == 0)
     {
-        QApplication a(argc, argv);
-        if (!setAppSettings()) return -1;
-
-        QStringList urls;
+        QStringList paths;
 
         for(int c = 2; c < argc; c++)
         {
-            urls.append(QString::fromUtf8(argv[c]));
+            paths.append(QString::fromUtf8(argv[c]));
         }
 
-        QSVNUpdateDialog w;
-        w.setOperationUpdate(urls);
-        w.show();
-
-        return a.exec();
+        dlg = new QSVNUpdateDialog();
+        ((QSVNUpdateDialog *)dlg)->setOperationUpdate(paths);
     }
     else if (strcmp(argv[1], "update-to-revision") == 0)
     {
-        QApplication a(argc, argv);
-        if (!setAppSettings()) return -1;
-
-        QStringList urls;
+        QStringList paths;
 
         for(int c = 2; c < argc; c++)
         {
-            urls.append(QString::fromUtf8(argv[c]));
+            paths.append(QString::fromUtf8(argv[c]));
         }
 
-        QSVNUpdateDialog w;
-        w.setOperationUpdate(urls);
-        w.show();
+        QSVNUpdateToRevisionDialog w(paths);
 
-        return a.exec();
+        if (w.exec() == QDialog::Accepted)
+        {
+            dlg = new QSVNUpdateDialog();
+            ((QSVNUpdateDialog *)dlg)->setOperationUpdateToRevision(w);
+        }
+        else
+        {
+            return 0;
+        }
     }
-    else if (strcmp(argv[1], "browse") == 0)
+    else
     {
-        QApplication a(argc, argv);
-        if (!setAppSettings()) return -1;
-        QSVNRepoBrowserDialog w;
-        w.show();
+        printf("Unknown usage.\nUsage qsvn <browse, checkout, commit, update, update-to-revision>\n");
 
-        return a.exec();
+        return -1;
     }
 
-    printf("Unknown usage.\nUsage qsvn <commit, update, browse>\n");
+    dlg->show();
 
-    return -1;
+    return a.exec();
 }

@@ -6,9 +6,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET       = qsvn
 TEMPLATE     = app
 
-SOURCES     += main.cpp qsvncheckoutdialog.cpp qsvncommitdialog.cpp qsvnupdatedialog.cpp qsvnrepobrowserdialog.cpp qsvnselectrevisiondialog.cpp qextcombobox.cpp qsvn.cpp qsvnthread.cpp
-HEADERS     +=          qsvncheckoutdialog.h   qsvncommitdialog.h   qsvnupdatedialog.h   qsvnrepobrowserdialog.h   qsvnselectrevisiondialog.h   qextcombobox.h   qsvn.h   qsvnthread.h
-FORMS       +=          qsvncheckoutdialog.ui  qsvncommitdialog.ui  qsvnupdatedialog.ui  qsvnrepobrowserdialog.ui  qsvnselectrevisiondialog.ui
+SOURCES     += main.cpp qsvncheckoutdialog.cpp qsvncommitdialog.cpp qsvnupdatedialog.cpp qsvnrepobrowserdialog.cpp qsvnselectrevisiondialog.cpp qsvnupdatetorevisiondialog.cpp qextcombobox.cpp qsvn.cpp qsvnthread.cpp
+HEADERS     +=          qsvncheckoutdialog.h   qsvncommitdialog.h   qsvnupdatedialog.h   qsvnrepobrowserdialog.h   qsvnselectrevisiondialog.h   qsvnupdatetorevisiondialog.h   qextcombobox.h   qsvn.h   qsvnthread.h
+FORMS       +=          qsvncheckoutdialog.ui  qsvncommitdialog.ui  qsvnupdatedialog.ui  qsvnrepobrowserdialog.ui  qsvnselectrevisiondialog.ui  qsvnupdatetorevisiondialog.ui
 
 SOURCES     += helpers.cpp
 HEADERS     += helpers.h

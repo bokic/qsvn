@@ -1,4 +1,5 @@
 #include "qsvnupdatedialog.h"
+#include "qsvnupdatetorevisiondialog.h"
 #include "ui_qsvnupdatedialog.h"
 #include "qsvncheckoutdialog.h"
 #include "helpers.h"
@@ -12,6 +13,11 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
     ui(new Ui::QSVNUpdateDialog),
     m_thread(this),
     m_depth(svn_depth_infinity),
+    m_depth_is_sticky(true),
+    m_ignore_externals(true),
+    m_allow_unver_obstructions(true),
+    m_add_as_modification(true),
+    m_make_parents(true),
     m_operation(QSVNOperationNone)
 {
     ui->setupUi(this);
@@ -39,6 +45,25 @@ void QSVNUpdateDialog::setOperationUpdate(const QStringList &paths)
     {
         m_operation = QSVNOperationUpdate;
         m_paths = paths;
+
+        m_thread.start();
+    }
+    else
+    {
+        qDebug("QSVNUpdateDialog::setOperationXXX() called more than once.");
+    }
+}
+
+void QSVNUpdateDialog::setOperationUpdateToRevision(const QSVNUpdateToRevisionDialog &dlg)
+{
+    if (m_operation == QSVNOperationNone)
+    {
+        m_operation = QSVNOperationUpdate;
+        m_paths = dlg.paths();
+        m_revision = dlg.ui_revision();
+        m_depth = dlg.ui_depth();
+        m_ignore_externals = dlg.ui_include_externals();
+        m_allow_unver_obstructions = dlg.ui_allow_unver();
 
         m_thread.start();
     }
@@ -102,7 +127,7 @@ void QSVNUpdateDialog::workerStarted()
     case QSVNOperationCommit:
         break;
     case QSVNOperationUpdate:
-        emit update(m_paths, m_revision, m_depth, true, true, true, true, true);
+        emit update(m_paths, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
         break;
     case QSVNOperationCheckout:
         emit checkout(m_url, m_path, m_peg_revision, m_revision, m_depth, m_ignore_externals, m_allow_unver_obstructions);

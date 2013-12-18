@@ -12,6 +12,7 @@ class QSVNUpdateDialog;
 }
 
 class QSVNCheckoutDialog;
+class QSVNUpdateToRevisionDialog;
 
 class QSVNUpdateDialog : public QDialog
 {
@@ -22,6 +23,7 @@ public:
     ~QSVNUpdateDialog();
 
     void setOperationUpdate(const QStringList &paths);
+    void setOperationUpdateToRevision(const QSVNUpdateToRevisionDialog &dlg);
     void setOperationCheckout(const QSVNCheckoutDialog &dlg);
 
     enum QSVNOperationType {QSVNOperationNone, QSVNOperationCommit, QSVNOperationUpdate, QSVNOperationCheckout};
@@ -51,9 +53,12 @@ private:
     svn_opt_revision_t m_revision;
     svn_opt_revision_t m_peg_revision;
     svn_depth_t m_depth;
+    bool m_depth_is_sticky;
+    bool m_ignore_externals;
+    bool m_allow_unver_obstructions;
+    bool m_add_as_modification;
+    bool m_make_parents;
     QSVNOperationType m_operation;
-    svn_boolean_t m_ignore_externals;
-    svn_boolean_t m_allow_unver_obstructions;
 };
 
 #endif // QSVNUPDATEDIALOG_H
