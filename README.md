@@ -1,4 +1,4 @@
 qsvn
 ====
 
-svn qt frontend
+svn frontend written in qt
