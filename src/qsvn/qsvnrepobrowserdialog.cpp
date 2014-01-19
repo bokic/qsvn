@@ -219,7 +219,10 @@ void QSVNRepoBrowserDialog::closeEvent(QCloseEvent *event)
 
 void QSVNRepoBrowserDialog::on_comboBox_URL_push(const QString &text)
 {
-    Q_UNUSED(text);
+	if (text.isEmpty())
+	{
+		return;
+	}
 
     ui->pushButton_Head->setText(tr("HEAD"));
 

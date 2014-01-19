@@ -44,7 +44,12 @@ void QSVNCheckoutDialog::on_pushButton_URL_clicked()
 {
     QSVNRepoBrowserDialog dlg(this);
 
-    dlg.setURL(ui->comboBox_URL->currentText());
+	QString curURL = ui->comboBox_URL->currentText();
+
+	if (!curURL.isEmpty())
+	{
+		dlg.setURL(ui->comboBox_URL->currentText());
+	}
 
     if (dlg.exec() == QDialog::Accepted)
     {
