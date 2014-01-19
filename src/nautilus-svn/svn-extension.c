@@ -1,6 +1,6 @@
 #include "svn-extension.h"
 
-#include <nautilus-menu-provider.h>
+#include <libnautilus-extension/nautilus-menu-provider.h>
 #include <gtk/gtk.h>
 
 #include <svn_client.h>
@@ -778,6 +778,7 @@ svn_extension_register_type (GTypeModule *module)
 					sizeof (SvnExtension),
 					0,
 					(GInstanceInitFunc) svn_extension_instance_init,
+					NULL
 			};
 
 	static const GInterfaceInfo menu_provider_iface_info = {
