@@ -764,7 +764,7 @@ NautilusOperationResult svn_extension_update_file_info (NautilusInfoProvider    
 
         error = svn_wc_context_create (&ctx, NULL, result_pool, scratch_pool);
 
-        if (!error)
+        if ((!error)&&(filename))
         {
             error = svn_wc_status3 (&status, ctx, filename, result_pool, scratch_pool);
 
@@ -822,7 +822,11 @@ NautilusOperationResult svn_extension_update_file_info (NautilusInfoProvider    
         apr_pool_destroy (scratch_pool);
         apr_pool_destroy (result_pool);
 
-        g_free (filename); filename = NULL;
+        if (filename)
+        {
+            g_free (filename);
+            filename = NULL;
+        }
 
         if (emblem)
         {
