@@ -1,6 +1,7 @@
 #include "svn-extension.h"
 
 #include <libnautilus-extension/nautilus-menu-provider.h>
+#include <libnautilus-extension/nautilus-info-provider.h>
 #include <gtk/gtk.h>
 
 #include <svn_client.h>
@@ -225,14 +226,6 @@ svn_extension_updatetorevision_callback(GtkWidget *widget, GList *files)
 	g_spawn_command_line_async (command, &error);
 
 	g_free (command); command = NULL;
-}
-
-static GList *
-svn_extension_get_background_items (NautilusMenuProvider  *provider,
-					GtkWidget             *window,
-					NautilusFileInfo      *file_info)
-{
-	return NULL;
 }
 
 static enum GSVNOperationType
@@ -725,6 +718,14 @@ svn_extension_create_menu_one_file_under_svn(GList *files)
 }
 
 static GList *
+svn_extension_get_background_items (NautilusMenuProvider  *provider,
+                    GtkWidget             *window,
+                    NautilusFileInfo      *file_info)
+{
+    return NULL;
+}
+
+static GList *
 svn_extension_get_file_items (NautilusMenuProvider *provider,
 				  GtkWidget            *window,
 				  GList                *files)
@@ -740,11 +741,116 @@ svn_extension_get_file_items (NautilusMenuProvider *provider,
 	}
 }
 
+NautilusOperationResult svn_extension_update_file_info (NautilusInfoProvider     *provider,
+                                                        NautilusFileInfo         *file,
+                                                        GClosure                 *update_complete,
+                                                        NautilusOperationHandle **handle)
+{
+    svn_error_t *error = NULL;
+    svn_wc_status3_t *status = NULL;
+    svn_wc_context_t *ctx = NULL;
+    gchar *filename = NULL;
+    char *emblem = NULL;
+    apr_pool_t *result_pool = NULL;
+    apr_pool_t *scratch_pool = NULL;
+
+    if (file)
+    {
+        error = NULL;
+        filename = g_filename_from_uri (nautilus_file_info_get_uri (file), NULL, NULL);
+
+        result_pool = svn_pool_create(NULL);
+        scratch_pool = svn_pool_create(NULL);
+
+        error = svn_wc_context_create (&ctx, NULL, result_pool, scratch_pool);
+
+        if (!error)
+        {
+            error = svn_wc_status3 (&status, ctx, filename, result_pool, scratch_pool);
+
+            if (!error)
+            {
+                switch(status->node_status)
+                {
+                case svn_wc_status_none:
+                    break;
+                case svn_wc_status_unversioned:
+                    emblem = "qsvn-unversioned";
+                    break;
+                case svn_wc_status_normal:
+                    emblem = "qsvn-normal";
+                    break;
+                case svn_wc_status_added:
+                    emblem = "qsvn-added";
+                    break;
+                case svn_wc_status_missing:
+                    emblem = "qsvn-unversioned"; // ????
+                    break;
+                case svn_wc_status_deleted:
+                    emblem = "qsvn-deleted";
+                    break;
+                case svn_wc_status_replaced:
+                    emblem = "qsvn-unversioned"; // ????
+                    break;
+                case svn_wc_status_modified:
+                    emblem = "qsvn-modified";
+                    break;
+                case svn_wc_status_merged:
+                    emblem = "qsvn-unversioned"; // ????
+                    break;
+                case svn_wc_status_conflicted:
+                    emblem = "qsvn-conflict";
+                    break;
+                case svn_wc_status_ignored:
+                    emblem = "qsvn-ignored";
+                    break;
+                case svn_wc_status_obstructed:
+                    emblem = "qsvn-unversioned"; // ????
+                    break;
+                case svn_wc_status_external:
+                    emblem = "qsvn-unversioned"; // ????
+                    break;
+                case svn_wc_status_incomplete:
+                    emblem = "qsvn-unversioned"; // ????
+                    break;
+                default:
+                    emblem = "qsvn-unversioned"; // ????
+                }
+            }
+        }
+
+        apr_pool_destroy (scratch_pool);
+        apr_pool_destroy (result_pool);
+
+        g_free (filename); filename = NULL;
+
+        if (emblem)
+        {
+            nautilus_file_info_add_emblem(file, emblem);
+        }
+    }
+
+    return NAUTILUS_OPERATION_COMPLETE;
+}
+
+void svn_extension_cancel_update (NautilusInfoProvider     *provider,
+                                  NautilusOperationHandle  *handle)
+{
+
+}
+
 static void
 svn_extension_menu_provider_iface_init (NautilusMenuProviderIface *iface)
 {
 	iface->get_background_items = svn_extension_get_background_items;
 	iface->get_file_items = svn_extension_get_file_items;
+}
+
+static void
+svn_extension_info_provider_iface_init (NautilusInfoProviderIface *iface)
+{
+    iface->update_file_info = svn_extension_update_file_info;
+    iface->cancel_update = svn_extension_cancel_update;
 }
 
 static void
@@ -787,10 +893,22 @@ svn_extension_register_type (GTypeModule *module)
 		NULL,
 	};
 
+    static const GInterfaceInfo info_provider_iface_info = {
+        (GInterfaceInitFunc) svn_extension_info_provider_iface_init,
+        NULL,
+        NULL,
+    };
+
 	svn_type = g_type_module_register_type (module, G_TYPE_OBJECT, "svnExtension", &info, 0);
 
 	g_type_module_add_interface (module,
 					 svn_type,
 					 NAUTILUS_TYPE_MENU_PROVIDER,
 					 &menu_provider_iface_info);
+
+    g_type_module_add_interface (module,
+                     svn_type,
+                     NAUTILUS_TYPE_INFO_PROVIDER,
+                     &info_provider_iface_info);
+
 }
