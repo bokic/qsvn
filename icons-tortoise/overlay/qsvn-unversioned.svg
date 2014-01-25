@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,10 +14,9 @@
    height="256"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
-   sodipodi:docbase="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays"
-   sodipodi:docname="UnversionedIcon.svg"
+   sodipodi:docname="qsvn-unversioned.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays\TortoiseModified.png"
    inkscape:export-xdpi="90"
@@ -54,7 +54,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.9445436"
      inkscape:cx="84.700639"
-     inkscape:cy="99.210147"
+     inkscape:cy="140.35091"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -66,7 +66,8 @@
      inkscape:window-width="1191"
      inkscape:window-height="764"
      inkscape:window-x="69"
-     inkscape:window-y="0" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -84,35 +85,36 @@
      inkscape:groupmode="layer">
     <path
        sodipodi:type="arc"
-       style="fill:url(#radialGradient3183);fill-opacity:1.0;stroke:none;stroke-opacity:0.76394850999999986"
+       style="fill:url(#radialGradient3183);fill-opacity:1;stroke:none"
        id="path3183"
        sodipodi:cx="47.119026"
        sodipodi:cy="208.49529"
        sodipodi:rx="46.990459"
        sodipodi:ry="46.990459"
-       d="M 94.109486 208.49529 A 46.990459 46.990459 0 1 1  0.12856674,208.49529 A 46.990459 46.990459 0 1 1  94.109486 208.49529 z"
-       transform="matrix(1.7024809,0,0,1.7046963,0.281369,-179.98661)" />
+       d="m 94.109486,208.49529 a 46.990459,46.990459 0 1 1 -93.98091926,0 46.990459,46.990459 0 1 1 93.98091926,0 z"
+       transform="matrix(2.7189421,0,0,2.7224802,0.1506859,-440.01588)" />
     <text
        xml:space="preserve"
-       style="font-size:177.27957153px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="31.102913"
-       y="239.30307"
+       style="font-size:283.12380981px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="49.375122"
+       y="229.10544"
        id="text2387"
-       transform="scale(1.0033034,0.9967074)"><tspan
+       transform="scale(1.0033034,0.99670744)"><tspan
          sodipodi:role="line"
          id="tspan2389"
-         x="31.102913"
-         y="239.30307"
+         x="49.375122"
+         y="229.10544"
          style="fill:#ffffff">?</tspan></text>
     <flowRoot
        xml:space="preserve"
        id="flowRoot2391"
-       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Bitstream Vera Sans;font-style:normal;font-weight:normal;font-size:22"><flowRegion
+       style="font-size:22px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       transform="matrix(1.597047,0,0,1.597047,-0.29867363,-152.5688)"><flowRegion
          id="flowRegion2393"><rect
            id="rect2395"
            width="22.627417"
            height="34.969646"
            x="44.226315"
            y="156.23366" /></flowRegion><flowPara
-         id="flowPara2397"></flowPara></flowRoot>  </g>
+         id="flowPara2397" /></flowRoot>  </g>
 </svg>

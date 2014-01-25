@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -13,10 +14,9 @@
    height="256"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.45.1"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
-   sodipodi:docbase="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays"
-   sodipodi:docname="TortoiseModified.svg"
+   sodipodi:docname="qsvn-modified.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays\TortoiseModified.png"
    inkscape:export-xdpi="90"
@@ -64,9 +64,10 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="1191"
-     inkscape:window-height="1067"
+     inkscape:window-height="1027"
      inkscape:window-x="523"
-     inkscape:window-y="29" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -84,28 +85,29 @@
      inkscape:groupmode="layer">
     <path
        sodipodi:type="arc"
-       style="fill:url(#radialGradient4162);fill-opacity:1;stroke:none;stroke-opacity:0.76394851"
+       style="fill:url(#radialGradient4162);fill-opacity:1;stroke:none"
        id="path3183"
        sodipodi:cx="47.119026"
        sodipodi:cy="208.49529"
        sodipodi:rx="46.990459"
        sodipodi:ry="46.990459"
-       d="M 94.109486 208.49529 A 46.990459 46.990459 0 1 1  0.12856674,208.49529 A 46.990459 46.990459 0 1 1  94.109486 208.49529 z"
-       transform="matrix(1.7024809,0,0,1.7046963,0.281369,-179.98661)" />
+       d="m 94.109486,208.49529 a 46.990459,46.990459 0 1 1 -93.98091926,0 46.990459,46.990459 0 1 1 93.98091926,0 z"
+       transform="matrix(2.7189421,0,0,2.7224802,0.1506859,-440.01588)" />
     <path
-       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#c8c8c8;stroke-width:1.80496562px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 74.876099,114.24837 C 66.159408,144.87776 64.620625,176.89655 73.026032,210.30089 L 85.359815,209.95163 C 94.149732,176.90487 92.880627,148.03847 84.434782,113.89906 L 74.876099,114.24837 z "
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#c8c8c8;stroke-width:2.88261509px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 119.28198,29.891221 C 105.36101,78.807798 102.9035,129.94331 116.32734,183.29161 l 19.69763,-0.55778 C 150.06288,129.9566 148.03606,83.8556 134.54765,29.333356 l -15.26567,0.557865 z"
        id="path3158"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccccc"
+       inkscape:connector-curvature="0" />
     <path
        sodipodi:type="arc"
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#c8c8c8;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#c8c8c8;stroke-opacity:1"
        id="path3160"
        sodipodi:cx="47.272728"
        sodipodi:cy="243.63637"
        sodipodi:rx="5.2727275"
        sodipodi:ry="4.909091"
-       d="M 52.545455 243.63637 A 5.2727275 4.909091 0 1 1  42,243.63637 A 5.2727275 4.909091 0 1 1  52.545455 243.63637 z"
-       transform="matrix(1.7021375,0,0,1.7046113,-4.1445146e-2,-177.49443)" />
+       d="m 52.545455,243.63637 a 5.2727275,4.909091 0 1 1 -10.545455,0 5.2727275,4.909091 0 1 1 10.545455,0 z"
+       transform="matrix(2.7183937,0,0,2.7223444,-0.36486348,-436.03576)" />
   </g>
 </svg>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -13,10 +14,9 @@
    height="256"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.45.1"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
-   sodipodi:docbase="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays"
-   sodipodi:docname="TortoiseDeleted.svg"
+   sodipodi:docname="qsvn-deleted.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays\TortoiseDeleted.png"
    inkscape:export-xdpi="90"
@@ -43,7 +43,7 @@
        fx="47.5"
        fy="211.14063"
        r="47.5"
-       gradientTransform="matrix(1.6662189,0,0,1.6662192,0.8546043,-175.80653)"
+       gradientTransform="matrix(2.6545896,0,0,2.6545901,1.36154,-431.9463)"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
@@ -54,8 +54,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.75"
-     inkscape:cx="101.89545"
-     inkscape:cy="84.758378"
+     inkscape:cx="148.80454"
+     inkscape:cy="154.9402"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -65,9 +65,10 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="1191"
-     inkscape:window-height="1067"
+     inkscape:window-height="1027"
      inkscape:window-x="523"
-     inkscape:window-y="29" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -84,8 +85,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <path
-       style="fill:url(#radialGradient3151);fill-opacity:1;fill-rule:evenodd;stroke:#740000;stroke-width:1.70920873px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.76394851"
-       d="M 31.211027,96.854604 L 1.1670204,124.57875 C 13.677871,155.30823 31.995287,170.92366 52.090834,184.51998 C 39.882584,197.33379 24.158526,208.5845 0.85460434,215.91514 L 24.1296,255.1454 C 52.129391,237.83098 68.751151,220.84447 81.926562,204.2447 C 98.679658,216.05168 115.38971,230.65475 129.93449,254.81668 L 159.04125,227.47603 C 144.55184,197.32969 126.36664,181.85606 107.64881,169.4525 C 119.96023,153.35121 134.45042,137.68069 159.1454,122.6063 L 137.38041,96.909387 C 106.65384,107.01262 92.405444,128.18801 77.708948,150.44006 C 60.253314,138.65777 43.835212,124.12405 31.211027,96.854604 z "
-       id="path2162" />
+       style="fill:url(#radialGradient3151);fill-opacity:1;fill-rule:evenodd;stroke:#740000;stroke-width:2.72308016px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.76394851"
+       d="M 49.72484,2.4524488 1.8592757,46.622054 C 21.791335,95.579702 50.974309,120.45792 82.990169,142.11933 63.540207,162.53406 38.488924,180.45849 1.3615401,192.13753 L 38.44284,254.63846 c 44.608757,-27.58501 71.09024,-54.64761 92.08107,-81.09406 26.69073,18.81066 53.31288,42.07601 76.48535,80.57035 l 46.37237,-43.55862 c -23.08427,-48.0286 -52.0566,-72.68091 -81.87751,-92.44203 19.61434,-25.652287 42.69984,-50.618274 82.04343,-74.634518 L 218.87197,2.5397281 C 169.91896,18.636015 147.21867,52.372261 123.80448,87.823822 95.994483,69.052492 69.837462,45.897634 49.72484,2.4524488 z"
+       id="path2162"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

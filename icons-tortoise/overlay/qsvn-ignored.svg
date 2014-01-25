@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -13,10 +14,9 @@
    height="256"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.45.1"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
-   sodipodi:docbase="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays"
-   sodipodi:docname="IgnoredIcon.svg"
+   sodipodi:docname="qsvn-ignored.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays\IgnoredIcon.png"
    inkscape:export-xdpi="90"
@@ -64,9 +64,10 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="1191"
-     inkscape:window-height="1067"
+     inkscape:window-height="1027"
      inkscape:window-x="523"
-     inkscape:window-y="29" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -84,17 +85,17 @@
      inkscape:groupmode="layer">
     <path
        sodipodi:type="arc"
-       style="fill:url(#radialGradient4162);fill-opacity:1;stroke:none;stroke-opacity:0.76394851"
+       style="fill:url(#radialGradient4162);fill-opacity:1;stroke:none"
        id="path3183"
        sodipodi:cx="47.119026"
        sodipodi:cy="208.49529"
        sodipodi:rx="46.990459"
        sodipodi:ry="46.990459"
-       d="M 94.109486 208.49529 A 46.990459 46.990459 0 1 1  0.12856674,208.49529 A 46.990459 46.990459 0 1 1  94.109486 208.49529 z"
-       transform="matrix(1.7024427,0,0,1.7046498,0.1838529,-180.09038)" />
+       d="m 94.109486,208.49529 a 46.990459,46.990459 0 1 1 -93.98091926,0 46.990459,46.990459 0 1 1 93.98091926,0 z"
+       transform="matrix(2.7148756,0,0,2.7183952,0.0536877,-439.08789)" />
     <path
        sodipodi:type="star"
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#c8c8c8;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#c8c8c8;stroke-opacity:1"
        id="path2165"
        sodipodi:sides="4"
        sodipodi:cx="23.272726"
@@ -106,7 +107,7 @@
        inkscape:flatsided="true"
        inkscape:rounded="0"
        inkscape:randomized="0"
-       d="M 48.72727,191.27273 L -0.72727244,192.72728 L -2.1818176,143.27274 L 47.272725,141.81819 L 48.72727,191.27273 z "
-       transform="matrix(2.5374314,0,-9.4597228e-2,0.988533,35.316047,12.8272)" />
+       d="M 48.72727,191.27273 -0.72727244,192.72728 -2.1818176,143.27274 47.272725,141.81819 z"
+       transform="matrix(4.0464273,0,-0.15085366,1.5764079,56.078796,-131.44333)" />
   </g>
 </svg>

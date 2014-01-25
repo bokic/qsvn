@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -13,10 +14,9 @@
    height="256"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.45.1"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
-   sodipodi:docbase="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays"
-   sodipodi:docname="TortoiseAdded.svg"
+   sodipodi:docname="qsvn-added.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays\TortoiseAdded.png"
    inkscape:export-xdpi="90"
@@ -43,7 +43,7 @@
        fx="47.5"
        fy="211"
        r="48"
-       gradientTransform="matrix(1.6661909,0,0,1.6671553,0.8559243,-175.76975)"
+       gradientTransform="matrix(2.6657986,0,0,2.6673416,1.369424,-434.80393)"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
@@ -53,9 +53,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.75"
-     inkscape:cx="104.91578"
-     inkscape:cy="127.13627"
+     inkscape:zoom="1"
+     inkscape:cx="236.52809"
+     inkscape:cy="133.44367"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -65,9 +65,10 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="1191"
-     inkscape:window-height="1067"
+     inkscape:window-height="1027"
      inkscape:window-x="523"
-     inkscape:window-y="29" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -84,8 +85,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <path
-       style="fill:url(#radialGradient3187);fill-opacity:1;fill-rule:evenodd;stroke:#00005d;stroke-width:1.7118485px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.7982833"
-       d="M 50.841654,96.855932 L 50.841654,149.61865 L 0.8559243,149.61865 L 0.8559243,211.17514 L 50.841654,211.17514 L 50.841654,255.14408 L 109.15834,255.14408 L 109.15834,211.17514 L 159.14407,211.17514 L 159.14407,149.61865 L 109.15834,149.61865 L 109.15834,96.855932 L 50.841654,96.855932 z "
-       id="rect2196" />
+       style="fill:url(#radialGradient3187);fill-opacity:1;fill-rule:evenodd;stroke:#00005d;stroke-width:2.73884797px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.7982833"
+       d="m 81.343389,1.379686 0,84.416968 -79.973965,0 0,98.486436 79.973965,0 0,70.34749 93.302961,0 0,-70.34749 79.97396,0 0,-98.486436 -79.97396,0 0,-84.416968 -93.302961,0 z"
+       id="rect2196"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>
