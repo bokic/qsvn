@@ -16,7 +16,16 @@
   <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,0,0" columnstretch="1,0,0,0">
    <item row="0" column="0" colspan="4">
     <widget class="QTableWidget" name="tableWidget">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
      <property name="showGrid">
+      <bool>false</bool>
+     </property>
+     <property name="wordWrap">
       <bool>false</bool>
      </property>
      <attribute name="verticalHeaderVisible">

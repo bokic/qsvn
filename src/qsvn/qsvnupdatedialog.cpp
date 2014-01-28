@@ -22,8 +22,6 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->tableWidget->setWordWrap(false);
-
     ui->tableWidget->setColumnWidth(0, 80);
     ui->tableWidget->setColumnWidth(1, 375);
     ui->tableWidget->setColumnWidth(2, 80);
