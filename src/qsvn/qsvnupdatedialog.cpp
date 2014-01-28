@@ -22,6 +22,10 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->tableWidget->setColumnWidth(0, 80);
+    ui->tableWidget->setColumnWidth(1, 375);
+    ui->tableWidget->setColumnWidth(2, 80);
+
     m_revision.kind = svn_opt_revision_head;
 
     connect(&m_thread, &QThread::started, this, &QSVNUpdateDialog::workerStarted);
@@ -155,6 +159,8 @@ void QSVNUpdateDialog::svnNotify(svn_wc_notify_t notify)
     ui->tableWidget->setItem(newRow, 0, new QTableWidgetItem());
     ui->tableWidget->setItem(newRow, 1, new QTableWidgetItem());
     ui->tableWidget->setItem(newRow, 2, new QTableWidgetItem());
+
+    ui->tableWidget->setRowHeight(newRow, ui->tableWidget->fontMetrics().height() + 4);
 
     ui->tableWidget->scrollToItem(ui->tableWidget->item(newRow, 0));
 
