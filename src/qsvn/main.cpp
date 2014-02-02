@@ -72,7 +72,15 @@ int main(int argc, char *argv[])
     }
     else if (strcmp(argv[1], "commit") == 0)
     {
+        QStringList paths;
+
+        for(int c = 2; c < argc; c++)
+        {
+            paths.append(QString::fromUtf8(argv[c]));
+        }
+
         dlg = new QSVNCommitDialog();
+        ((QSVNCommitDialog *)dlg)->setOperationStatus(paths);
     }
     else if (strcmp(argv[1], "update") == 0)
     {
