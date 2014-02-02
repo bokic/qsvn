@@ -26,8 +26,6 @@ public:
     void setOperationUpdateToRevision(const QSVNUpdateToRevisionDialog &dlg);
     void setOperationCheckout(const QSVNCheckoutDialog &dlg);
 
-    enum QSVNOperationType {QSVNOperationNone, QSVNOperationCommit, QSVNOperationUpdate, QSVNOperationCheckout};
-
 signals:
     void update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t depth, bool depthIsSticky, bool ignoreExternals, bool allowUnverObstructions, bool addsAsModification, bool makeParents);
     void checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions);
@@ -37,6 +35,7 @@ protected:
 
 private slots:
     void workerStarted();
+    void workerFinished();
     void svnProgress(int progress, int total);
     void svnNotify(svn_wc_notify_t notify);
     void svnFinished(bool result);
@@ -58,7 +57,6 @@ private:
     bool m_allow_unver_obstructions;
     bool m_add_as_modification;
     bool m_make_parents;
-    QSVNOperationType m_operation;
 };
 
 #endif // QSVNUPDATEDIALOG_H

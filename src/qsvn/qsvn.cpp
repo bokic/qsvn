@@ -98,11 +98,23 @@ void QSvn::cancel()
     cancelOperation = true;
 }
 
+QSvn::QSVNOperationType QSvn::operation()
+{
+    return m_operation;
+}
+
+bool QSvn::isBusy()
+{
+    return m_operation != QSVNOperationNone;
+}
+
 void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 {
     QRepoBrowserResult ret;
     apr_hash_t *dirents;
     apr_hash_index_t *hi;
+
+    m_operation = QSvn::QSVNOperationRepoBrowser;
 
     const char *l_url = svn_uri_canonicalize(url.toUtf8().constData(), pool);
 
@@ -208,6 +220,32 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
     emit finished(err == nullptr);
 }
 
+void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky)
+{
+    svn_error_t *err;
+
+    apr_pool_t *scratch_pool = svn_pool_create(NULL);
+
+    err = svn_client_status5(nullptr,
+                             ctx,
+                             path.toUtf8().constData(),
+                             &revision,
+                             depth,
+                             get_all,
+                             update,
+                             no_ignore,
+                             ignore_externals,
+                             depth_as_sticky,
+                             nullptr,
+                             status_funct,
+                             this,
+                             scratch_pool);
+
+    apr_pool_destroy (scratch_pool);
+
+    emit finished(err == nullptr);
+}
+
 svn_error_t * QSvn::log_msg_func3(const char **log_msg,
                                   const char **tmp_file,
                                   const apr_array_header_t *commit_items,
@@ -264,6 +302,21 @@ svn_error_t * QSvn::conflict_func2(svn_wc_conflict_result_t **result,
 
     Q_UNUSED(svn);
     Q_UNIMPLEMENTED();
+
+    return SVN_NO_ERROR;
+}
+
+svn_error_t * QSvn::status_funct(void *baton,
+                                 const char *path,
+                                 const svn_client_status_t *status,
+                                 apr_pool_t *scratch_pool)
+{
+    QSvn *svn = (QSvn *)baton;
+
+    Q_UNUSED(svn);
+    Q_UNUSED(path);
+    Q_UNUSED(status);
+    Q_UNUSED(scratch_pool);
 
     return SVN_NO_ERROR;
 }

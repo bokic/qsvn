@@ -17,10 +17,18 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
     m_ignore_externals(true),
     m_allow_unver_obstructions(true),
     m_add_as_modification(true),
-    m_make_parents(true),
-    m_operation(QSVNOperationNone)
+    m_make_parents(true)
 {
     ui->setupUi(this);
+
+    connect(this, &QSVNUpdateDialog::update, m_thread.m_worker, &QSvn::update);
+    connect(this, &QSVNUpdateDialog::checkout, m_thread.m_worker, &QSvn::checkout);
+
+    // Notify signals
+    connect(m_thread.m_worker, &QSvn::progress, this, &QSVNUpdateDialog::svnProgress, Qt::BlockingQueuedConnection);
+    connect(m_thread.m_worker, &QSvn::notify, this, &QSVNUpdateDialog::svnNotify, Qt::BlockingQueuedConnection);
+    connect(m_thread.m_worker, &QSvn::finished, this, &QSVNUpdateDialog::svnFinished, Qt::BlockingQueuedConnection);
+    connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::svnError, Qt::BlockingQueuedConnection);
 
     ui->tableWidget->setColumnWidth(0, 80);
     ui->tableWidget->setColumnWidth(1, 375);
@@ -28,7 +36,8 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
 
     m_revision.kind = svn_opt_revision_head;
 
-    connect(&m_thread, &QThread::started, this, &QSVNUpdateDialog::workerStarted);
+    m_thread.start();
+
 }
 
 QSVNUpdateDialog::~QSVNUpdateDialog()
@@ -41,47 +50,50 @@ QSVNUpdateDialog::~QSVNUpdateDialog()
     }
 
     delete ui;
+    ui = nullptr;
 }
 
 void QSVNUpdateDialog::setOperationUpdate(const QStringList &paths)
 {
-    if (m_operation == QSVNOperationNone)
+    if (!m_thread.m_worker->isBusy())
     {
-        m_operation = QSVNOperationUpdate;
+        setWindowTitle(tr("Update"));
+
         m_paths = paths;
 
-        m_thread.start();
+        emit update(m_paths, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
     }
     else
     {
-        qDebug("QSVNUpdateDialog::setOperationXXX() called more than once.");
+        qDebug("QSVNUpdateDialog::setOperationXXX() worker thread is currently busy.");
     }
 }
 
 void QSVNUpdateDialog::setOperationUpdateToRevision(const QSVNUpdateToRevisionDialog &dlg)
 {
-    if (m_operation == QSVNOperationNone)
+    if (!m_thread.m_worker->isBusy())
     {
-        m_operation = QSVNOperationUpdate;
+        setWindowTitle(tr("Update to revision"));
+
         m_paths = dlg.paths();
         m_revision = dlg.ui_revision();
         m_depth = dlg.ui_depth();
         m_ignore_externals = dlg.ui_include_externals();
         m_allow_unver_obstructions = dlg.ui_allow_unver();
 
-        m_thread.start();
+        emit update(m_paths, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
     }
     else
     {
-        qDebug("QSVNUpdateDialog::setOperationXXX() called more than once.");
+        qDebug("QSVNUpdateDialog::setOperationUpdateToRevision() worker thread is currently busy.");
     }
 }
 
 void QSVNUpdateDialog::setOperationCheckout(const QSVNCheckoutDialog &dlg)
 {
-    if (m_operation == QSVNOperationNone)
+    if (!m_thread.m_worker->isBusy())
     {
-        m_operation = QSVNOperationCheckout;
+        setWindowTitle(tr("Checkout"));
 
         m_url = dlg.ui_url();
         m_path = dlg.ui_path();
@@ -91,11 +103,11 @@ void QSVNUpdateDialog::setOperationCheckout(const QSVNCheckoutDialog &dlg)
         m_ignore_externals = dlg.ui_include_externals();
         m_allow_unver_obstructions = dlg.ui_allow_unver();
 
-        m_thread.start();
+        emit checkout(m_url, m_path, m_peg_revision, m_revision, m_depth, m_ignore_externals, m_allow_unver_obstructions);
     }
     else
     {
-        qDebug("QSVNUpdateDialog::setOperationXXX() called more than once.");
+        qDebug("QSVNUpdateDialog::setOperationCheckout() worker thread is currently busy.");
     }
 }
 
@@ -115,30 +127,11 @@ void QSVNUpdateDialog::closeEvent(QCloseEvent *event)
 
 void QSVNUpdateDialog::workerStarted()
 {
-    //connect(m_thread.m_worker, &QSvn::update, this, &QSVNRepoBrowserDialog::workerResult);
-    //connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::workerError);
-    connect(this, &QSVNUpdateDialog::update, m_thread.m_worker, &QSvn::update);
-    connect(this, &QSVNUpdateDialog::checkout, m_thread.m_worker, &QSvn::checkout);
+}
 
-    // Notify signals
-    connect(m_thread.m_worker, &QSvn::progress, this, &QSVNUpdateDialog::svnProgress, Qt::BlockingQueuedConnection);
-    connect(m_thread.m_worker, &QSvn::notify, this, &QSVNUpdateDialog::svnNotify, Qt::BlockingQueuedConnection);
-    connect(m_thread.m_worker, &QSvn::finished, this, &QSVNUpdateDialog::svnFinished, Qt::BlockingQueuedConnection);
-    connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::svnError, Qt::BlockingQueuedConnection);
+void QSVNUpdateDialog::workerFinished()
+{
 
-    switch(m_operation)
-    {
-    case QSVNOperationCommit:
-        break;
-    case QSVNOperationUpdate:
-        emit update(m_paths, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
-        break;
-    case QSVNOperationCheckout:
-        emit checkout(m_url, m_path, m_peg_revision, m_revision, m_depth, m_ignore_externals, m_allow_unver_obstructions);
-        break;
-    default:
-        break;
-    }
 }
 
 void QSVNUpdateDialog::svnProgress(int progress, int total)
