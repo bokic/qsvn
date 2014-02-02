@@ -32,6 +32,8 @@ void QSVNCheckoutDialog::loadSettings()
         ui->comboBox_URL->addItem(settings.value(QString("URL_%1").arg(c)).toString());
     }
 
+    ui->comboBox_URL->addItem("https://github.com/bokic/qsvn/trunk");
+
     settings.endGroup();
 }
 
