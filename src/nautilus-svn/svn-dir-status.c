@@ -79,6 +79,7 @@ enum path_status svn_get_dir_status(const char *path)
 {
     apr_pool_t *pool;
     svn_client_ctx_t *ctx;
+    svn_opt_revision_t rev;
     svn_error_t *err;
 
     pool = svn_pool_create(NULL);
@@ -92,27 +93,24 @@ enum path_status svn_get_dir_status(const char *path)
     apr_array_header_t *providers = apr_array_make (pool, 0, sizeof (svn_auth_provider_object_t *));
     svn_auth_open (&ctx->auth_baton, providers, pool);
 
-    {
-        svn_opt_revision_t rev;
-        rev.kind = svn_opt_revision_working;
-        rev.value.number = 0;
+    apr_pool_t *scratch = svn_pool_create(pool);
 
-        apr_pool_t *scratch = svn_pool_create(pool);
+    status_added = FALSE;
+    status_conflicted = FALSE;
+    status_deleted = FALSE;
+    status_ignored = FALSE;
+    status_locked = FALSE;
+    status_modified = FALSE;
+    status_normal = FALSE;
+    status_readonly = FALSE;
+    status_unversioned = FALSE;
 
-        status_added = FALSE;
-        status_conflicted = FALSE;
-        status_deleted = FALSE;
-        status_ignored = FALSE;
-        status_locked = FALSE;
-        status_modified = FALSE;
-        status_normal = FALSE;
-        status_readonly = FALSE;
-        status_unversioned = FALSE;
+    rev.kind = svn_opt_revision_working;
+    rev.value.number = 0;
 
-        err = svn_client_status5(NULL, ctx, path, &rev, svn_depth_infinity, TRUE, FALSE, TRUE, TRUE, TRUE, NULL, &status_funct, path, scratch);
+    err = svn_client_status5(NULL, ctx, path, &rev, svn_depth_infinity, TRUE, FALSE, TRUE, TRUE, TRUE, NULL, &status_funct, path, scratch);
 
-        apr_pool_destroy(scratch);
-    }
+    apr_pool_destroy(scratch);
 
     apr_pool_destroy(pool);
 
