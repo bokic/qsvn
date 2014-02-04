@@ -24,6 +24,7 @@ void QSVNCommitDialog::setOperationStatus(const QStringList &paths)
         m_paths = paths;
 
         m_thread.start();
+        m_thread.waitForStartup();
     }
     else
     {

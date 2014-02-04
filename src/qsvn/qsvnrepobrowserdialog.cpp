@@ -11,8 +11,7 @@
 QSVNRepoBrowserDialog::QSVNRepoBrowserDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::QSVNRepoBrowserDialog),
-    m_thread(this),
-    m_threadStarted(false)
+    m_thread(this)
 {
     ui->setupUi(this);
 
@@ -20,15 +19,14 @@ QSVNRepoBrowserDialog::QSVNRepoBrowserDialog(QWidget *parent) :
 
     ui->comboBox_URL->setCurrentIndex(-1);
 
-    connect(&m_thread, &QThread::started, this, &QSVNRepoBrowserDialog::workerStarted);
     connect(&m_thread, &QThread::finished, this, &QSVNRepoBrowserDialog::workerFinished);
 
     m_thread.start();
+    m_thread.waitForStartup();
 
-    while(!m_threadStarted)
-    {
-        QApplication::processEvents();
-    }
+    connect(m_thread.m_worker, &QSvn::repoBrowserResult, this, &QSVNRepoBrowserDialog::workerResult);
+    connect(m_thread.m_worker, &QSvn::error, this, &QSVNRepoBrowserDialog::workerError);
+    connect(this, &QSVNRepoBrowserDialog::getURL, m_thread.m_worker, &QSvn::repoBrowser);
 }
 
 QSVNRepoBrowserDialog::~QSVNRepoBrowserDialog()
@@ -53,15 +51,6 @@ void QSVNRepoBrowserDialog::setURL(const QString &url)
 QString QSVNRepoBrowserDialog::URL()
 {
     return ui->comboBox_URL->currentText();
-}
-
-void QSVNRepoBrowserDialog::workerStarted()
-{
-    connect(m_thread.m_worker, &QSvn::repoBrowserResult, this, &QSVNRepoBrowserDialog::workerResult);
-    connect(m_thread.m_worker, &QSvn::error, this, &QSVNRepoBrowserDialog::workerError);
-    connect(this, &QSVNRepoBrowserDialog::getURL, m_thread.m_worker, &QSvn::repoBrowser);
-
-    m_threadStarted = true;
 }
 
 void QSVNRepoBrowserDialog::workerFinished()

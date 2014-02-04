@@ -4,6 +4,7 @@
 #include "qsvn.h"
 
 #include <QThread>
+#include <QMutex>
 
 
 class QSVNThread : public QThread
@@ -11,6 +12,8 @@ class QSVNThread : public QThread
     Q_OBJECT
 public:
     explicit QSVNThread(QObject *parent = 0);
+
+    void waitForStartup();
 
 signals:
 
@@ -21,6 +24,9 @@ protected:
 
 public:
     QSvn *m_worker;
+
+private:
+    QMutex m_startupMutex;
 
 };
 

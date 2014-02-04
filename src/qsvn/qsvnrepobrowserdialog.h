@@ -24,7 +24,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void workerStarted();
     void workerFinished();
     void workerResult(QRepoBrowserResult items);
     void workerError(QString text);
@@ -42,7 +41,6 @@ private:
 
     Ui::QSVNRepoBrowserDialog *ui;
     QSVNThread m_thread;
-    bool m_threadStarted;
     QHash<QString, QRepoBrowserResult> m_cachedFolders;
 };
 

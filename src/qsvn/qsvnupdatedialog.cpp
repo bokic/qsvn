@@ -21,6 +21,15 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->tableWidget->setColumnWidth(0, 80);
+    ui->tableWidget->setColumnWidth(1, 375);
+    ui->tableWidget->setColumnWidth(2, 80);
+
+    m_revision.kind = svn_opt_revision_head;
+
+    m_thread.start();
+    m_thread.waitForStartup();
+
     connect(this, &QSVNUpdateDialog::update, m_thread.m_worker, &QSvn::update);
     connect(this, &QSVNUpdateDialog::checkout, m_thread.m_worker, &QSvn::checkout);
 
@@ -29,15 +38,6 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
     connect(m_thread.m_worker, &QSvn::notify, this, &QSVNUpdateDialog::svnNotify, Qt::BlockingQueuedConnection);
     connect(m_thread.m_worker, &QSvn::finished, this, &QSVNUpdateDialog::svnFinished, Qt::BlockingQueuedConnection);
     connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::svnError, Qt::BlockingQueuedConnection);
-
-    ui->tableWidget->setColumnWidth(0, 80);
-    ui->tableWidget->setColumnWidth(1, 375);
-    ui->tableWidget->setColumnWidth(2, 80);
-
-    m_revision.kind = svn_opt_revision_head;
-
-    m_thread.start();
-
 }
 
 QSVNUpdateDialog::~QSVNUpdateDialog()
