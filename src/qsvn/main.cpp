@@ -11,7 +11,7 @@
 
 bool setAppSettings()
 {
-    QCoreApplication::setOrganizationName("Boris Barbulovski");
+    QCoreApplication::setOrganizationName("qsvn");
     QCoreApplication::setOrganizationDomain("bokicsoft.com");
     QCoreApplication::setApplicationName("qsvn");
 
