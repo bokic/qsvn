@@ -65,7 +65,7 @@ void QSVNUpdateDialog::setOperationUpdate(const QStringList &paths)
     }
     else
     {
-        qDebug("QSVNUpdateDialog::setOperationXXX() worker thread is currently busy.");
+        qDebug("QSVNUpdateDialog::setOperationUpdate() worker thread is currently busy.");
     }
 }
 
