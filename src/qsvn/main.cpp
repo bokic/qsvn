@@ -28,6 +28,7 @@ void registerClasses()
     qRegisterMetaType<QRepoBrowserResult>("QRepoBrowserResult");
     qRegisterMetaType<svn_opt_revision_t>("svn_opt_revision_t");
     qRegisterMetaType<svn_wc_notify_t>("svn_wc_notify_t");
+    qRegisterMetaType<svn_boolean_t>("svn_boolean_t");
     qRegisterMetaType<svn_depth_t>("svn_depth_t");
 }
 
