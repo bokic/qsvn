@@ -12,6 +12,9 @@ QSVNCommitDialog::QSVNCommitDialog(const QStringList &items, QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->changes_tableView->verticalHeader()->setDefaultSectionSize(ui->changes_tableView->fontMetrics().height() + 4);
+
+
     m_thread.start();
     m_thread.waitForStartup();
 
