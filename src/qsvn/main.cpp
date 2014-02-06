@@ -6,6 +6,7 @@
 #include "qsvn.h"
 
 #include <QApplication>
+#include <QDir>
 
 #include <stdio.h>
 
@@ -58,7 +59,11 @@ int main(int argc, char *argv[])
 
         if (argc > 2)
         {
-            w.setTargetDir(QString::fromUtf8(argv[2]));
+            w.setTargetDir(QDir::current().relativeFilePath(QString::fromUtf8(argv[2])));
+        }
+        else
+        {
+            w.setTargetDir(QDir::currentPath());
         }
 
         if (w.exec() == QDialog::Accepted)
@@ -75,13 +80,16 @@ int main(int argc, char *argv[])
     {
         QStringList paths;
 
-        for(int c = 2; c < argc; c++)
-        {
-            paths.append(QString::fromUtf8(argv[c]));
-        }
-
         dlg = new QSVNCommitDialog();
-        ((QSVNCommitDialog *)dlg)->setOperationStatus(paths);
+
+        if (argc > 2)
+        {
+            ((QSVNCommitDialog *)dlg)->setOperationStatus(QDir::current().relativeFilePath(QString::fromUtf8(argv[2])));
+        }
+        else
+        {
+            ((QSVNCommitDialog *)dlg)->setOperationStatus(QDir::currentPath());
+        }
     }
     else if (strcmp(argv[1], "update") == 0)
     {

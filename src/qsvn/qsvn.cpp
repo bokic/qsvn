@@ -115,10 +115,9 @@ void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
     apr_hash_index_t *hi;
 
     m_operation = QSvn::QSVNOperationRepoBrowser;
+    cancelOperation = false;
 
     const char *l_url = svn_uri_canonicalize(url.toUtf8().constData(), pool);
-
-    cancelOperation = false;
 
     // TODO: Replace svn_client_ls call with svn_client_list2
     svn_error_t *err = svn_client_ls (&dirents,
@@ -175,6 +174,9 @@ void QSvn::update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t
 {
     svn_error_t *err;
 
+    m_operation = QSvn::QSVNOperationUpdate;
+    cancelOperation = false;
+
     apr_array_header_t *paths = apr_array_make(pool, 0, pathList.length());
 
     for(const QString path : pathList)
@@ -204,6 +206,7 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
     svn_error_t *err;
     svn_revnum_t result_rev;
 
+    m_operation = QSvn::QSVNOperationCheckout;
     cancelOperation = false;
 
     err = svn_client_checkout3(&result_rev,
@@ -224,7 +227,12 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
 {
     svn_error_t *err;
 
+    m_operation = QSvn::QSVNOperationStatus;
+    cancelOperation = false;
+
     apr_pool_t *scratch_pool = svn_pool_create(NULL);
+
+    QList<QSvnStatusItem> items;
 
     err = svn_client_status5(nullptr,
                              ctx,
@@ -238,12 +246,12 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
                              depth_as_sticky,
                              nullptr,
                              status_funct,
-                             this,
+                             (void *)&items,
                              scratch_pool);
 
     apr_pool_destroy (scratch_pool);
 
-    emit finished(err == nullptr);
+    emit statusFinished(items, err == nullptr);
 }
 
 svn_error_t * QSvn::log_msg_func3(const char **log_msg,
@@ -311,12 +319,12 @@ svn_error_t * QSvn::status_funct(void *baton,
                                  const svn_client_status_t *status,
                                  apr_pool_t *scratch_pool)
 {
-    QSvn *svn = (QSvn *)baton;
-
-    Q_UNUSED(svn);
     Q_UNUSED(path);
-    Q_UNUSED(status);
     Q_UNUSED(scratch_pool);
+
+    QList<QSvnStatusItem> *items = (QList<QSvnStatusItem> *)baton;
+
+    items->append(QSvnStatusItem(status));
 
     return SVN_NO_ERROR;
 }

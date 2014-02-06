@@ -1,5 +1,6 @@
 #include "qsvncommitdialog.h"
 #include "ui_qsvncommitdialog.h"
+#include "qsvncommititemsmodel.h"
 
 QSVNCommitDialog::QSVNCommitDialog(QWidget *parent) :
     QDialog(parent),
@@ -8,7 +9,12 @@ QSVNCommitDialog::QSVNCommitDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(&m_thread, &QThread::started, this, &QSVNCommitDialog::workerStarted);
+    m_thread.start();
+    m_thread.waitForStartup();
+
+    connect(this, &QSVNCommitDialog::status, m_thread.m_worker, &QSvn::status);
+    connect(m_thread.m_worker, &QSvn::statusFinished, this, &QSVNCommitDialog::statusFinished, Qt::BlockingQueuedConnection);
+    //connect(this, &QSVNCommitDialog::commit, m_thread.m_worker, &QSvn::commit);
 }
 
 QSVNCommitDialog::~QSVNCommitDialog()
@@ -16,23 +22,23 @@ QSVNCommitDialog::~QSVNCommitDialog()
     delete ui;
 }
 
-void QSVNCommitDialog::setOperationStatus(const QStringList &paths)
+void QSVNCommitDialog::setOperationStatus(const QString &path)
 {
-    if (m_operation == QSvn::QSVNOperationNone)
+    if (!m_thread.m_worker->isBusy())
     {
-        m_operation = QSvn::QSVNOperationCommit;
-        m_paths = paths;
+        svn_opt_revision_t rev;
+        rev.kind = svn_opt_revision_working;
+        rev.value.number = 0;
 
-        m_thread.start();
-        m_thread.waitForStartup();
+        emit status(path, rev, svn_depth_infinity, false, false, false, true, true);
     }
     else
     {
-        qDebug("QSVNUpdateDialog::setOperationXXX() called more than once.");
+        qDebug("QSVNCommitDialog::setOperationStatus() worker thread is currently busy.");
     }
 }
 
-void QSVNCommitDialog::workerStarted()
+void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, bool error)
 {
-
+    ui->changes_tableView->setModel(new QSVNCommitItemsModel(items));
 }

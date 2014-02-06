@@ -37,12 +37,14 @@ struct QRepoBrowserResult
     QString error;
 };
 
+class QSvnStatusItem;
+
 class QSvn : public QObject
 {
     Q_OBJECT
 
 public:
-    enum QSVNOperationType {QSVNOperationNone, QSVNOperationRepoBrowser, QSVNOperationCommit, QSVNOperationUpdate, QSVNOperationCheckout};
+    enum QSVNOperationType {QSVNOperationNone, QSVNOperationRepoBrowser, QSVNOperationCommit, QSVNOperationUpdate, QSVNOperationCheckout, QSVNOperationStatus};
 
     QSvn(QObject *parent=0);
     ~QSvn();
@@ -58,6 +60,7 @@ signals:
     void logMsg();
     void notify(svn_wc_notify_t notify);
     void progress(int progress, int total);
+    void statusFinished(QList<QSvnStatusItem> items, bool error);
 
 public slots:
     void repoBrowser(QString url, svn_opt_revision_t revision, bool recursion);
@@ -99,6 +102,51 @@ private:
     svn_client_ctx_t *ctx;
     volatile QSVNOperationType m_operation;
     volatile bool cancelOperation;
+};
+
+class QSvnStatusItem
+{
+
+public:
+
+    QSvnStatusItem()
+    : m_nodeStatus(svn_wc_status_none)
+    {
+
+    }
+
+    QSvnStatusItem(const QSvnStatusItem &other)
+    {
+        m_nodeStatus = other.m_nodeStatus;
+        m_filename = other.m_filename;
+    }
+
+    QSvnStatusItem(const svn_client_status_t *item)
+    {
+        m_nodeStatus = item->node_status;
+        m_filename = QString::fromUtf8(item->local_abspath);
+    }
+
+#ifdef Q_COMPILER_RVALUE_REFS
+    QSvnStatusItem &operator=(QSvnStatusItem &&other)
+    {
+        qSwap(m_nodeStatus, other.m_nodeStatus);
+        qSwap(m_filename, other.m_filename);
+
+        return *this;
+    }
+#endif
+
+    QSvnStatusItem &operator=(const QSvnStatusItem &other)
+    {
+        m_nodeStatus = other.m_nodeStatus;
+        m_filename = other.m_filename;
+
+        return *this;
+    }
+
+    svn_wc_status_kind m_nodeStatus;
+    QString m_filename;
 };
 
 #endif // QSVN_H
