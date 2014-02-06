@@ -15,13 +15,13 @@ QSVNCommitDialog::QSVNCommitDialog(const QStringList &items, QWidget *parent)
     m_thread.start();
     m_thread.waitForStartup();
 
-    const QString &commonDir = getCommonDir(m_items);
+    m_commonDir = getCommonDir(m_items);
 
-    setWindowTitle(tr("%1 - Commit - QSvn").arg(commonDir));
+    setWindowTitle(tr("%1 - Commit - QSvn").arg(m_commonDir));
 
     if (m_items.length() == 1)
     {
-        ui->commitURL_label->setText(m_thread.m_worker->urlFromPath(commonDir));
+        ui->commitURL_label->setText(m_thread.m_worker->urlFromPath(m_commonDir));
     }
     else
     {
@@ -46,5 +46,5 @@ QSVNCommitDialog::~QSVNCommitDialog()
 
 void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, bool error)
 {
-    ui->changes_tableView->setModel(new QSVNCommitItemsModel(items));
+    ui->changes_tableView->setModel(new QSVNCommitItemsModel(items, m_commonDir));
 }

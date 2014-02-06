@@ -30,6 +30,7 @@ private:
     QSVNThread m_thread;
 
     QStringList m_items;
+    QString m_commonDir;
 
     QSvn::QSVNOperationType m_operation;
 };

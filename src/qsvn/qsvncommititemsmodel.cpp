@@ -4,9 +4,10 @@
 #include <QAbstractItemModel>
 #include <QList>
 
-QSVNCommitItemsModel::QSVNCommitItemsModel(const QList<QSvnStatusItem> &items, QObject *parent)
+QSVNCommitItemsModel::QSVNCommitItemsModel(const QList<QSvnStatusItem> &items, const QString &dir, QObject *parent)
     : QAbstractItemModel(parent)
     , m_items(items)
+    , m_dir(dir)
 {
 }
 
@@ -38,6 +39,8 @@ int QSVNCommitItemsModel::columnCount(const QModelIndex &parent) const
 
 QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
 {
+    QString filename;
+
     if (role == Qt::DisplayRole)
     {
         const QSvnStatusItem &item = m_items.at(index.row());
@@ -45,7 +48,14 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
 
         switch(index.column()) {
         case 0:
-            return item.m_filename;
+            filename = m_dir.relativeFilePath(item.m_filename);
+
+            if (filename.isEmpty())
+            {
+                filename = ".";
+            }
+
+            return filename;
             break;
         case 1:
             pos = item.m_filename.lastIndexOf('.');
