@@ -80,16 +80,19 @@ int main(int argc, char *argv[])
     {
         QStringList paths;
 
-        dlg = new QSVNCommitDialog();
-
         if (argc > 2)
         {
-            ((QSVNCommitDialog *)dlg)->setOperationStatus(QDir::current().relativeFilePath(QString::fromUtf8(argv[2])));
+            for(int c = 2; c < argc; c++)
+            {
+                paths.append(QString::fromUtf8(argv[c]));
+            }
         }
         else
         {
-            ((QSVNCommitDialog *)dlg)->setOperationStatus(QDir::currentPath());
+            paths.append(QDir::currentPath());
         }
+
+        dlg = new QSVNCommitDialog(paths);
     }
     else if (strcmp(argv[1], "update") == 0)
     {

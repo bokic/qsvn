@@ -1,41 +1,47 @@
 #include "qsvncommitdialog.h"
 #include "ui_qsvncommitdialog.h"
 #include "qsvncommititemsmodel.h"
+#include "helpers.h"
 
-QSVNCommitDialog::QSVNCommitDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::QSVNCommitDialog),
-    m_operation(QSvn::QSVNOperationNone)
+
+QSVNCommitDialog::QSVNCommitDialog(const QStringList &items, QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::QSVNCommitDialog)
+    , m_items(items)
+    , m_operation(QSvn::QSVNOperationNone)
 {
     ui->setupUi(this);
 
     m_thread.start();
     m_thread.waitForStartup();
 
+    const QString &commonDir = getCommonDir(m_items);
+
+    setWindowTitle(tr("%1 - Commit - QSvn").arg(commonDir));
+
+    if (m_items.length() == 1)
+    {
+        ui->commitURL_label->setText(m_thread.m_worker->urlFromPath(commonDir));
+    }
+    else
+    {
+        ui->commitURL_label->setText(tr("(multiple targets selected)"));
+    }
+
     connect(this, &QSVNCommitDialog::status, m_thread.m_worker, &QSvn::status);
     connect(m_thread.m_worker, &QSvn::statusFinished, this, &QSVNCommitDialog::statusFinished, Qt::BlockingQueuedConnection);
     //connect(this, &QSVNCommitDialog::commit, m_thread.m_worker, &QSvn::commit);
+
+    svn_opt_revision_t rev;
+    rev.kind = svn_opt_revision_working;
+    rev.value.number = 0;
+
+    emit status(m_items.at(0), rev, svn_depth_infinity, false, false, false, true, true);
 }
 
 QSVNCommitDialog::~QSVNCommitDialog()
 {
     delete ui;
-}
-
-void QSVNCommitDialog::setOperationStatus(const QString &path)
-{
-    if (!m_thread.m_worker->isBusy())
-    {
-        svn_opt_revision_t rev;
-        rev.kind = svn_opt_revision_working;
-        rev.value.number = 0;
-
-        emit status(path, rev, svn_depth_infinity, false, false, false, true, true);
-    }
-    else
-    {
-        qDebug("QSVNCommitDialog::setOperationStatus() worker thread is currently busy.");
-    }
 }
 
 void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, bool error)

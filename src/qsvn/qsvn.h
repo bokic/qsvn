@@ -52,6 +52,7 @@ public:
     void cancel();
     QSVNOperationType operation();
     bool isBusy();
+    QString urlFromPath(const QString &path);
 
 signals:
     void error(QString text);

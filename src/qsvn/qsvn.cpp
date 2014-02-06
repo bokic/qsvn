@@ -108,6 +108,48 @@ bool QSvn::isBusy()
     return m_operation != QSVNOperationNone;
 }
 
+QString QSvn::urlFromPath(const QString &path)
+{
+    QString ret;
+    svn_error_t *err;
+
+    svn_opt_revision_t rev;
+    rev.kind = svn_opt_revision_working;
+    rev.value.number = 0;
+
+    apr_pool_t *scratch_pool = svn_pool_create(NULL);
+
+    err = svn_client_status5(nullptr,
+                             ctx,
+                             path.toUtf8().constData(),
+                             &rev,
+                             svn_depth_empty,
+                             true,
+                             false,
+                             true,
+                             true,
+                             false,
+                             nullptr,
+                             [](void *baton, const char *path, const svn_client_status_t *status, apr_pool_t *scratch_pool) -> svn_error_t * {
+                                QString *ret = (QString *)baton;
+
+                                *ret = QString::fromUtf8(status->repos_root_url);
+
+                                if (strlen(status->repos_relpath) > 0)
+                                {
+                                    *ret += "/" + QString::fromUtf8(status->repos_relpath);
+                                }
+
+                                return NULL;
+                             },
+                             (void *)&ret,
+                             scratch_pool);
+
+    apr_pool_destroy (scratch_pool);
+
+    return ret;
+}
+
 void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 {
     QRepoBrowserResult ret;

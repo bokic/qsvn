@@ -2,6 +2,8 @@
 
 #include <QString>
 #include <QObject>
+#include <QDir>
+
 
 QString bytesToString(int bytes)
 {
@@ -21,4 +23,21 @@ QString bytesToString(int bytes)
     {
         return QObject::tr("%1 GB").arg((float)bytes / (1024 * 1024 * 1024));
     }
+}
+
+QString getCommonDir(const QStringList &items)
+{
+    QString ret;
+
+    foreach (const QString &item, items)
+    {
+        const QString &path = QDir(item).path();
+
+        if ((ret.isEmpty())||(path.length() < ret.length()))
+        {
+            ret = path;
+        }
+    }
+
+    return ret;
 }
