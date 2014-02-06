@@ -1,5 +1,5 @@
 #include "qsvn.h"
-
+#include <QDebug>
 
 QSvn::QSvn(QObject *parent)
     : QObject(parent)
@@ -131,6 +131,10 @@ QString QSvn::urlFromPath(const QString &path)
                              false,
                              nullptr,
                              [](void *baton, const char *path, const svn_client_status_t *status, apr_pool_t *scratch_pool) -> svn_error_t * {
+                                Q_UNUSED(path);
+                                Q_UNUSED(status);
+                                Q_UNUSED(scratch_pool);
+
                                 QString *ret = (QString *)baton;
 
                                 *ret = QString::fromUtf8(status->repos_root_url);
@@ -144,6 +148,11 @@ QString QSvn::urlFromPath(const QString &path)
                              },
                              (void *)&ret,
                              scratch_pool);
+
+    if (err)
+    {
+        qDebug() << err->message;
+    }
 
     apr_pool_destroy (scratch_pool);
 

@@ -108,7 +108,7 @@ enum path_status svn_get_dir_status(const char *path)
     rev.kind = svn_opt_revision_working;
     rev.value.number = 0;
 
-    err = svn_client_status5(NULL, ctx, path, &rev, svn_depth_infinity, TRUE, FALSE, TRUE, TRUE, TRUE, NULL, &status_funct, path, scratch);
+    err = svn_client_status5(NULL, ctx, path, &rev, svn_depth_infinity, TRUE, FALSE, TRUE, TRUE, TRUE, NULL, &status_funct, (void *)path, scratch);
 
     apr_pool_destroy(scratch);
 
