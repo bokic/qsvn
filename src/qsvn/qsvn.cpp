@@ -261,7 +261,7 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
     cancelOperation = false;
 
     err = svn_client_checkout3(&result_rev,
-                               url.toUtf8().constData(),
+                               svn_uri_canonicalize(url.toUtf8().constData(), pool),
                                path.toUtf8().constData(),
                                &peg_revision,
                                &revision,
