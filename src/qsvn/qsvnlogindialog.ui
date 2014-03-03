@@ -1,18 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>QSVNLoginDialog</class>
- <widget name="QSVNLoginDialog" class="QDialog">
+ <widget class="QDialog" name="QSVNLoginDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>283</width>
+    <height>144</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>QSvn login</string>
   </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="username_label">
+       <property name="text">
+        <string>&amp;Username</string>
+       </property>
+       <property name="buddy">
+        <cstring>username_lineEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="username_lineEdit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="password_label">
+       <property name="text">
+        <string>&amp;Password</string>
+       </property>
+       <property name="buddy">
+        <cstring>password_lineEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="password_lineEdit"/>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QCheckBox" name="savePassword_checkBox">
+       <property name="text">
+        <string>&amp;Save Password</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancel_pushButton">
+       <property name="text">
+        <string>&amp;Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="login_pushButton">
+       <property name="text">
+        <string>&amp;Login</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>login_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>QSVNLoginDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>388</x>
+     <y>249</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>412</x>
+     <y>219</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancel_pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>QSVNLoginDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>293</x>
+     <y>252</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>254</x>
+     <y>221</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

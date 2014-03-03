@@ -1,23 +1,48 @@
 #include "qsvn.h"
 #include <QDebug>
 
+
+svn_error_t *svn_login_callback(svn_auth_cred_simple_t **cred,
+                                void *baton,
+                                const char *realm,
+                                const char *username,
+                                svn_boolean_t may_save,
+                                apr_pool_t *pool)
+{
+    QSvn *sender = (QSvn *)baton;
+
+    sender->setCredentials(QString::fromUtf8(username), "", may_save, false);
+
+    emit sender->credentials();
+
+    if (sender->validCredentials())
+    {
+        (*cred)->username = "";
+        (*cred)->password = "";
+        (*cred)->may_save = false;
+    }
+
+    return nullptr;
+}
+
 QSvn::QSvn(QObject *parent)
     : QObject(parent)
     , pool(nullptr)
     , ctx(nullptr)
-    , cancelOperation(false)
+    , m_cancelOperation(false)
+    , m_validUserPass(false)
+    , m_saveCredentials(false)
 {
 }
 
 QSvn::~QSvn()
 {
-    ctx = nullptr;
+    clearCredentials();
 
-    if (pool)
-    {
-        apr_pool_destroy(pool);
-        pool = nullptr;
-    }
+    apr_pool_destroy(pool);
+
+    ctx = nullptr;
+    pool = nullptr;
 }
 
 void QSvn::init()
@@ -63,9 +88,9 @@ void QSvn::init()
     ctx->notify_func2 = notify_func2;
     ctx->notify_baton2 = this;
     ctx->notify_func = nullptr;
-    ctx->notify_baton = nullptr;
+    ctx->notify_baton = this;
     ctx->conflict_func = nullptr;
-    ctx->conflict_baton = nullptr;
+    ctx->conflict_baton = this;
     ctx->conflict_func2 = conflict_func2;
     ctx->conflict_baton2 = this;
     ctx->cancel_func = cancel_func;
@@ -75,18 +100,13 @@ void QSvn::init()
     ctx->client_name = "qsvn";
 
     svn_auth_provider_object_t *provider;
-    apr_array_header_t *providers = apr_array_make (pool, 4, sizeof (svn_auth_provider_object_t *));
+    apr_array_header_t *providers = apr_array_make (pool, 3, sizeof (svn_auth_provider_object_t *));
 
     svn_auth_get_simple_prompt_provider (&provider,
-                                         NULL,
-                                         NULL, /* baton */
-                                         2, /* retry limit */ pool);
-    APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
-
-    svn_auth_get_username_prompt_provider (&provider,
-                                           NULL,
-                                           NULL, /* baton */
-                                           2, /* retry limit */ pool);
+                                         &svn_login_callback,
+                                         this, /* baton */
+                                         3, /* retry limit */
+                                         pool);
     APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 
     /* Register the auth-providers into the context's auth_baton. */
@@ -95,7 +115,7 @@ void QSvn::init()
 
 void QSvn::cancel()
 {
-    cancelOperation = true;
+    m_cancelOperation = true;
 }
 
 QSvn::QSVNOperationType QSvn::operation()
@@ -159,6 +179,30 @@ QString QSvn::urlFromPath(const QString &path)
     return ret;
 }
 
+void QSvn::clearCredentials()
+{
+    m_validUserPass = false;
+
+    m_username.fill(0); m_username.clear();
+    m_password.fill(0); m_password.clear();
+}
+
+void QSvn::setCredentials(const QString &username, const QString &password, bool saveCredentials, bool validUserPass)
+{
+    clearCredentials();
+
+    this->m_username = username;
+    this->m_password = password;
+    this->m_saveCredentials = saveCredentials;
+
+    this->m_validUserPass = validUserPass;
+}
+
+bool QSvn::validCredentials()
+{
+    return m_validUserPass;
+}
+
 void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 {
     QRepoBrowserResult ret;
@@ -166,7 +210,7 @@ void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
     apr_hash_index_t *hi;
 
     m_operation = QSvn::QSVNOperationRepoBrowser;
-    cancelOperation = false;
+    m_cancelOperation = false;
 
     const char *l_url = svn_uri_canonicalize(url.toUtf8().constData(), pool);
 
@@ -226,7 +270,7 @@ void QSvn::update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t
     svn_error_t *err;
 
     m_operation = QSvn::QSVNOperationUpdate;
-    cancelOperation = false;
+    m_cancelOperation = false;
 
     apr_array_header_t *paths = apr_array_make(pool, 0, pathList.length());
 
@@ -235,7 +279,7 @@ void QSvn::update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t
         APR_ARRAY_PUSH(paths, const char *) = apr_pstrdup(pool, path.toUtf8().constData());
     }
 
-    cancelOperation = false;
+    m_cancelOperation = false;
 
     err = svn_client_update4(nullptr,
                              paths,
@@ -258,7 +302,7 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
     svn_revnum_t result_rev;
 
     m_operation = QSvn::QSVNOperationCheckout;
-    cancelOperation = false;
+    m_cancelOperation = false;
 
     err = svn_client_checkout3(&result_rev,
                                svn_uri_canonicalize(url.toUtf8().constData(), pool),
@@ -274,12 +318,37 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
     emit finished(err == nullptr);
 }
 
+void QSvn::commit(QStringList targets, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations)
+{
+    svn_error_t *err;
+    const apr_array_header_t *target_items;
+    apr_array_header_t *changelists;
+    apr_hash_t *revprop_table;
+
+    m_operation = QSvn::QSVNOperationCommit;
+    m_cancelOperation = false;
+
+    err = svn_client_commit5(target_items,
+                             depth,
+                             keep_locks,
+                             keep_changelists,
+                             commit_as_operations,
+                             changelists,
+                             revprop_table,
+                             commit_func2,
+                             this,
+                             ctx,
+                             pool);
+
+    emit finished(err == nullptr);
+}
+
 void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky)
 {
     svn_error_t *err;
 
     m_operation = QSvn::QSVNOperationStatus;
-    cancelOperation = false;
+    m_cancelOperation = false;
 
     apr_pool_t *scratch_pool = svn_pool_create(NULL);
 
@@ -365,6 +434,13 @@ svn_error_t * QSvn::conflict_func2(svn_wc_conflict_result_t **result,
     return SVN_NO_ERROR;
 }
 
+svn_error_t * QSvn::commit_func2(const svn_commit_info_t *commit_info,
+                                 void *baton,
+                                 apr_pool_t *pool)
+{
+
+}
+
 svn_error_t * QSvn::status_funct(void *baton,
                                  const char *path,
                                  const svn_client_status_t *status,
@@ -384,7 +460,7 @@ svn_error_t * QSvn::cancel_func(void *baton)
 {
     QSvn *svn = (QSvn *)baton;
 
-    if ((svn)&&(svn->cancelOperation))
+    if ((svn)&&(svn->m_cancelOperation))
     {
         return svn_error_create(SVN_ERR_CANCELLED, NULL, tr("User has canceled the operation.").toUtf8().constData());
     }

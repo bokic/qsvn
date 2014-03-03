@@ -53,6 +53,9 @@ public:
     QSVNOperationType operation();
     bool isBusy();
     QString urlFromPath(const QString &path);
+    void clearCredentials();
+    void setCredentials(const QString &m_username, const QString &m_password, bool m_saveCredentials = false, bool m_validUserPass = true);
+    bool validCredentials();
 
 signals:
     void error(QString text);
@@ -62,11 +65,13 @@ signals:
     void notify(svn_wc_notify_t notify);
     void progress(int progress, int total);
     void statusFinished(QList<QSvnStatusItem> items, bool error);
+    void credentials();
 
 public slots:
     void repoBrowser(QString url, svn_opt_revision_t revision, bool recursion);
     void update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t depth, bool depthIsSticky, bool ignoreExternals, bool allowUnverObstructions, bool addsAsModification, bool makeParents);
     void checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions);
+    void commit(QStringList targets, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations);
     void status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky);
 
 private:
@@ -86,6 +91,10 @@ private:
                                         apr_pool_t *result_pool,
                                         apr_pool_t *scratch_pool);
 
+    static svn_error_t * commit_func2(const svn_commit_info_t *commit_info,
+                                     void *baton,
+                                     apr_pool_t *pool);
+
     static svn_error_t * status_funct(void *baton,
                                       const char *path,
                                       const svn_client_status_t *status,
@@ -102,7 +111,11 @@ private:
     apr_pool_t *pool;
     svn_client_ctx_t *ctx;
     volatile QSVNOperationType m_operation;
-    volatile bool cancelOperation;
+    volatile bool m_cancelOperation;
+    volatile bool m_validUserPass;
+    QString m_username;
+    QString m_password;
+    volatile bool m_saveCredentials;
 };
 
 class QSvnStatusItem
