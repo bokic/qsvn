@@ -15,6 +15,12 @@ public:
     explicit QSVNLoginDialog(QWidget *parent = 0);
     ~QSVNLoginDialog();
 
+    QString username();
+    void setUsername(const QString &username);
+    QString password();
+    void setPassword(const QString &password);
+    bool saveCredentials();
+
 private:
     Ui::QSVNLoginDialog *ui;
 };

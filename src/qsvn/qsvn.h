@@ -54,6 +54,7 @@ public:
     bool isBusy();
     QString urlFromPath(const QString &path);
     void clearCredentials();
+    QString username();
     void setCredentials(const QString &m_username, const QString &m_password, bool m_saveCredentials = false, bool m_validUserPass = true);
     bool validCredentials();
 

@@ -1,5 +1,6 @@
 #include "qsvnupdatedialog.h"
 #include "qsvnupdatetorevisiondialog.h"
+#include "qsvnlogindialog.h"
 #include "ui_qsvnupdatedialog.h"
 #include "qsvncheckoutdialog.h"
 #include "helpers.h"
@@ -39,6 +40,7 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
     connect(m_thread.m_worker, &QSvn::progress, this, &QSVNUpdateDialog::svnProgress, Qt::BlockingQueuedConnection);
     connect(m_thread.m_worker, &QSvn::notify, this, &QSVNUpdateDialog::svnNotify, Qt::BlockingQueuedConnection);
     connect(m_thread.m_worker, &QSvn::finished, this, &QSVNUpdateDialog::svnFinished, Qt::BlockingQueuedConnection);
+    connect(m_thread.m_worker, &QSvn::credentials, this, &QSVNUpdateDialog::svnCredentials, Qt::BlockingQueuedConnection);
     connect(m_thread.m_worker, &QSvn::error, this, &QSVNUpdateDialog::svnError, Qt::BlockingQueuedConnection);
 }
 
@@ -218,6 +220,19 @@ void QSVNUpdateDialog::svnFinished(bool result)
     ui->pushButton_OK->setEnabled(true);
     ui->pushButton_Cancel->setEnabled(false);
     ui->pushButton_ShowLog->setEnabled(true);
+}
+
+void QSVNUpdateDialog::svnCredentials()
+{
+    QSVNLoginDialog dlg(this);
+    QSvn *m_worker = (QSvn *)sender();
+
+    dlg.setUsername(m_worker->username());
+
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        m_worker->setCredentials(dlg.username(), dlg.password(), dlg.saveCredentials());
+    }
 }
 
 void QSVNUpdateDialog::svnError(QString text)

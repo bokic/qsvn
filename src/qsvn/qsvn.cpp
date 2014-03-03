@@ -20,6 +20,8 @@ svn_error_t *svn_login_callback(svn_auth_cred_simple_t **cred,
         (*cred)->username = "";
         (*cred)->password = "";
         (*cred)->may_save = false;
+
+        return nullptr;
     }
 
     return nullptr;
@@ -185,6 +187,11 @@ void QSvn::clearCredentials()
 
     m_username.fill(0); m_username.clear();
     m_password.fill(0); m_password.clear();
+}
+
+QString QSvn::username()
+{
+    return m_username;
 }
 
 void QSvn::setCredentials(const QString &username, const QString &password, bool saveCredentials, bool validUserPass)
