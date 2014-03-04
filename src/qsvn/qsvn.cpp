@@ -2,31 +2,6 @@
 #include <QDebug>
 
 
-svn_error_t *svn_login_callback(svn_auth_cred_simple_t **cred,
-                                void *baton,
-                                const char *realm,
-                                const char *username,
-                                svn_boolean_t may_save,
-                                apr_pool_t *pool)
-{
-    QSvn *sender = (QSvn *)baton;
-
-    sender->setCredentials(QString::fromUtf8(username), "", may_save, false);
-
-    emit sender->credentials();
-
-    if (sender->validCredentials())
-    {
-        (*cred)->username = "";
-        (*cred)->password = "";
-        (*cred)->may_save = false;
-
-        return nullptr;
-    }
-
-    return nullptr;
-}
-
 QSvn::QSvn(QObject *parent)
     : QObject(parent)
     , pool(nullptr)
@@ -166,7 +141,7 @@ QString QSvn::urlFromPath(const QString &path)
                                     *ret += "/" + QString::fromUtf8(status->repos_relpath);
                                 }
 
-                                return NULL;
+                                return SVN_NO_ERROR;
                              },
                              (void *)&ret,
                              scratch_pool);
@@ -194,15 +169,25 @@ QString QSvn::username()
     return m_username;
 }
 
+QString QSvn::password()
+{
+    return m_password;
+}
+
+bool QSvn::shouldSaveCredentials()
+{
+    return m_saveCredentials;
+}
+
 void QSvn::setCredentials(const QString &username, const QString &password, bool saveCredentials, bool validUserPass)
 {
     clearCredentials();
 
-    this->m_username = username;
-    this->m_password = password;
-    this->m_saveCredentials = saveCredentials;
+    m_username = username;
+    m_password = password;
+    m_saveCredentials = saveCredentials;
 
-    this->m_validUserPass = validUserPass;
+    m_validUserPass = validUserPass;
 }
 
 bool QSvn::validCredentials()
@@ -488,4 +473,31 @@ void QSvn::progress_func(apr_off_t progress,
     {
         emit svn->progress((int)progress, (int)total);
     }
+}
+
+svn_error_t *QSvn::svn_login_callback(svn_auth_cred_simple_t **cred,
+                                      void *baton,
+                                      const char *realm,
+                                      const char *username,
+                                      svn_boolean_t may_save,
+                                      apr_pool_t *pool)
+{
+    QSvn *sender = (QSvn *)baton;
+
+    sender->setCredentials(QString::fromUtf8(username), "", may_save, false);
+
+    emit sender->credentials();
+
+    if (sender->validCredentials())
+    {
+        svn_auth_cred_simple_t * ret = (svn_auth_cred_simple_t *) apr_pcalloc (pool, sizeof (*ret));
+
+        ret->username = apr_pstrdup(pool, sender->username().toUtf8().constData());
+        ret->password = apr_pstrdup(pool, sender->password().toUtf8().constData());
+        ret->may_save = sender->shouldSaveCredentials();
+
+        *cred = ret;
+    }
+
+    return SVN_NO_ERROR;
 }

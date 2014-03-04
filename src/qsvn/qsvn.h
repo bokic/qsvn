@@ -55,6 +55,8 @@ public:
     QString urlFromPath(const QString &path);
     void clearCredentials();
     QString username();
+    QString password();
+    bool shouldSaveCredentials();
     void setCredentials(const QString &m_username, const QString &m_password, bool m_saveCredentials = false, bool m_validUserPass = true);
     bool validCredentials();
 
@@ -93,8 +95,8 @@ private:
                                         apr_pool_t *scratch_pool);
 
     static svn_error_t * commit_func2(const svn_commit_info_t *commit_info,
-                                     void *baton,
-                                     apr_pool_t *pool);
+                                      void *baton,
+                                      apr_pool_t *pool);
 
     static svn_error_t * status_funct(void *baton,
                                       const char *path,
@@ -107,6 +109,13 @@ private:
                               apr_off_t total,
                               void *baton,
                               apr_pool_t *pool);
+
+    static svn_error_t * svn_login_callback(svn_auth_cred_simple_t **cred,
+                                            void *baton,
+                                            const char *realm,
+                                            const char *username,
+                                            svn_boolean_t may_save,
+                                            apr_pool_t *pool);
 
 private:
     apr_pool_t *pool;
