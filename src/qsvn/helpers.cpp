@@ -7,7 +7,11 @@
 
 QString bytesToString(int bytes)
 {
-    if (bytes < 1024)
+    if (bytes == 1)
+    {
+        return QObject::tr("1 byte");
+    }
+    else if (bytes < 1024)
     {
         return QObject::tr("%1 bytes").arg(bytes);
     }
