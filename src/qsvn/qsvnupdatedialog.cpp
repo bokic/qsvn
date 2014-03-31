@@ -3,6 +3,7 @@
 #include "qsvnlogindialog.h"
 #include "ui_qsvnupdatedialog.h"
 #include "qsvncheckoutdialog.h"
+#include "qsvnrepobrowserdialog.h"
 #include "helpers.h"
 
 #include <QCloseEvent>
@@ -239,4 +240,16 @@ void QSVNUpdateDialog::svnError(QString text)
 {
     ui->label2->setText(text);
     ui->label2->setStyleSheet("background: red");
+}
+
+void QSVNUpdateDialog::on_pushButton_ShowLog_clicked()
+{
+    if (!m_url.isEmpty())
+    {
+        QSVNRepoBrowserDialog dlg(this);
+
+        dlg.setURL(m_url);
+
+        dlg.exec();
+    }
 }

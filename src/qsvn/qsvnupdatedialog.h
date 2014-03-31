@@ -42,6 +42,8 @@ private slots:
     void svnCredentials();
     void svnError(QString text);
 
+    void on_pushButton_ShowLog_clicked();
+
 private:
     Ui::QSVNUpdateDialog *ui;
     QSVNThread m_thread;
