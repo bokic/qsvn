@@ -30,6 +30,7 @@ public:
 
 private slots:
     void on_pushButton_URL_clicked();
+    void on_pushButton_dir_clicked();
 
 private:
     Ui::QSVNCheckoutDialog *ui;

@@ -2,7 +2,9 @@
 #include "ui_qsvncheckoutdialog.h"
 #include "qsvnrepobrowserdialog.h"
 
+#include <QFileDialog>
 #include <QSettings>
+#include <QDir>
 
 
 QSVNCheckoutDialog::QSVNCheckoutDialog(QWidget *parent) :
@@ -111,4 +113,23 @@ svn_boolean_t QSVNCheckoutDialog::ui_include_externals() const
 svn_boolean_t QSVNCheckoutDialog::ui_allow_unver() const
 {
     return true; // TODO: Implement QSVNCheckoutDialog::ui_allow_unver()
+}
+
+void QSVNCheckoutDialog::on_pushButton_dir_clicked()
+{
+    QString dir;
+
+    dir = ui->lineEdit_dir->text();
+
+    if (dir.isEmpty())
+    {
+        dir = QDir::currentPath();
+    }
+
+    dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), dir, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    if (!dir.isEmpty())
+    {
+        ui->lineEdit_dir->setText(dir);
+    }
 }
