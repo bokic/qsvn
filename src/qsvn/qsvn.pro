@@ -30,7 +30,7 @@ LIBS        += -lsvn_auth_gnome_keyring-1 \
 	       -lsvn_ra-1 \
 #	       -lsvn_ra_dav-1 \
 	       -lsvn_ra_local-1 \
-	       -lsvn_ra_neon-1 \
+#	       -lsvn_ra_neon-1 \
 	       -lsvn_ra_svn-1 \
 	       -lsvn_repos-1 \
 	       -lsvn_subr-1 \
