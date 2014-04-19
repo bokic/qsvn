@@ -15,8 +15,12 @@ public:
     explicit QSVNMessageLogDialog(QWidget *parent = 0);
     ~QSVNMessageLogDialog();
 
+    void setLocation(const QString &location);
+
 private:
     Ui::QSVNMessageLogDialog *ui;
+
+    QString m_location;
 };
 
 #endif // QSVNMESSAGELOGDIALOG_H

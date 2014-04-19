@@ -12,3 +12,8 @@ QSVNMessageLogDialog::~QSVNMessageLogDialog()
 {
     delete ui;
 }
+
+void QSVNMessageLogDialog::setLocation(const QString &location)
+{
+    m_location = location;
+}
