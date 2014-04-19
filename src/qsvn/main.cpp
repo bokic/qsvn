@@ -59,7 +59,16 @@ int main(int argc, char *argv[])
 
         if (argc > 2)
         {
-            w.setTargetDir(QDir::current().relativeFilePath(QString::fromUtf8(argv[2])));
+            const QString path = QString::fromUtf8(argv[2]);
+
+            if (QDir::isAbsolutePath(path))
+            {
+                w.setTargetDir(path);
+            }
+            else
+            {
+                w.setTargetDir(QDir::current().relativeFilePath(path));
+            }
         }
         else
         {
