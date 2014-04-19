@@ -17,15 +17,15 @@ QString bytesToString(int bytes)
     }
     else if (bytes < (1024 * 1024))
     {
-        return QObject::tr("%1 KB").arg((float)bytes / 1024);
+        return QObject::tr("%1 KB").arg(QString::number((float)bytes / 1024, 'f', 2));
     }
     else if (bytes < (1024 * 1024 * 1024))
     {
-        return QObject::tr("%1 MB").arg((float)bytes / (1024 * 1024));
+        return QObject::tr("%1 MB").arg(QString::number((float)bytes / (1024 * 1024), 'f', 2));
     }
     else
     {
-        return QObject::tr("%1 GB").arg((float)bytes / (1024 * 1024 * 1024));
+        return QObject::tr("%1 GB").arg(QString::number((float)bytes / (1024 * 1024 * 1024), 'f', 2));
     }
 }
 
