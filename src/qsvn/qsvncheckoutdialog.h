@@ -31,6 +31,8 @@ public:
 private slots:
     void on_pushButton_URL_clicked();
     void on_pushButton_dir_clicked();
+    void on_radioButton_head_clicked();
+    void on_radioButton_revision_clicked();
 
 private:
     Ui::QSVNCheckoutDialog *ui;

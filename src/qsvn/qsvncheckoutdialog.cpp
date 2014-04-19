@@ -133,3 +133,15 @@ void QSVNCheckoutDialog::on_pushButton_dir_clicked()
         ui->lineEdit_dir->setText(dir);
     }
 }
+
+void QSVNCheckoutDialog::on_radioButton_head_clicked()
+{
+    ui->lineEdit_revision->setEnabled(false);
+}
+
+void QSVNCheckoutDialog::on_radioButton_revision_clicked()
+{
+    ui->lineEdit_revision->setEnabled(true);
+    ui->lineEdit_revision->setFocus();
+    ui->lineEdit_revision->selectAll();
+}
