@@ -1,8 +1,10 @@
 #include "qsvncheckoutdialog.h"
 #include "ui_qsvncheckoutdialog.h"
 #include "qsvnrepobrowserdialog.h"
+#include "qsvnmessagelogdialog.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QSettings>
 #include <QDir>
 
@@ -144,4 +146,32 @@ void QSVNCheckoutDialog::on_radioButton_revision_clicked()
     ui->lineEdit_revision->setEnabled(true);
     ui->lineEdit_revision->setFocus();
     ui->lineEdit_revision->selectAll();
+}
+
+void QSVNCheckoutDialog::on_pushButton_revision_clicked()
+{
+    QSVNMessageLogDialog dlg(this);
+    QString location;
+
+    location = ui->comboBox_URL->currentText();
+
+    if (location.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Error"), tr("Repository URL is empty."));
+        ui->comboBox_URL->setFocus();
+
+        return;
+    }
+
+    dlg.setLocation(location);
+
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        ui->radioButton_revision->setChecked(true);
+        ui->lineEdit_revision->setEnabled(true);
+        ui->lineEdit_revision->setText("some rev. number");
+        ui->lineEdit_revision->setStyleSheet("background: red");
+        ui->lineEdit_revision->setToolTip("Invalid revision number.");
+        ui->pushButton_ok->setEnabled(false);
+    }
 }
