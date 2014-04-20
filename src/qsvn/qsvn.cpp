@@ -9,6 +9,7 @@ QSvn::QSvn(QObject *parent)
     , m_cancelOperation(false)
     , m_validUserPass(false)
     , m_saveCredentials(false)
+    , m_localVar(nullptr)
 {
 }
 
@@ -364,6 +365,74 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
     apr_pool_destroy (scratch_pool);
 
     emit statusFinished(items, err == nullptr);
+}
+
+ svn_error_t *messageLog_callback(
+  void *baton,
+  apr_hash_t *changed_paths,
+  svn_revnum_t revision,
+  const char *author,
+  const char *date,  /* use svn_time_from_cstring() if need apr_time_t */
+  const char *message,
+  apr_pool_t *pool)
+{
+    QSvn *svn = (QSvn *)baton;
+
+    QMessageLogItem item;
+
+    item.revision = revision;
+    item.author = QString::fromUtf8(author);
+    item.date = QDateTime::fromString(QString::fromUtf8(date), Qt::ISODate);
+    item.message = QString::fromUtf8(message);
+
+    ((QList<QMessageLogItem>*)svn->m_localVar)->append(item);
+
+    return NULL;
+}
+
+void QSvn::messageLog(const QString &location)
+{
+    svn_error_t *err;
+
+    m_operation = QSvn::QSVNOperationMessageLog;
+    m_cancelOperation = false;
+
+    apr_pool_t *scratch_pool = svn_pool_create(NULL);
+
+    QList<QMessageLogItem> list;
+
+    svn_opt_revision_t start;
+    svn_opt_revision_t end;
+
+    start.kind = svn_opt_revision_head;
+    start.value.number = 0;
+
+    end.kind = svn_opt_revision_number;
+    end.value.number = 40;
+
+    apr_array_header_t *paths = apr_array_make(pool, 0, 1);
+    APR_ARRAY_PUSH(paths, const char *) = apr_pstrdup(pool, location.toUtf8().constData());
+
+    m_localVar = &list;
+
+    err = svn_client_log(paths,
+                         &start,
+                         &end,
+                         TRUE, // discover_changed_paths
+                         TRUE, // strict_node_history
+                         &messageLog_callback,
+                         this, // receiver_baton
+                         ctx,
+                         pool);
+
+    if (err)
+    {
+        emit error(QString::fromLatin1(err->message));
+    }
+
+    apr_pool_destroy (scratch_pool);
+
+    emit messageLogFinished(list);
 }
 
 svn_error_t * QSvn::log_msg_func3(const char **log_msg,

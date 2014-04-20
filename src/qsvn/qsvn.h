@@ -13,6 +13,7 @@
 #include "svn_config.h"
 #include "svn_fs.h"
 
+struct QMessageLogItem;
 
 struct QRepoBrowserFile
 {
@@ -44,7 +45,7 @@ class QSvn : public QObject
     Q_OBJECT
 
 public:
-    enum QSVNOperationType {QSVNOperationNone, QSVNOperationRepoBrowser, QSVNOperationCommit, QSVNOperationUpdate, QSVNOperationCheckout, QSVNOperationStatus};
+    enum QSVNOperationType {QSVNOperationNone, QSVNOperationRepoBrowser, QSVNOperationCommit, QSVNOperationUpdate, QSVNOperationCheckout, QSVNOperationStatus, QSVNOperationMessageLog};
 
     QSvn(QObject *parent=0);
     ~QSvn();
@@ -68,6 +69,7 @@ signals:
     void notify(svn_wc_notify_t notify);
     void progress(int progress, int total);
     void statusFinished(QList<QSvnStatusItem> items, bool error);
+    void messageLogFinished(QList<QMessageLogItem>);
     void credentials();
 
 public slots:
@@ -76,6 +78,7 @@ public slots:
     void checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions);
     void commit(QStringList targets, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations);
     void status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky);
+    void messageLog(const QString &location);
 
 private:
     static svn_error_t * log_msg_func3(const char **log_msg,
@@ -126,6 +129,9 @@ private:
     QString m_username;
     QString m_password;
     volatile bool m_saveCredentials;
+
+public:
+    void *m_localVar;
 };
 
 class QSvnStatusItem
@@ -171,6 +177,15 @@ public:
 
     svn_wc_status_kind m_nodeStatus;
     QString m_filename;
+};
+
+struct QMessageLogItem
+{
+public:
+    int revision;
+    QString author;
+    QDateTime date;
+    QString message;
 };
 
 #endif // QSVN_H

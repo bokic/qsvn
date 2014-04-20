@@ -1,6 +1,8 @@
 #ifndef QSVNMESSAGELOGDIALOG_H
 #define QSVNMESSAGELOGDIALOG_H
 
+#include "qsvnthread.h"
+
 #include <QDialog>
 
 namespace Ui {
@@ -17,9 +19,15 @@ public:
 
     void setLocation(const QString &location);
 
+signals:
+    void messageLog(const QString &location);
+
+public slots:
+    void messageLogFinished(QList<QMessageLogItem> items);
+
 private:
     Ui::QSVNMessageLogDialog *ui;
-
+    QSVNThread m_thread;
     QString m_location;
 };
 

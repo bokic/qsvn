@@ -3,6 +3,7 @@
 #include "qsvnupdatedialog.h"
 #include "qsvnrepobrowserdialog.h"
 #include "qsvnupdatetorevisiondialog.h"
+#include "qsvnmessagelogdialog.h"
 #include "qsvn.h"
 
 #include <QApplication>
@@ -26,6 +27,7 @@ bool setAppSettings()
 
 void registerClasses()
 {
+    qRegisterMetaType<QList<QMessageLogItem>>("QList<QMessageLogItem>");
     qRegisterMetaType<QRepoBrowserResult>("QRepoBrowserResult");
     qRegisterMetaType<svn_opt_revision_t>("svn_opt_revision_t");
     qRegisterMetaType<svn_wc_notify_t>("svn_wc_notify_t");
