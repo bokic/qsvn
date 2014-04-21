@@ -1,5 +1,9 @@
 #include "qsvnselectrevisiondialog.h"
 #include "ui_qsvnselectrevisiondialog.h"
+#include "qsvnmessagelogdialog.h"
+
+#include <QMessageBox>
+
 
 QSVNSelectRevisionDialog::QSVNSelectRevisionDialog(QWidget *parent, const QString &text) :
     QDialog(parent),
@@ -38,4 +42,28 @@ int QSVNSelectRevisionDialog::revision()
 void QSVNSelectRevisionDialog::on_lineEdit_Revision_editingFinished()
 {
     ui->radioButton_Revision->setChecked(true);
+}
+
+void QSVNSelectRevisionDialog::on_pushButton_ShowLog_clicked()
+{
+    QSVNMessageLogDialog dlg(this);
+
+    if (m_locations.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Error"), tr("Repository URL is empty."));
+
+        return;
+    }
+
+    dlg.setLocations(m_locations);
+
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        int selectedRevision = dlg.selectedRevision();
+
+        if (selectedRevision > 0)
+        {
+            ui->lineEdit_Revision->setText(QString::number(selectedRevision));
+        }
+    }
 }

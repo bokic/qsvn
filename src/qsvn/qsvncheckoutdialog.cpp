@@ -163,15 +163,18 @@ void QSVNCheckoutDialog::on_pushButton_revision_clicked()
         return;
     }
 
-    dlg.setLocation(location);
+    dlg.setLocations(QStringList() << location);
 
     if (dlg.exec() == QDialog::Accepted)
     {
-        ui->radioButton_revision->setChecked(true);
-        ui->lineEdit_revision->setEnabled(true);
-        ui->lineEdit_revision->setText("some rev. number");
-        ui->lineEdit_revision->setStyleSheet("background: red");
-        ui->lineEdit_revision->setToolTip("Invalid revision number.");
-        ui->pushButton_ok->setEnabled(false);
+        int selectedRevision = dlg.selectedRevision();
+
+        if (selectedRevision > 0)
+        {
+            ui->radioButton_revision->setChecked(true);
+            ui->lineEdit_revision->setEnabled(true);
+            ui->lineEdit_revision->setText(QString::number(selectedRevision));
+            ui->pushButton_ok->setEnabled(true);
+        }
     }
 }

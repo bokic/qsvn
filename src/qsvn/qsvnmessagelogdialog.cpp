@@ -7,9 +7,27 @@
 QSVNMessageLogDialog::QSVNMessageLogDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::QSVNMessageLogDialog),
-    m_thread(this)
+    m_thread(this),
+    m_selectedRevision(-1)
 {
     ui->setupUi(this);
+
+    ui->tableWidget_revisions->verticalHeader()->setDefaultSectionSize(ui->tableWidget_revisions->fontMetrics().height() + 4);
+    ui->tableWidget_revisions->setColumnWidth(0, 70);
+    ui->tableWidget_revisions->setColumnWidth(1, 80);
+    ui->tableWidget_revisions->setColumnWidth(2, 120);
+    ui->tableWidget_revisions->setColumnWidth(3, 180);
+    ui->tableWidget_revisions->setColumnWidth(4, 380);
+
+    const QDate &today = QDate::currentDate();
+    const QDate &oneMonthFromToday = QDate::currentDate().addMonths(-1);
+
+
+    ui->dateEdit_from->setDate(oneMonthFromToday);
+    ui->dateEdit_to->setDate(today);
+
+    ui->dateEdit_from->setMaximumDate(ui->dateEdit_to->date());
+    ui->dateEdit_to->setMinimumDate(ui->dateEdit_from->date());
 
     m_thread.start();
     m_thread.waitForStartup();
@@ -20,14 +38,22 @@ QSVNMessageLogDialog::QSVNMessageLogDialog(QWidget *parent) :
 
 QSVNMessageLogDialog::~QSVNMessageLogDialog()
 {
+    emit m_thread.quit();
+    m_thread.wait();
+
     delete ui;
 }
 
-void QSVNMessageLogDialog::setLocation(const QString &location)
+void QSVNMessageLogDialog::setLocations(const QStringList &locations)
 {
-    m_location = location;
+    m_locations = locations;
 
-    emit messageLog(location);
+    emit messageLog(locations);
+}
+
+int QSVNMessageLogDialog::selectedRevision()
+{
+    return m_selectedRevision;
 }
 
 void QSVNMessageLogDialog::messageLogFinished(QList<QMessageLogItem> items)
@@ -39,10 +65,28 @@ void QSVNMessageLogDialog::messageLogFinished(QList<QMessageLogItem> items)
         const QMessageLogItem &item = items.at(c);
 
         ui->tableWidget_revisions->setItem(c, 0, new QTableWidgetItem(QString::number(item.revision)));
+        ui->tableWidget_revisions->setItem(c, 1, new QTableWidgetItem("")); // TODO: 2nd column implementation is missing(messageLogFinished).
         ui->tableWidget_revisions->setItem(c, 2, new QTableWidgetItem(item.author));
         ui->tableWidget_revisions->setItem(c, 3, new QTableWidgetItem(item.date.toString()));
         ui->tableWidget_revisions->setItem(c, 4, new QTableWidgetItem(item.message));
     }
+}
 
-    return;
+void QSVNMessageLogDialog::on_tableWidget_revisions_itemSelectionChanged()
+{
+    QString cellText;
+    int row;
+
+    row = ui->tableWidget_revisions->currentRow();
+    cellText = ui->tableWidget_revisions->item(row, 0)->text();
+    m_selectedRevision = cellText.toInt();
+
+    ui->textEdit_revisionText->setText(ui->tableWidget_revisions->item(ui->tableWidget_revisions->currentRow(), 4)->text());
+}
+
+void QSVNMessageLogDialog::on_tableWidget_revisions_itemDoubleClicked(QTableWidgetItem *item)
+{
+    Q_UNUSED(item);
+
+    accept();
 }

@@ -78,7 +78,7 @@ public slots:
     void checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions);
     void commit(QStringList targets, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations);
     void status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky);
-    void messageLog(const QString &location);
+    void messageLog(const QStringList &locations);
 
 private:
     static svn_error_t * log_msg_func3(const char **log_msg,

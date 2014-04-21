@@ -390,7 +390,7 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
     return NULL;
 }
 
-void QSvn::messageLog(const QString &location)
+void QSvn::messageLog(const QStringList &locations)
 {
     svn_error_t *err;
 
@@ -410,8 +410,11 @@ void QSvn::messageLog(const QString &location)
     end.kind = svn_opt_revision_number;
     end.value.number = 40;
 
-    apr_array_header_t *paths = apr_array_make(pool, 0, 1);
-    APR_ARRAY_PUSH(paths, const char *) = apr_pstrdup(pool, location.toUtf8().constData());
+    apr_array_header_t *paths = apr_array_make(pool, 0, locations.count());
+    foreach(const QString &location, locations)
+    {
+        APR_ARRAY_PUSH(paths, const char *) = apr_pstrdup(pool, location.toUtf8().constData());
+    }
 
     m_localVar = &list;
 

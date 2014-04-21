@@ -3,6 +3,7 @@
 
 #include "qsvnthread.h"
 
+#include <QTableWidgetItem>
 #include <QDialog>
 
 namespace Ui {
@@ -17,18 +18,22 @@ public:
     explicit QSVNMessageLogDialog(QWidget *parent = 0);
     ~QSVNMessageLogDialog();
 
-    void setLocation(const QString &location);
+    void setLocations(const QStringList &locations);
+    int selectedRevision();
 
 signals:
-    void messageLog(const QString &location);
+    void messageLog(const QStringList &locations);
 
-public slots:
+private slots:
     void messageLogFinished(QList<QMessageLogItem> items);
+    void on_tableWidget_revisions_itemSelectionChanged();
+    void on_tableWidget_revisions_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
     Ui::QSVNMessageLogDialog *ui;
     QSVNThread m_thread;
-    QString m_location;
+    QStringList m_locations;
+    int m_selectedRevision;
 };
 
 #endif // QSVNMESSAGELOGDIALOG_H
