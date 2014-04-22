@@ -138,6 +138,19 @@ int main(int argc, char *argv[])
             return 0;
         }
     }
+    else if (strcmp(argv[1], "log") == 0)
+    {
+             QStringList paths;
+
+             for(int c = 2; c < argc; c++)
+             {
+                 paths.append(QString::fromUtf8(argv[c]));
+             }
+
+             dlg = new QSVNMessageLogDialog();
+
+             ((QSVNMessageLogDialog *)dlg)->setLocations(paths);
+    }
     else
     {
         printf("Unknown usage.\nUsage qsvn <browse, checkout, commit, update, update-to-revision>\n");
