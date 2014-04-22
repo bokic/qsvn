@@ -403,12 +403,16 @@ void QSvn::messageLog(const QStringList &locations)
 
     svn_opt_revision_t start;
     svn_opt_revision_t end;
+    svn_opt_revision_t peg;
 
     start.kind = svn_opt_revision_head;
     start.value.number = 0;
 
     end.kind = svn_opt_revision_number;
     end.value.number = 40;
+
+    peg.kind = svn_opt_revision_unspecified;
+    peg.value.number = 0;
 
     apr_array_header_t *paths = apr_array_make(pool, 0, locations.count());
     foreach(const QString &location, locations)
@@ -418,15 +422,17 @@ void QSvn::messageLog(const QStringList &locations)
 
     m_localVar = &list;
 
-    err = svn_client_log(paths,
-                         &start,
-                         &end,
-                         TRUE, // discover_changed_paths
-                         TRUE, // strict_node_history
-                         &messageLog_callback,
-                         this, // receiver_baton
-                         ctx,
-                         pool);
+    err = svn_client_log3(paths,
+                          &peg,
+                          &start,
+                          &end,
+                          0,    // limit
+                          TRUE, // discover_changed_paths
+                          TRUE, // strict_node_history
+                          &messageLog_callback,
+                          this, // receiver_baton
+                          ctx,
+                          pool);
 
     if (err)
     {
