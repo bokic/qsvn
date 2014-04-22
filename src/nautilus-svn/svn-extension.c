@@ -30,6 +30,7 @@ static gboolean svn_extension_are_items_under_svn  (GList                *files)
 static void     svn_extension_checkout_callback    (GtkWidget            *widget,    GList     *files);
 static void     svn_extension_update_callback      (GtkWidget            *widget,    GList     *files);
 static void     svn_extension_commit_callback      (GtkWidget            *widget,    GList     *files);
+static void     svn_extension_showlog_callback     (GtkWidget            *widget,    GList     *files);
 static void     svn_extension_repo_browse_callback (GtkWidget            *widget,    GList     *files);
 static GList   *svn_extension_get_background_items (NautilusMenuProvider *provider,  GtkWidget *window,       NautilusFileInfo *file_info);
 static void     svn_extension_instance_init        (SvnExtension         *snv);
@@ -189,6 +190,54 @@ svn_extension_commit_callback(GtkWidget *widget, GList *files)
 	g_spawn_command_line_async (command, &error);
 
 	g_free (command); command = NULL;
+}
+
+static void
+svn_extension_showlog_callback(GtkWidget *widget, GList *files)
+{
+    gchar *command = NULL, *path = NULL;
+    NautilusFileInfo *file_info = NULL;
+    GError *error = NULL;
+    GString *str = NULL;
+    int c = 0;
+
+
+    str = g_string_new ("qsvn");
+
+    g_string_append (str, " log");
+
+    for(; c < g_list_length(files); c++)
+    {
+        file_info = g_list_nth_data (files, c);
+
+        if (file_info == NULL)
+        {
+            continue;
+        }
+
+        path = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
+
+        if (path == NULL)
+        {
+            file_info = NULL;
+
+            continue;
+        }
+
+        g_string_append (str, " \"");
+        g_string_append (str, path);
+        g_string_append (str, "\"");
+
+        path = NULL;
+
+        file_info = NULL;
+    }
+
+    command = g_string_free (str, FALSE); str = NULL;
+
+    g_spawn_command_line_async (command, &error);
+
+    g_free (command); command = NULL;
 }
 
 static void
@@ -374,10 +423,10 @@ svn_extension_create_menu_one_file_under_svn(GList *files)
                                   "showlog...",
                                   "svn-showlog");
 
-    //g_signal_connect (item,
-    //                  "activate",
-    //                  G_CALLBACK (svn_extension_showlog_callback),
-    //                  nautilus_file_info_list_copy (files));
+    g_signal_connect (item,
+                      "activate",
+                      G_CALLBACK (svn_extension_showlog_callback),
+                      nautilus_file_info_list_copy (files));
 
     nautilus_menu_append_item (submenu, item);
     //--->
