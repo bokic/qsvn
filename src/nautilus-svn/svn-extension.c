@@ -45,7 +45,7 @@ svn_extension_are_items_under_svn(GList *files)
 	svn_error_t *error = NULL;
  	svn_wc_status3_t *status = NULL;
  	svn_wc_context_t *ctx = NULL;
- 	char *local_abspath = NULL;
+    char *uri = NULL, *path = NULL;
  	apr_pool_t *result_pool = NULL;
  	apr_pool_t *scratch_pool = NULL;
  	guint items;
@@ -63,20 +63,31 @@ svn_extension_are_items_under_svn(GList *files)
 
 	NautilusFileInfo *file_info = g_list_nth_data (files, 0); // TODO: Currently only checks the first item.
 
-	local_abspath = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
+    uri = nautilus_file_info_get_uri (file_info);
 
-	if (local_abspath)
-	{
-		error = svn_wc_status3 (&status, ctx, local_abspath, result_pool, scratch_pool);
+    if (uri)
+    {
+        path = g_filename_from_uri (uri, NULL, NULL);
 
-		g_free (local_abspath); local_abspath = NULL;
+        if (path)
+        {
+            error = svn_wc_status3 (&status, ctx, path, result_pool, scratch_pool);
 
-		ret = (error == NULL);
-	}
-	else
-	{
-		ret = FALSE;
-	}
+            g_free (path); path = NULL;
+
+            ret = (error == NULL);
+        }
+        else
+        {
+            ret = FALSE;
+        }
+
+        g_free (uri); uri = NULL;
+    }
+    else
+    {
+        ret = FALSE;
+    }
 
 	apr_pool_destroy (scratch_pool);
 	apr_pool_destroy (result_pool);
@@ -87,8 +98,9 @@ svn_extension_are_items_under_svn(GList *files)
 static void
 svn_extension_checkout_callback(GtkWidget *widget, GList *files)
 {
-	gchar *command = NULL, *path = NULL;
-	NautilusFileInfo *file_info = NULL;
+    NautilusFileInfo *file_info = NULL;
+    char *uri = NULL, *path = NULL;
+    gchar *command = NULL;
 	GError *error = NULL;
 	GString *str = NULL;
 
@@ -98,10 +110,12 @@ svn_extension_checkout_callback(GtkWidget *widget, GList *files)
 	{
 		file_info = g_list_nth_data (files, 0);
 
-		path = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
+        uri = nautilus_file_info_get_uri (file_info);
+        path = g_filename_from_uri (uri, NULL, NULL);
 
 		g_string_append_printf (str, " \"%s\"", path);
 
+        g_free (uri); uri = NULL;
 		g_free (path); path = NULL;
 	}
 
@@ -116,7 +130,8 @@ static void
 svn_extension_update_callback(GtkWidget *widget, GList *files)
 {
 	NautilusFileInfo *file_info = NULL;
-	gchar *command = NULL, *path = NULL;
+    char *uri = NULL, *path = NULL;
+    gchar *command = NULL;
 	GError *error = NULL;
 	GString *str = NULL;
 	guint lcount, c;
@@ -135,12 +150,12 @@ svn_extension_update_callback(GtkWidget *widget, GList *files)
 	{
 		file_info = g_list_nth_data (files, c);
 
-		path = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
+        uri = nautilus_file_info_get_uri (file_info);
+        path = g_filename_from_uri (uri, NULL, NULL);
 
-		str = g_string_append (str, " \"");
-		str = g_string_append (str, path);
-		str = g_string_append (str, "\"");
+        g_string_append_printf (str, " \"%s\"", path);
 
+        g_free (uri); uri = NULL;
 		g_free (path); path = NULL;
 	}
 
@@ -155,7 +170,8 @@ static void
 svn_extension_commit_callback(GtkWidget *widget, GList *files)
 {
 	NautilusFileInfo *file_info = NULL;
-	gchar *command = NULL, *path = NULL;
+    char *uri = NULL, *path = NULL;
+    gchar *command = NULL;
 	GError *error = NULL;
 	GString *str = NULL;
 	guint lcount, c;
@@ -176,7 +192,8 @@ svn_extension_commit_callback(GtkWidget *widget, GList *files)
 
 		file_info = g_list_nth_data (files, c);
 
-		path = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
+        uri = nautilus_file_info_get_uri (file_info);
+        path = g_filename_from_uri (uri, NULL, NULL);
 
 		str = g_string_append (str, path);
 
@@ -195,12 +212,12 @@ svn_extension_commit_callback(GtkWidget *widget, GList *files)
 static void
 svn_extension_showlog_callback(GtkWidget *widget, GList *files)
 {
-    gchar *command = NULL, *path = NULL;
+    char *uri = NULL, *path = NULL;
+    gchar *command = NULL;
     NautilusFileInfo *file_info = NULL;
     GError *error = NULL;
     GString *str = NULL;
-    int c = 0;
-
+    guint c = 0;
 
     str = g_string_new ("qsvn");
 
@@ -215,7 +232,8 @@ svn_extension_showlog_callback(GtkWidget *widget, GList *files)
             continue;
         }
 
-        path = g_filename_from_uri (nautilus_file_info_get_uri (file_info), NULL, NULL);
+        uri = nautilus_file_info_get_uri (file_info);
+        path = g_filename_from_uri (uri, NULL, NULL);
 
         if (path == NULL)
         {
@@ -224,11 +242,10 @@ svn_extension_showlog_callback(GtkWidget *widget, GList *files)
             continue;
         }
 
-        g_string_append (str, " \"");
-        g_string_append (str, path);
-        g_string_append (str, "\"");
+        g_string_append_printf (str, " \"%s\"", path);
 
-        path = NULL;
+        g_free (uri); uri = NULL;
+        g_free (path); path = NULL;
 
         file_info = NULL;
     }
@@ -796,12 +813,14 @@ NautilusOperationResult svn_extension_update_file_info (NautilusInfoProvider    
                                                         GClosure                 *update_complete,
                                                         NautilusOperationHandle **handle)
 {
+    char *uri = NULL;
     gchar *filename = NULL;
     char *emblem = NULL;
 
     if (file)
     {
-        filename = g_filename_from_uri (nautilus_file_info_get_uri (file), NULL, NULL);
+        uri = nautilus_file_info_get_uri (file);
+        filename = g_filename_from_uri (uri, NULL, NULL);
 
         if (filename)
         {
@@ -840,8 +859,10 @@ NautilusOperationResult svn_extension_update_file_info (NautilusInfoProvider    
                 emblem = "qsvn-error"; // TODO: Create this emblem.
             }
 
-            g_free (filename);
+            g_free (filename); filename = NULL;
         }
+
+        g_free (uri); uri = NULL;
 
         if (emblem)
         {
