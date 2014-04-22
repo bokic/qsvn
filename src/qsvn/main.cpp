@@ -144,7 +144,16 @@ int main(int argc, char *argv[])
 
              for(int c = 2; c < argc; c++)
              {
-                 paths.append(QString::fromUtf8(argv[c]));
+                 const QString path = QString::fromUtf8(argv[c]);
+
+                 if (QDir::isAbsolutePath(path))
+                 {
+                     paths.append(path);
+                 }
+                 else
+                 {
+                     paths.append(QDir::current().absoluteFilePath(path));
+                 }
              }
 
              dlg = new QSVNMessageLogDialog();
