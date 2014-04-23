@@ -19,7 +19,7 @@ QSVNUpdateToRevisionDialog::QSVNUpdateToRevisionDialog(const QStringList &paths)
 
 QSVNUpdateToRevisionDialog::~QSVNUpdateToRevisionDialog()
 {
-    delete ui;
+    delete ui; ui = nullptr;
 }
 
 QStringList QSVNUpdateToRevisionDialog::paths() const

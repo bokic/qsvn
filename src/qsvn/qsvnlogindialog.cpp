@@ -10,7 +10,7 @@ QSVNLoginDialog::QSVNLoginDialog(QWidget *parent) :
 
 QSVNLoginDialog::~QSVNLoginDialog()
 {
-    delete ui;
+    delete ui; ui = nullptr;
 }
 
 QString QSVNLoginDialog::username()

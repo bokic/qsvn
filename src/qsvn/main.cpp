@@ -103,7 +103,17 @@ int main(int argc, char *argv[])
             paths.append(QDir::currentPath());
         }
 
-        dlg = new QSVNCommitDialog(paths);
+        QSVNCommitDialog w(paths);
+
+        if (w.exec() == QDialog::Accepted)
+        {
+            dlg = new QSVNUpdateDialog();
+            ((QSVNUpdateDialog *)dlg)->setOperationCommit(w);
+        }
+        else
+        {
+            return 0;
+        }
     }
     else if (strcmp(argv[1], "update") == 0)
     {

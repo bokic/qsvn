@@ -76,7 +76,7 @@ public slots:
     void repoBrowser(QString url, svn_opt_revision_t revision, bool recursion);
     void update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t depth, bool depthIsSticky, bool ignoreExternals, bool allowUnverObstructions, bool addsAsModification, bool makeParents);
     void checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions);
-    void commit(QStringList targets, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations);
+    void commit(QStringList items, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations);
     void status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky);
     void messageLog(const QStringList &locations);
 
@@ -141,6 +141,7 @@ public:
 
     QSvnStatusItem()
     : m_nodeStatus(svn_wc_status_none)
+    , m_selected(false)
     {
 
     }
@@ -149,12 +150,14 @@ public:
     {
         m_nodeStatus = other.m_nodeStatus;
         m_filename = other.m_filename;
+        m_selected = other.m_selected;
     }
 
     QSvnStatusItem(const svn_client_status_t *item)
     {
         m_nodeStatus = item->node_status;
         m_filename = QString::fromUtf8(item->local_abspath);
+        m_selected = false;
     }
 
 #ifdef Q_COMPILER_RVALUE_REFS
@@ -162,6 +165,7 @@ public:
     {
         qSwap(m_nodeStatus, other.m_nodeStatus);
         qSwap(m_filename, other.m_filename);
+        qSwap(m_selected, other.m_selected);
 
         return *this;
     }
@@ -171,12 +175,14 @@ public:
     {
         m_nodeStatus = other.m_nodeStatus;
         m_filename = other.m_filename;
+        m_selected = other.m_selected;
 
         return *this;
     }
 
     svn_wc_status_kind m_nodeStatus;
     QString m_filename;
+    bool m_selected;
 };
 
 struct QMessageLogItem

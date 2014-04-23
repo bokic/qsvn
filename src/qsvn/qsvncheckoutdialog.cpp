@@ -22,7 +22,7 @@ QSVNCheckoutDialog::QSVNCheckoutDialog(QWidget *parent) :
 
 QSVNCheckoutDialog::~QSVNCheckoutDialog()
 {
-    delete ui;
+    delete ui; ui = nullptr;
 }
 
 void QSVNCheckoutDialog::loadSettings()

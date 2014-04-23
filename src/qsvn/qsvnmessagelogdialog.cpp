@@ -41,7 +41,7 @@ QSVNMessageLogDialog::~QSVNMessageLogDialog()
     emit m_thread.quit();
     m_thread.wait();
 
-    delete ui;
+    delete ui; ui = nullptr;
 }
 
 void QSVNMessageLogDialog::setLocations(const QStringList &locations)

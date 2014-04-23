@@ -37,6 +37,16 @@ int QSVNCommitItemsModel::columnCount(const QModelIndex &parent) const
     return 5;
 }
 
+Qt::ItemFlags QSVNCommitItemsModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+    {
+        return 0;
+    }
+
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable |  Qt::ItemIsEditable;
+}
+
 QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
 {
     QString filename;
@@ -117,11 +127,39 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
     {
         if (index.column() == 0)
         {
-            return Qt::Unchecked;
+            if (m_items[index.row()].m_selected)
+            {
+                return Qt::Checked;
+            }
+            else
+            {
+                return Qt::Unchecked;
+            }
         }
     }
 
     return QVariant();
+}
+
+bool QSVNCommitItemsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if ((index.column() == 0)&&(role==Qt::CheckStateRole))
+    {
+        if (value == Qt::Checked)
+        {
+            m_items[index.row()].m_selected = true;
+        }
+        else
+        {
+            m_items[index.row()].m_selected = false;
+        }
+
+        emit dataChanged(index, index);
+
+        return true;
+    }
+
+    return false;
 }
 
 QVariant QSVNCommitItemsModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -148,4 +186,14 @@ QVariant QSVNCommitItemsModel::headerData(int section, Qt::Orientation orientati
     }
 
     return QVariant();
+}
+
+QList<QSvnStatusItem> QSVNCommitItemsModel::items() const
+{
+    return m_items;
+}
+
+QDir QSVNCommitItemsModel::dir() const
+{
+    return m_dir;
 }

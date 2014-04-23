@@ -1,5 +1,6 @@
 #include "qsvnupdatedialog.h"
 #include "qsvnupdatetorevisiondialog.h"
+#include "qsvncommitdialog.h"
 #include "qsvnlogindialog.h"
 #include "ui_qsvnupdatedialog.h"
 #include "qsvncheckoutdialog.h"
@@ -19,7 +20,10 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
     m_ignore_externals(true),
     m_allow_unver_obstructions(true),
     m_add_as_modification(true),
-    m_make_parents(true)
+    m_make_parents(true),
+    m_keep_locks(true),
+    m_changelist(true),
+    m_commit_as_operations(true)
 {
     ui->setupUi(this);
 
@@ -35,6 +39,7 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
     m_thread.waitForStartup();
 
     connect(this, &QSVNUpdateDialog::update, m_thread.m_worker, &QSvn::update);
+    connect(this, &QSVNUpdateDialog::commit, m_thread.m_worker, &QSvn::commit);
     connect(this, &QSVNUpdateDialog::checkout, m_thread.m_worker, &QSvn::checkout);
 
     // Notify signals
@@ -47,15 +52,10 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
 
 QSVNUpdateDialog::~QSVNUpdateDialog()
 {
-    if (m_thread.isRunning())
-    {
-        m_thread.exit();
+    emit m_thread.quit();
+    m_thread.wait();
 
-        m_thread.wait();
-    }
-
-    delete ui;
-    ui = nullptr;
+    delete ui; ui = nullptr;
 }
 
 void QSVNUpdateDialog::setOperationUpdate(const QStringList &paths)
@@ -64,9 +64,9 @@ void QSVNUpdateDialog::setOperationUpdate(const QStringList &paths)
     {
         setWindowTitle(tr("Update"));
 
-        m_paths = paths;
+        m_path_items = paths;
 
-        emit update(m_paths, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
+        emit update(m_path_items, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
     }
     else
     {
@@ -80,13 +80,13 @@ void QSVNUpdateDialog::setOperationUpdateToRevision(const QSVNUpdateToRevisionDi
     {
         setWindowTitle(tr("Update to revision"));
 
-        m_paths = dlg.paths();
+        m_path_items = dlg.paths();
         m_revision = dlg.ui_revision();
         m_depth = dlg.ui_depth();
         m_ignore_externals = dlg.ui_include_externals();
         m_allow_unver_obstructions = dlg.ui_allow_unver();
 
-        emit update(m_paths, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
+        emit update(m_path_items, m_revision, m_depth, m_depth_is_sticky, m_ignore_externals, m_allow_unver_obstructions, m_add_as_modification, m_make_parents);
     }
     else
     {
@@ -109,6 +109,26 @@ void QSVNUpdateDialog::setOperationCheckout(const QSVNCheckoutDialog &dlg)
         m_allow_unver_obstructions = dlg.ui_allow_unver();
 
         emit checkout(m_url, m_path, m_peg_revision, m_revision, m_depth, m_ignore_externals, m_allow_unver_obstructions);
+    }
+    else
+    {
+        qDebug("QSVNUpdateDialog::setOperationCheckout() worker thread is currently busy.");
+    }
+}
+
+void QSVNUpdateDialog::setOperationCommit(const QSVNCommitDialog &dlg)
+{
+    if (!m_thread.m_worker->isBusy())
+    {
+        setWindowTitle(tr("Commit"));
+
+        m_path_items = dlg.ui_checked_path_items();
+        m_depth = dlg.ui_depth();
+        m_keep_locks = dlg.ui_keep_locks(); // TODO: Check the initialization of m_peg_revision
+        m_changelist = dlg.ui_changelist();
+        m_commit_as_operations = dlg.ui_m_commit_as_operations();
+
+        emit commit(m_path_items, m_depth, m_keep_locks, m_changelist, m_commit_as_operations);
     }
     else
     {

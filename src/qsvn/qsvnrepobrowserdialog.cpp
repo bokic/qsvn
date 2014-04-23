@@ -31,14 +31,10 @@ QSVNRepoBrowserDialog::QSVNRepoBrowserDialog(QWidget *parent) :
 
 QSVNRepoBrowserDialog::~QSVNRepoBrowserDialog()
 {
-    if (m_thread.isRunning())
-    {
-        m_thread.exit();
+    emit m_thread.quit();
+    m_thread.wait();
 
-        m_thread.wait();
-    }
-
-    delete ui;
+    delete ui; ui = nullptr;
 }
 
 void QSVNRepoBrowserDialog::setURL(const QString &url)

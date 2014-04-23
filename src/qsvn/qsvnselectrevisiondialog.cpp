@@ -21,7 +21,7 @@ QSVNSelectRevisionDialog::QSVNSelectRevisionDialog(QWidget *parent, const QStrin
 
 QSVNSelectRevisionDialog::~QSVNSelectRevisionDialog()
 {
-    delete ui;
+    delete ui; ui = nullptr;
 }
 
 int QSVNSelectRevisionDialog::revision()

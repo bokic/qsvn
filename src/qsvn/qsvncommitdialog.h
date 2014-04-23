@@ -20,6 +20,12 @@ public:
     explicit QSVNCommitDialog(const QStringList &items, QWidget *parent = 0);
     ~QSVNCommitDialog();
 
+    QStringList ui_checked_path_items() const;
+    svn_depth_t ui_depth() const;
+    bool ui_keep_locks() const;
+    bool ui_changelist() const;
+    bool ui_m_commit_as_operations() const;
+
 signals:
     void status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky);
 

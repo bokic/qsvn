@@ -265,11 +265,11 @@ void QSvn::update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t
     m_operation = QSvn::QSVNOperationUpdate;
     m_cancelOperation = false;
 
-    apr_array_header_t *paths = apr_array_make(pool, 0, pathList.length());
+    apr_array_header_t *paths = apr_array_make (pool, pathList.length(), sizeof(char *));
 
     for(const QString path : pathList)
     {
-        APR_ARRAY_PUSH(paths, const char *) = apr_pstrdup(pool, path.toUtf8().constData());
+        APR_ARRAY_PUSH(paths, char *) = apr_pstrdup (pool, path.toUtf8().constData());
     }
 
     m_cancelOperation = false;
@@ -311,15 +311,32 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
     emit finished(err == nullptr);
 }
 
-void QSvn::commit(QStringList targets, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations)
+void QSvn::commit(QStringList items, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations)
 {
-    svn_error_t *err;
-    const apr_array_header_t *target_items;
-    apr_array_header_t *changelists;
-    apr_hash_t *revprop_table;
+    /*svn_error_t *err = NULL;
+    apr_array_header_t *target_items = NULL;
+    apr_array_header_t *changelists = NULL;
+    apr_hash_t *revprop_table = NULL;
+
+    target_items = apr_array_make (pool, items.count(), sizeof(const char *));
+    revprop_table = apr_hash_make (pool);
+    apr_hash_set (revprop_table, "key", 3, (const void*)"val");
+
+    changelists = apr_array_make (pool, 0, sizeof(const char *));
+
+    foreach(const QString item, items)
+    {
+        char *file_item = apr_pstrdup(pool, item.toUtf8().constData());
+        APR_ARRAY_PUSH(target_items, char *) = file_item;
+
+        err = svn_client_add(file_item, FALSE, ctx, pool);
+        err = NULL;
+    }
 
     m_operation = QSvn::QSVNOperationCommit;
     m_cancelOperation = false;
+
+    ctx->log_msg_baton3 = NULL;
 
     err = svn_client_commit5(target_items,
                              depth,
@@ -332,6 +349,37 @@ void QSvn::commit(QStringList targets, svn_depth_t depth, bool keep_locks, bool 
                              this,
                              ctx,
                              pool);
+
+    if (err)
+    {
+        qDebug() << err->message;
+        if (err->child)
+        {
+            qDebug() << err->child->message;
+        }
+    }
+
+    emit finished(err == nullptr);
+    */
+
+
+    svn_client_commit_info_t *commit_into_p = NULL;
+    apr_array_header_t *targets = NULL;
+    svn_boolean_t nonrecursive = TRUE;
+    svn_error_t *err = NULL;
+
+    targets = apr_array_make (pool, items.count(), sizeof(const char *));
+
+    foreach(const QString item, items)
+    {
+        char *file_item = apr_pstrdup(pool, item.toUtf8().constData());
+        APR_ARRAY_PUSH(targets, char *) = file_item;
+
+        //err = svn_client_add(file_item, FALSE, ctx, pool);
+        //err = NULL;
+    }
+
+    err = svn_client_commit(&commit_into_p, targets, nonrecursive, ctx, pool);
 
     emit finished(err == nullptr);
 }
@@ -414,10 +462,10 @@ void QSvn::messageLog(const QStringList &locations)
     peg.kind = svn_opt_revision_unspecified;
     peg.value.number = 0;
 
-    apr_array_header_t *paths = apr_array_make(pool, 0, locations.count());
+    apr_array_header_t *paths = apr_array_make (pool, locations.count(), sizeof(const char *));
     foreach(const QString &location, locations)
     {
-        APR_ARRAY_PUSH(paths, const char *) = apr_pstrdup(pool, location.toUtf8().constData());
+        APR_ARRAY_PUSH(paths, char *) = apr_pstrdup (pool, location.toUtf8().constData());
     }
 
     m_localVar = &list;
@@ -448,17 +496,17 @@ svn_error_t * QSvn::log_msg_func3(const char **log_msg,
                                   const char **tmp_file,
                                   const apr_array_header_t *commit_items,
                                   void *baton,
-                                  apr_pool_t * pool)
+                                  apr_pool_t *pool)
 {
-    Q_UNUSED(log_msg);
-    Q_UNUSED(tmp_file);
-    Q_UNUSED(commit_items);
-    Q_UNUSED(pool);
+    //Q_UNUSED(log_msg);
+    //Q_UNUSED(tmp_file);
+    //Q_UNUSED(commit_items);
+    //Q_UNUSED(pool);
 
     QSvn *svn = (QSvn *)baton;
 
-    Q_UNUSED(svn);
-    Q_UNIMPLEMENTED();
+    //Q_UNUSED(svn);
+    //Q_UNIMPLEMENTED();
 
     /*log_msg_baton3 *lmb = (log_msg_baton3 *) baton;
     *tmp_file = NULL;
@@ -466,6 +514,9 @@ svn_error_t * QSvn::log_msg_func3(const char **log_msg,
     {
         *log_msg = apr_pstrdup (pool, lmb->message);
     }*/
+
+    *log_msg = apr_pstrdup (pool, "ok"); // TODO: Commit log is here.
+    *tmp_file = NULL;
 
     return SVN_NO_ERROR;
 }
@@ -508,7 +559,7 @@ svn_error_t * QSvn::commit_func2(const svn_commit_info_t *commit_info,
                                  void *baton,
                                  apr_pool_t *pool)
 {
-
+    return NULL;
 }
 
 svn_error_t * QSvn::status_funct(void *baton,

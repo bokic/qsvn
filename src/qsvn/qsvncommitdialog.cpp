@@ -33,7 +33,6 @@ QSVNCommitDialog::QSVNCommitDialog(const QStringList &items, QWidget *parent)
 
     connect(this, &QSVNCommitDialog::status, m_thread.m_worker, &QSvn::status);
     connect(m_thread.m_worker, &QSvn::statusFinished, this, &QSVNCommitDialog::statusFinished, Qt::BlockingQueuedConnection);
-    //connect(this, &QSVNCommitDialog::commit, m_thread.m_worker, &QSvn::commit);
 
     svn_opt_revision_t rev;
     rev.kind = svn_opt_revision_working;
@@ -44,7 +43,53 @@ QSVNCommitDialog::QSVNCommitDialog(const QStringList &items, QWidget *parent)
 
 QSVNCommitDialog::~QSVNCommitDialog()
 {
-    delete ui;
+    emit m_thread.quit();
+    m_thread.wait();
+
+    delete ui; ui = nullptr;
+}
+
+QStringList QSVNCommitDialog::ui_checked_path_items() const
+{
+    QSVNCommitItemsModel *model = (QSVNCommitItemsModel *)ui->changes_tableView->model();
+    QStringList ret;
+
+    const QList<QSvnStatusItem> &items = model->items();
+
+    foreach(const QSvnStatusItem &item, items)
+    {
+        if (item.m_selected)
+        {
+            ret.append(item.m_filename);
+        }
+    }
+
+    return ret;
+}
+
+svn_depth_t QSVNCommitDialog::ui_depth() const
+{
+    return svn_depth_infinity; // TODO Implement me bool QSVNCommitDialog::ui_depth() const
+}
+
+bool QSVNCommitDialog::ui_keep_locks() const
+{
+    if (ui->keepLoks_checkBox->isChecked())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool QSVNCommitDialog::ui_changelist() const
+{
+    return true; // TODO Implement me bool QSVNCommitDialog::ui_changelist() const
+}
+
+bool QSVNCommitDialog::ui_m_commit_as_operations() const
+{
+    return true; // TODO Implement me bool QSVNCommitDialog::ui_m_commit_as_operations() const
 }
 
 void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, bool error)
