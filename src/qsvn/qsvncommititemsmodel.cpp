@@ -8,7 +8,22 @@ QSVNCommitItemsModel::QSVNCommitItemsModel(const QList<QSvnStatusItem> &items, c
     : QAbstractItemModel(parent)
     , m_items(items)
     , m_dir(dir)
+    , m_showUnversionedFiles(true)
 {
+    if ((m_items.count() > 0)&&(m_items.first().m_filename == m_dir.absolutePath())&&(m_items.first().m_nodeStatus == svn_wc_status_normal))
+    {
+        m_items.takeFirst();
+    }
+
+    for(int c = 0; c < m_items.count(); c++)
+    {
+        QSvnStatusItem *item = &m_items[c];
+
+        if (item->m_nodeStatus != svn_wc_status_unversioned)
+        {
+            m_versionedItems.append(item);
+        }
+    }
 }
 
 QModelIndex QSVNCommitItemsModel::index(int row, int column, const QModelIndex &parent) const
@@ -26,8 +41,18 @@ QModelIndex QSVNCommitItemsModel::parent(const QModelIndex &child) const
 int QSVNCommitItemsModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
+    int count;
 
-    return m_items.length();
+    if (m_showUnversionedFiles)
+    {
+        count = m_items.length();
+    }
+    else
+    {
+        count = m_versionedItems.length();
+    }
+
+    return count;
 }
 
 int QSVNCommitItemsModel::columnCount(const QModelIndex &parent) const
@@ -53,12 +78,22 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-        const QSvnStatusItem &item = m_items.at(index.row());
+        const QSvnStatusItem *item = nullptr;
+
+
+        if (m_showUnversionedFiles)
+        {
+            item = &m_items.at(index.row());
+        }
+        else
+        {
+            item = m_versionedItems.at(index.row());
+        }
         int pos;
 
         switch(index.column()) {
         case 0:
-            filename = m_dir.relativeFilePath(item.m_filename);
+            filename = m_dir.relativeFilePath(item->m_filename);
 
             if (filename.isEmpty())
             {
@@ -68,19 +103,19 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
             return filename;
             break;
         case 1:
-            pos = item.m_filename.lastIndexOf('.');
+            pos = item->m_filename.lastIndexOf('.');
             if (pos > 0)
             {
-                return item.m_filename.right(item.m_filename.length() - pos);
+                return item->m_filename.right(item->m_filename.length() - pos);
             }
             break;
         case 2:
-            switch(item.m_nodeStatus) {
+            switch(item->m_nodeStatus) {
             case svn_wc_status_none:
                 return tr("none");
                 break;
             case svn_wc_status_unversioned:
-                return tr("unversioned");
+                return tr("non-versioned");
                 break;
             case svn_wc_status_normal:
                 return tr("normal");
@@ -127,7 +162,17 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
     {
         if (index.column() == 0)
         {
-            if (m_items[index.row()].m_selected)
+            bool checked;
+            if (m_showUnversionedFiles)
+            {
+                checked = m_items[index.row()].m_selected;
+            }
+            else
+            {
+                checked = m_versionedItems[index.row()]->m_selected;
+            }
+
+            if (checked)
             {
                 return Qt::Checked;
             }
@@ -145,13 +190,24 @@ bool QSVNCommitItemsModel::setData(const QModelIndex &index, const QVariant &val
 {
     if ((index.column() == 0)&&(role==Qt::CheckStateRole))
     {
-        if (value == Qt::Checked)
+        QSvnStatusItem *item = nullptr;
+
+        if (m_showUnversionedFiles)
         {
-            m_items[index.row()].m_selected = true;
+            item = &m_items[index.row()];
         }
         else
         {
-            m_items[index.row()].m_selected = false;
+            item = m_versionedItems[index.row()];
+        }
+
+        if (value == Qt::Checked)
+        {
+            item->m_selected = true;
+        }
+        else
+        {
+            item->m_selected = false;
         }
 
         emit dataChanged(index, index);
@@ -188,9 +244,41 @@ QVariant QSVNCommitItemsModel::headerData(int section, Qt::Orientation orientati
     return QVariant();
 }
 
-QList<QSvnStatusItem> QSVNCommitItemsModel::items() const
+void QSVNCommitItemsModel::showUnversionedFiles(bool state)
 {
-    return m_items;
+    int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+
+    m_showUnversionedFiles = state;
+
+    emit dataChanged(index(0, 0), index(current_rows, 4));
+}
+
+QList<QSvnStatusItem> QSVNCommitItemsModel::checkedItems() const
+{
+    QList<QSvnStatusItem> ret;
+
+    if (m_showUnversionedFiles)
+    {
+        foreach(const QSvnStatusItem &item, m_items)
+        {
+            if (item.m_selected)
+            {
+                ret.append(item);
+            }
+        }
+    }
+    else
+    {
+        foreach(const QSvnStatusItem *item, m_versionedItems)
+        {
+            if (item->m_selected)
+            {
+                ret.append(*item);
+            }
+        }
+    }
+
+    return ret;
 }
 
 QDir QSVNCommitItemsModel::dir() const

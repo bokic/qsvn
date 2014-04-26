@@ -1,6 +1,17 @@
 #include "qsvn.h"
+#include "qsvnpool.h"
+
 #include <QDebug>
 
+
+struct log_msg_baton3
+{
+  const char *message;  /* the message. */
+  const char *message_encoding; /* the locale/encoding of the message. */
+  const char *base_dir; /* the base directory for an external edit. UTF-8! */
+  const char *tmpfile_left; /* the tmpfile left by an external edit. UTF-8! */
+  apr_pool_t *pool; /* a pool. */
+};
 
 QSvn::QSvn(QObject *parent)
     : QObject(parent)
@@ -62,7 +73,7 @@ void QSvn::init()
     }
 
     ctx->log_msg_func3 = log_msg_func3;
-    ctx->log_msg_baton3 = this;
+    ctx->log_msg_baton3 = nullptr;
     ctx->notify_func2 = notify_func2;
     ctx->notify_baton2 = this;
     ctx->notify_func = nullptr;
@@ -311,75 +322,34 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
     emit finished(err == nullptr);
 }
 
-void QSvn::commit(QStringList items, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations)
+void QSvn::commit(QStringList pathlist, QString message, QStringList changelists, bool keepchangelist, svn_depth_t depth, bool keep_locks, QHash<QString, QString> revProps)
 {
-    /*svn_error_t *err = NULL;
-    apr_array_header_t *target_items = NULL;
-    apr_array_header_t *changelists = NULL;
-    apr_hash_t *revprop_table = NULL;
+    QSvnPool localpool(pool);
+    svn_error_t *err = nullptr;
 
-    target_items = apr_array_make (pool, items.count(), sizeof(const char *));
-    revprop_table = apr_hash_make (pool);
-    apr_hash_set (revprop_table, "key", 3, (const void*)"val");
+    ctx->log_msg_baton3 = logMessage(message);
 
-    changelists = apr_array_make (pool, 0, sizeof(const char *));
+    //CHooks::Instance().PreConnect(pathlist);
 
-    foreach(const QString item, items)
-    {
-        char *file_item = apr_pstrdup(pool, item.toUtf8().constData());
-        APR_ARRAY_PUSH(target_items, char *) = file_item;
-
-        err = svn_client_add(file_item, FALSE, ctx, pool);
-        err = NULL;
-    }
-
-    m_operation = QSvn::QSVNOperationCommit;
-    m_cancelOperation = false;
-
-    ctx->log_msg_baton3 = NULL;
-
-    err = svn_client_commit5(target_items,
+    err = svn_client_commit5 (
+                             makePathList(pathlist, localpool),
                              depth,
                              keep_locks,
-                             keep_changelists,
-                             commit_as_operations,
-                             changelists,
-                             revprop_table,
+                             keepchangelist,
+                             true,       // commit_as_operations
+                             makeChangeListArray(changelists, localpool),
+                             makeRevPropHash(revProps, localpool),
                              commit_func2,
                              this,
                              ctx,
-                             pool);
+                             localpool);
+
+    ctx->log_msg_baton3 = nullptr;
 
     if (err)
     {
-        qDebug() << err->message;
-        if (err->child)
-        {
-            qDebug() << err->child->message;
-        }
+        //err->
     }
-
-    emit finished(err == nullptr);
-    */
-
-
-    svn_client_commit_info_t *commit_into_p = NULL;
-    apr_array_header_t *targets = NULL;
-    svn_boolean_t nonrecursive = TRUE;
-    svn_error_t *err = NULL;
-
-    targets = apr_array_make (pool, items.count(), sizeof(const char *));
-
-    foreach(const QString item, items)
-    {
-        char *file_item = apr_pstrdup(pool, item.toUtf8().constData());
-        APR_ARRAY_PUSH(targets, char *) = file_item;
-
-        //err = svn_client_add(file_item, FALSE, ctx, pool);
-        //err = NULL;
-    }
-
-    err = svn_client_commit(&commit_into_p, targets, nonrecursive, ctx, pool);
 
     emit finished(err == nullptr);
 }
@@ -559,6 +529,7 @@ svn_error_t * QSvn::commit_func2(const svn_commit_info_t *commit_info,
                                  void *baton,
                                  apr_pool_t *pool)
 {
+    // TODO: Implement me(commit_func2).
     return NULL;
 }
 
@@ -629,4 +600,82 @@ svn_error_t *QSvn::svn_login_callback(svn_auth_cred_simple_t **cred,
     }
 
     return SVN_NO_ERROR;
+}
+
+void *QSvn::logMessage(QString message, char *baseDirectory)
+{
+    message.remove('\r');
+
+    log_msg_baton3 *baton = (log_msg_baton3 *) apr_palloc (pool, sizeof (log_msg_baton3));
+    baton->message = apr_pstrdup(pool, message.toUtf8().constData());
+    baton->base_dir = baseDirectory ? baseDirectory : "";
+
+    baton->message_encoding = NULL;
+    baton->tmpfile_left = NULL;
+    baton->pool = pool;
+
+    return baton;
+}
+
+apr_hash_t *QSvn::makeRevPropHash(const QHash<QString, QString> &revProps, apr_pool_t *pool)
+{
+    apr_hash_t * revprop_table = NULL;
+
+    const QStringList &keys = revProps.keys();
+
+    if (!keys.isEmpty())
+    {
+        revprop_table = apr_hash_make(pool);
+
+        foreach(const QString &key, keys)
+        {
+            svn_string_t *k = svn_string_create(key.toUtf8().constData(), pool);
+            svn_string_t *v = svn_string_create(revProps.value(key).toUtf8().constData(), pool);
+
+            apr_hash_set (revprop_table, k, APR_HASH_KEY_STRING, v);
+        }
+    }
+
+    return revprop_table;
+}
+
+apr_array_header_t *QSvn::makePathList(const QStringList &paths, apr_pool_t *pool)
+{
+    apr_array_header_t *ret = nullptr;
+
+    ret = apr_array_make (pool, paths.count(), sizeof(const char *));
+
+    foreach(const QString path, paths)
+    {
+        char *path_item = apr_pstrdup(pool, path.toUtf8().constData());
+        APR_ARRAY_PUSH(ret, char *) = path_item;
+    }
+
+    return ret;
+}
+
+apr_array_header_t *QSvn::makeChangeListArray(const QStringList &changelists, apr_pool_t *pool)
+{
+    int count = changelists.length();
+
+    // special case: the changelist array contains one empty string
+    if ((count == 1)&&(changelists.at(0).isEmpty()))
+    {
+        count = 0;
+    }
+
+    apr_array_header_t * ret = apr_array_make (pool, count, sizeof(const char *));
+
+    if (count == 0)
+    {
+        return ret;
+    }
+
+    foreach(const QString &item, changelists)
+    {
+        const char *new_item = apr_pstrdup(pool, item.toUtf8().constData());
+        (*((const char **) apr_array_push(ret))) = new_item;
+    }
+
+    return ret;
 }

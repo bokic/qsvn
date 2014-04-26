@@ -38,7 +38,7 @@ QSVNCommitDialog::QSVNCommitDialog(const QStringList &items, QWidget *parent)
     rev.kind = svn_opt_revision_working;
     rev.value.number = 0;
 
-    emit status(m_items.at(0), rev, svn_depth_infinity, false, false, false, true, true);
+    emit status(m_items.at(0), rev, svn_depth_infinity, true, false, false, true, true);
 }
 
 QSVNCommitDialog::~QSVNCommitDialog()
@@ -54,14 +54,11 @@ QStringList QSVNCommitDialog::ui_checked_path_items() const
     QSVNCommitItemsModel *model = (QSVNCommitItemsModel *)ui->changes_tableView->model();
     QStringList ret;
 
-    const QList<QSvnStatusItem> &items = model->items();
+    const QList<QSvnStatusItem> &items = model->checkedItems();
 
     foreach(const QSvnStatusItem &item, items)
     {
-        if (item.m_selected)
-        {
-            ret.append(item.m_filename);
-        }
+        ret.append(item.m_filename);
     }
 
     return ret;
@@ -74,7 +71,7 @@ svn_depth_t QSVNCommitDialog::ui_depth() const
 
 bool QSVNCommitDialog::ui_keep_locks() const
 {
-    if (ui->keepLoks_checkBox->isChecked())
+    if (ui->keepLocks_checkBox->isChecked())
     {
         return true;
     }
@@ -95,4 +92,9 @@ bool QSVNCommitDialog::ui_m_commit_as_operations() const
 void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, bool error)
 {
     ui->changes_tableView->setModel(new QSVNCommitItemsModel(items, m_commonDir));
+}
+
+void QSVNCommitDialog::on_showUnversioned_checkBox_stateChanged(int state)
+{
+    ((QSVNCommitItemsModel *)ui->changes_tableView->model())->showUnversionedFiles(state?true:false);
 }

@@ -13,7 +13,7 @@ class QSVNCommitItemsModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit QSVNCommitItemsModel(const QList<QSvnStatusItem> &items, const QString &dir, QObject *parent = 0);
+    explicit QSVNCommitItemsModel(const QList<QSvnStatusItem> &checkedItems, const QString &dir, QObject *parent = 0);
 
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &child) const override;
@@ -23,8 +23,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    void showUnversionedFiles(bool state);
 
-    QList<QSvnStatusItem> items() const;
+    QList<QSvnStatusItem> checkedItems() const;
     QDir dir() const;
 
 signals:
@@ -33,7 +34,9 @@ public slots:
 
 private:
     QList<QSvnStatusItem> m_items;
+    QList<QSvnStatusItem *> m_versionedItems;
     QDir m_dir;
+    bool m_showUnversionedFiles;
 };
 
 #endif // QSVNCOMMITITEMSMODEL_H

@@ -76,7 +76,7 @@ public slots:
     void repoBrowser(QString url, svn_opt_revision_t revision, bool recursion);
     void update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t depth, bool depthIsSticky, bool ignoreExternals, bool allowUnverObstructions, bool addsAsModification, bool makeParents);
     void checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions);
-    void commit(QStringList items, svn_depth_t depth, bool keep_locks, bool keep_changelists, bool commit_as_operations);
+    void commit(QStringList pathlist, QString message, QStringList changelists, bool keepchangelist, svn_depth_t depth, bool keep_locks, QHash<QString, QString> revProps);
     void status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky);
     void messageLog(const QStringList &locations);
 
@@ -119,6 +119,12 @@ private:
                                             const char *username,
                                             svn_boolean_t may_save,
                                             apr_pool_t *pool);
+
+    /// Private helper functions
+    void *logMessage(QString message, char *baseDirectory = NULL);
+    static apr_array_header_t *makePathList(const QStringList &paths, apr_pool_t *pool);
+    static apr_array_header_t *makeChangeListArray(const QStringList &changelists, apr_pool_t *pool);
+    static apr_hash_t *makeRevPropHash(const QHash<QString, QString> &revProps, apr_pool_t *pool);
 
 private:
     apr_pool_t *pool;

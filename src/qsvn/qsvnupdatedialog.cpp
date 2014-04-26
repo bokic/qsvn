@@ -128,7 +128,7 @@ void QSVNUpdateDialog::setOperationCommit(const QSVNCommitDialog &dlg)
         m_changelist = dlg.ui_changelist();
         m_commit_as_operations = dlg.ui_m_commit_as_operations();
 
-        emit commit(m_path_items, m_depth, m_keep_locks, m_changelist, m_commit_as_operations);
+        //emit commit(m_path_items, "",  m_depth, m_keep_locks, m_changelist, m_commit_as_operations);
     }
     else
     {

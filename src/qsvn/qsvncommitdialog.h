@@ -31,6 +31,8 @@ signals:
 
 private slots:
     void statusFinished(QList<QSvnStatusItem> items, bool error);
+    void on_showUnversioned_checkBox_stateChanged(int state);
+
 private:
     Ui::QSVNCommitDialog *ui;
     QSVNThread m_thread;
