@@ -41,6 +41,8 @@ QSVNMessageLogDialog::QSVNMessageLogDialog(QWidget *parent) :
 
     connect(this, &QSVNMessageLogDialog::messageLog, m_thread.m_worker, &QSvn::messageLog);
     connect(m_thread.m_worker, &QSvn::messageLogFinished, this, &QSVNMessageLogDialog::messageLogFinished);
+
+    setCursor(Qt::BusyCursor);
 }
 
 QSVNMessageLogDialog::~QSVNMessageLogDialog()
@@ -77,6 +79,8 @@ void QSVNMessageLogDialog::messageLogFinished(QList<QMessageLogItem> items)
         ui->tableWidget_revisions->setItem(c, 3, new QTableWidgetItem(item.date.toString()));
         ui->tableWidget_revisions->setItem(c, 4, new QTableWidgetItem(item.message));
     }
+
+    setCursor(Qt::ArrowCursor);
 }
 
 void QSVNMessageLogDialog::on_tableWidget_revisions_itemSelectionChanged()
