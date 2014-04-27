@@ -3,7 +3,7 @@ qsvn - TortoiseSVN for Linux
 
 qsvn is svn frontend written in qt.
 
-Ubuntu 14.04, 13.10 and 13.04 are supported.
+Ubuntu 14.10, 14.04, 13.10, and 13.04(not in the repo) are supported.
 
 Currently supported commands are:
 * browse
