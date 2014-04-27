@@ -25,7 +25,18 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     void showUnversionedFiles(bool state);
 
+    void checkAllItems();
+    void uncheckAllItems();
+    void checkNonVersionedItems();
+    void checkVersionedItems();
+    void checkAddedItems();
+    void checkDeletedItems();
+    void checkModifiedItems();
+    void checkFileItems();
+    void checkDirItems();
+
     QList<QSvnStatusItem> checkedItems() const;
+    QList<QSvnStatusItem> items() const;
     int totalItemCount() const;
     int checkItemCount() const;
     QDir dir() const;

@@ -35,10 +35,12 @@ private slots:
     void on_showUnversioned_checkBox_stateChanged(int state);
     void on_showLog_pushButton_clicked();
     void filesChecked(int index, bool state);
+    void label_clicked();
 
 private:
     void updateTotalAndChecked();
     void removeNormalSvnFiles(QList<QSvnStatusItem> &items);
+    void updateLabelsState();
 
     Ui::QSVNCommitDialog *ui;
     QSVNThread m_thread;

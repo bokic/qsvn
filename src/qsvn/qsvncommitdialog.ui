@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1057</width>
-    <height>676</height>
+    <width>581</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="modal">
@@ -84,12 +84,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="allFiles_label">
+          <widget class="QClickableLabel" name="allFiles_label">
            <property name="font">
             <font>
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>All</string>
@@ -97,7 +100,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="noneFiles_label">
+          <widget class="QClickableLabel" name="noneFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -106,6 +109,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>None</string>
@@ -113,7 +119,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="nonVersionedFiles_label">
+          <widget class="QClickableLabel" name="nonVersionedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -122,6 +128,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>Non-versioned</string>
@@ -129,7 +138,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="versionedFiles_label">
+          <widget class="QClickableLabel" name="versionedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -138,6 +147,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>Versioned</string>
@@ -145,7 +157,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="addedFiles_label">
+          <widget class="QClickableLabel" name="addedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -154,6 +166,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>Added</string>
@@ -161,7 +176,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="deletedFiles_label">
+          <widget class="QClickableLabel" name="deletedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -170,6 +185,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>Deleted</string>
@@ -177,7 +195,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="modifiedFiles_label">
+          <widget class="QClickableLabel" name="modifiedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -186,6 +204,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>Modified</string>
@@ -193,7 +214,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="filesFiles_label">
+          <widget class="QClickableLabel" name="filesFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -202,6 +223,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>Files</string>
@@ -209,7 +233,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="directoriesFiles_label">
+          <widget class="QClickableLabel" name="directoriesFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -218,6 +242,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QClickableLabel:hover { color: blue }</string>
            </property>
            <property name="text">
             <string>Directories</string>
@@ -389,6 +416,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QClickableLabel</class>
+   <extends>QLabel</extends>
+   <header>qclickablelabel.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>rescentMessage_toolButton</tabstop>
   <tabstop>message_plainTextEdit</tabstop>

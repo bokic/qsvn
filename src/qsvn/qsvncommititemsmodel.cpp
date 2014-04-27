@@ -284,6 +284,301 @@ void QSVNCommitItemsModel::showUnversionedFiles(bool state)
     emit dataChanged(index(0, 0), index(current_rows, 4));
 }
 
+void QSVNCommitItemsModel::checkAllItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if (!m_items[c].m_selected)
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if (!m_versionedItems[c]->m_selected)
+            {
+                m_versionedItems[c]->m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::uncheckAllItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if (m_items[c].m_selected)
+            {
+                m_items[c].m_selected = false;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if (m_versionedItems[c]->m_selected)
+            {
+                m_versionedItems[c]->m_selected = false;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::checkNonVersionedItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if (m_items[c].m_nodeStatus == svn_wc_status_unversioned)
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::checkVersionedItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if (m_items[c].m_nodeStatus != svn_wc_status_unversioned)
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if (m_versionedItems[c]->m_nodeStatus != svn_wc_status_unversioned)
+            {
+                m_versionedItems[c]->m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::checkAddedItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if (m_items[c].m_nodeStatus == svn_wc_status_added)
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if (m_versionedItems[c]->m_nodeStatus == svn_wc_status_added)
+            {
+                m_versionedItems[c]->m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::checkDeletedItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if (m_items[c].m_nodeStatus == svn_wc_status_missing)
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if (m_versionedItems[c]->m_nodeStatus == svn_wc_status_deleted)
+            {
+                m_versionedItems[c]->m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::checkModifiedItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if (m_items[c].m_nodeStatus == svn_wc_status_modified)
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if (m_versionedItems[c]->m_nodeStatus == svn_wc_status_modified)
+            {
+                m_versionedItems[c]->m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::checkFileItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if ((m_items[c].m_kind == svn_node_file)||(QFileInfo(m_items[c].m_filename).isFile()))
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if ((m_versionedItems[c]->m_kind == svn_node_file)||(QFileInfo(m_versionedItems[c]->m_filename).isFile()))
+            {
+                m_versionedItems[c]->m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
+void QSVNCommitItemsModel::checkDirItems()
+{
+    bool changed = false;
+
+    if (m_showUnversionedFiles)
+    {
+        for(int c = 0; c < m_items.count(); c++)
+        {
+            if ((m_items[c].m_kind == svn_node_dir)||(QFileInfo(m_items[c].m_filename).isDir()))
+            {
+                m_items[c].m_selected = true;
+                changed = true;
+            }
+        }
+    }
+    else
+    {
+        for(int c = 0; c < m_versionedItems.count(); c++)
+        {
+            if ((m_versionedItems[c]->m_kind == svn_node_dir)&&(QFileInfo(m_versionedItems[c]->m_filename).isDir()))
+            {
+                m_versionedItems[c]->m_selected = true;
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+        emit dataChanged(index(0, 0), index(current_rows, 4));
+    }
+}
+
 QList<QSvnStatusItem> QSVNCommitItemsModel::checkedItems() const
 {
     QList<QSvnStatusItem> ret;
@@ -307,6 +602,23 @@ QList<QSvnStatusItem> QSVNCommitItemsModel::checkedItems() const
                 ret.append(*item);
             }
         }
+    }
+
+    return ret;
+}
+
+QList<QSvnStatusItem> QSVNCommitItemsModel::items() const
+{
+    QList<QSvnStatusItem> ret;
+
+    if (m_showUnversionedFiles)
+    {
+        return  m_items;
+    }
+
+    foreach(const QSvnStatusItem *item, m_versionedItems)
+    {
+        ret.append(*item);
     }
 
     return ret;
