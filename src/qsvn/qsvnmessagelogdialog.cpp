@@ -44,7 +44,7 @@ QSVNMessageLogDialog::~QSVNMessageLogDialog()
     delete ui; ui = nullptr;
 }
 
-void QSVNMessageLogDialog::setLocations(const QStringList &locations)
+void QSVNMessageLogDialog::setUrlLocations(const QStringList &locations)
 {
     m_locations = locations;
 

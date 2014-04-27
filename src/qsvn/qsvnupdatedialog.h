@@ -66,6 +66,7 @@ private:
     bool m_keep_locks;
     bool m_changelist;
     bool m_commit_as_operations;
+    QString m_commit_message;
 };
 
 #endif // QSVNUPDATEDIALOG_H

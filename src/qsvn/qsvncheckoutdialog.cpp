@@ -163,7 +163,7 @@ void QSVNCheckoutDialog::on_pushButton_revision_clicked()
         return;
     }
 
-    dlg.setLocations(QStringList() << location);
+    dlg.setUrlLocations(QStringList() << location);
 
     if (dlg.exec() == QDialog::Accepted)
     {

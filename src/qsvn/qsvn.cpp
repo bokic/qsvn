@@ -17,6 +17,7 @@ QSvn::QSvn(QObject *parent)
     : QObject(parent)
     , pool(nullptr)
     , ctx(nullptr)
+    , m_operation(QSVNOperationNone)
     , m_cancelOperation(false)
     , m_validUserPass(false)
     , m_saveCredentials(false)
@@ -43,7 +44,7 @@ void QSvn::init()
     err = svn_fs_initialize(pool);
     if (err)
     {
-        emit error("Error calling svn_fs_initialize.");
+        emit error(tr("Error calling svn_fs_initialize."));
 
         return;
     }
@@ -51,7 +52,7 @@ void QSvn::init()
     err = svn_config_ensure(NULL, pool);
     if (err)
     {
-        emit error("Error calling svn_config_ensure.");
+        emit error(tr("Error calling svn_config_ensure."));
 
         return;
     }
@@ -59,7 +60,7 @@ void QSvn::init()
     err = svn_client_create_context(&ctx, pool);
     if (err)
     {
-        emit error("Error calling svn_client_create_context.");
+        emit error(tr("Error calling svn_client_create_context."));
 
         return;
     }
@@ -67,7 +68,7 @@ void QSvn::init()
     err = svn_config_get_config(&(ctx->config), NULL, pool);
     if (err)
     {
-        emit error("Error calling svn_config_get_config.");
+        emit error(tr("Error calling svn_config_get_config."));
 
         return;
     }
@@ -121,12 +122,11 @@ QString QSvn::urlFromPath(const QString &path)
 {
     QString ret;
     svn_error_t *err;
+    QSvnPool localpool(pool);
 
     svn_opt_revision_t rev;
     rev.kind = svn_opt_revision_working;
     rev.value.number = 0;
-
-    apr_pool_t *scratch_pool = svn_pool_create(NULL);
 
     err = svn_client_status5(nullptr,
                              ctx,
@@ -156,14 +156,12 @@ QString QSvn::urlFromPath(const QString &path)
                                 return SVN_NO_ERROR;
                              },
                              (void *)&ret,
-                             scratch_pool);
+                             localpool);
 
     if (err)
     {
         qDebug() << err->message;
     }
-
-    apr_pool_destroy (scratch_pool);
 
     return ret;
 }
@@ -424,13 +422,13 @@ void QSvn::messageLog(const QStringList &locations)
     svn_opt_revision_t peg;
 
     start.kind = svn_opt_revision_head;
-    start.value.number = 0;
+    start.value.number = 0;// FIXME: Hardcoded revision number.
 
     end.kind = svn_opt_revision_number;
-    end.value.number = 40;
+    end.value.number = 40; // FIXME: Hardcoded revision number.
 
     peg.kind = svn_opt_revision_unspecified;
-    peg.value.number = 0;
+    peg.value.number = 0;// FIXME: Hardcoded revision number.
 
     apr_array_header_t *paths = apr_array_make (pool, locations.count(), sizeof(const char *));
     foreach(const QString &location, locations)
@@ -454,7 +452,7 @@ void QSvn::messageLog(const QStringList &locations)
 
     if (err)
     {
-        emit error(QString::fromLatin1(err->message));
+        emit error(QString::fromUtf8(err->message));
     }
 
     apr_pool_destroy (scratch_pool);
@@ -468,25 +466,14 @@ svn_error_t * QSvn::log_msg_func3(const char **log_msg,
                                   void *baton,
                                   apr_pool_t *pool)
 {
-    //Q_UNUSED(log_msg);
-    //Q_UNUSED(tmp_file);
-    //Q_UNUSED(commit_items);
-    //Q_UNUSED(pool);
+    Q_UNUSED(commit_items);
 
-    QSvn *svn = (QSvn *)baton;
-
-    //Q_UNUSED(svn);
-    //Q_UNIMPLEMENTED();
-
-    /*log_msg_baton3 *lmb = (log_msg_baton3 *) baton;
+    log_msg_baton3 *lmb = (log_msg_baton3 *) baton;
     *tmp_file = NULL;
     if (lmb->message)
     {
         *log_msg = apr_pstrdup (pool, lmb->message);
-    }*/
-
-    *log_msg = apr_pstrdup (pool, "ok"); // TODO: Commit log is here.
-    *tmp_file = NULL;
+    }
 
     return SVN_NO_ERROR;
 }
@@ -621,7 +608,7 @@ apr_hash_t *QSvn::makeRevPropHash(const QHash<QString, QString> &revProps, apr_p
 {
     apr_hash_t * revprop_table = NULL;
 
-    const QStringList &keys = revProps.keys();
+    QList<QString> keys = revProps.keys();
 
     if (!keys.isEmpty())
     {

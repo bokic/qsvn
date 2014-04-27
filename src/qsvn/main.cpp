@@ -28,6 +28,7 @@ bool setAppSettings()
 void registerClasses()
 {
     qRegisterMetaType<QList<QMessageLogItem>>("QList<QMessageLogItem>");
+    qRegisterMetaType<QHash<QString,QString>>("QHash<QString,QString>");
     qRegisterMetaType<QRepoBrowserResult>("QRepoBrowserResult");
     qRegisterMetaType<svn_opt_revision_t>("svn_opt_revision_t");
     qRegisterMetaType<svn_wc_notify_t>("svn_wc_notify_t");
@@ -168,7 +169,7 @@ int main(int argc, char *argv[])
 
              dlg = new QSVNMessageLogDialog();
 
-             ((QSVNMessageLogDialog *)dlg)->setLocations(paths);
+             ((QSVNMessageLogDialog *)dlg)->setUrlLocations(paths);
     }
     else
     {

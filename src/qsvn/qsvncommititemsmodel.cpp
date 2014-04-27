@@ -2,7 +2,9 @@
 #include "qsvn.h"
 
 #include <QAbstractItemModel>
+#include <QColor>
 #include <QList>
+
 
 QSVNCommitItemsModel::QSVNCommitItemsModel(const QList<QSvnStatusItem> &items, const QString &dir, QObject *parent)
     : QAbstractItemModel(parent)
@@ -158,7 +160,34 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
             break;
         }
     }
-    if (role == Qt::CheckStateRole)
+    else if (role == Qt::TextColorRole)
+    {
+        QColor color(Qt::black);
+        const QSvnStatusItem *item = nullptr;
+
+        if (m_showUnversionedFiles)
+        {
+            item = &m_items[index.row()];
+        }
+        else
+        {
+            item = m_versionedItems[index.row()];
+        }
+
+        switch (item->m_nodeStatus)
+        {
+        case svn_wc_status_modified:
+            color = QColor(Qt::darkBlue);
+            break;
+        case svn_wc_status_missing:
+            color = QColor(Qt::darkRed);
+        default:
+            break;
+        }
+
+        return color;
+    }
+    else if (role == Qt::CheckStateRole)
     {
         if (index.column() == 0)
         {
@@ -211,6 +240,8 @@ bool QSVNCommitItemsModel::setData(const QModelIndex &index, const QVariant &val
         }
 
         emit dataChanged(index, index);
+
+        emit checked(index.row(), item->m_selected);
 
         return true;
     }
@@ -274,6 +305,44 @@ QList<QSvnStatusItem> QSVNCommitItemsModel::checkedItems() const
             if (item->m_selected)
             {
                 ret.append(*item);
+            }
+        }
+    }
+
+    return ret;
+}
+
+int QSVNCommitItemsModel::totalItemCount() const
+{
+    if (m_showUnversionedFiles)
+    {
+        return m_items.count();
+    }
+
+    return m_versionedItems.count();
+}
+
+int QSVNCommitItemsModel::checkItemCount() const
+{
+    int ret = 0;
+
+    if (m_showUnversionedFiles)
+    {
+        foreach(const QSvnStatusItem &item, m_items)
+        {
+            if (item.m_selected)
+            {
+                ret++;
+            }
+        }
+    }
+    else
+    {
+        foreach(const QSvnStatusItem *item, m_versionedItems)
+        {
+            if (item->m_selected)
+            {
+                ret++;
             }
         }
     }

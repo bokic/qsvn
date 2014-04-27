@@ -18,7 +18,7 @@ public:
     explicit QSVNMessageLogDialog(QWidget *parent = 0);
     ~QSVNMessageLogDialog();
 
-    void setLocations(const QStringList &locations);
+    void setUrlLocations(const QStringList &locations);
     int selectedRevision();
 
 signals:

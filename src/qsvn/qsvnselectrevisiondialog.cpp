@@ -55,7 +55,7 @@ void QSVNSelectRevisionDialog::on_pushButton_ShowLog_clicked()
         return;
     }
 
-    dlg.setLocations(m_locations);
+    dlg.setUrlLocations(m_locations);
 
     if (dlg.exec() == QDialog::Accepted)
     {

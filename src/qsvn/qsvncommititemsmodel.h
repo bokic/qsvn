@@ -26,9 +26,12 @@ public:
     void showUnversionedFiles(bool state);
 
     QList<QSvnStatusItem> checkedItems() const;
+    int totalItemCount() const;
+    int checkItemCount() const;
     QDir dir() const;
 
 signals:
+    void checked(int index, bool state);
 
 public slots:
 

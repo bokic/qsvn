@@ -16,7 +16,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout_4">
+  <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,1,0">
    <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="commitTo_label">
      <property name="text">
@@ -84,10 +84,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
+          <widget class="QLabel" name="allFiles_label">
            <property name="font">
             <font>
              <weight>75</weight>
@@ -100,7 +97,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="noneFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -116,7 +113,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_4">
+          <widget class="QLabel" name="nonVersionedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -132,7 +129,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_5">
+          <widget class="QLabel" name="versionedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -148,7 +145,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_6">
+          <widget class="QLabel" name="addedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -164,7 +161,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_7">
+          <widget class="QLabel" name="deletedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -180,7 +177,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_8">
+          <widget class="QLabel" name="modifiedFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -196,7 +193,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_9">
+          <widget class="QLabel" name="filesFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -212,7 +209,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_10">
+          <widget class="QLabel" name="directoriesFiles_label">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -347,28 +344,28 @@
       </spacer>
      </item>
      <item row="1" column="1">
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="showLog_pushButton">
        <property name="text">
         <string>Show log</string>
        </property>
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="ok_pushButton">
        <property name="text">
         <string>OK</string>
        </property>
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="cancel_pushButton">
        <property name="text">
         <string>Cancel</string>
        </property>
       </widget>
      </item>
      <item row="1" column="4">
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="help_pushButton">
        <property name="text">
         <string>Help</string>
        </property>
@@ -403,7 +400,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>ok_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>QSVNCommitDialog</receiver>
    <slot>accept()</slot>
@@ -419,7 +416,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>cancel_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>QSVNCommitDialog</receiver>
    <slot>reject()</slot>
