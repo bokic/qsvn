@@ -406,7 +406,7 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
     return NULL;
 }
 
-void QSvn::messageLog(const QStringList &locations)
+void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_revision_t end, svn_opt_revision_t peg)
 {
     svn_error_t *err;
 
@@ -416,19 +416,6 @@ void QSvn::messageLog(const QStringList &locations)
     apr_pool_t *scratch_pool = svn_pool_create(NULL);
 
     QList<QMessageLogItem> list;
-
-    svn_opt_revision_t start;
-    svn_opt_revision_t end;
-    svn_opt_revision_t peg;
-
-    start.kind = svn_opt_revision_head;
-    start.value.number = 0;// FIXME: Hardcoded revision number.
-
-    end.kind = svn_opt_revision_number;
-    end.value.number = 40; // FIXME: Hardcoded revision number.
-
-    peg.kind = svn_opt_revision_unspecified;
-    peg.value.number = 0;// FIXME: Hardcoded revision number.
 
     apr_array_header_t *paths = apr_array_make (pool, locations.count(), sizeof(const char *));
     foreach(const QString &location, locations)

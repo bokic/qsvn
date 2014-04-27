@@ -22,7 +22,7 @@ public:
     int selectedRevision();
 
 signals:
-    void messageLog(const QStringList &locations);
+    void messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_revision_t end, svn_opt_revision_t peg);
 
 private slots:
     void messageLogFinished(QList<QMessageLogItem> items);
@@ -33,6 +33,9 @@ private:
     Ui::QSVNMessageLogDialog *ui;
     QSVNThread m_thread;
     QStringList m_locations;
+    svn_opt_revision_t m_start;
+    svn_opt_revision_t m_end;
+    svn_opt_revision_t m_peg;
     int m_selectedRevision;
 };
 

@@ -12,6 +12,13 @@ QSVNMessageLogDialog::QSVNMessageLogDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_start.kind = svn_opt_revision_head;
+    m_start.value.number = 0;
+    m_end.kind = svn_opt_revision_date;
+    m_end.value.date = QDate::currentDate().addMonths(-1).toJulianDay();
+    m_peg.kind = svn_opt_revision_unspecified;
+    m_peg.value.number = 0;
+
     ui->tableWidget_revisions->verticalHeader()->setDefaultSectionSize(ui->tableWidget_revisions->fontMetrics().height() + 4);
     ui->tableWidget_revisions->setColumnWidth(0, 70);
     ui->tableWidget_revisions->setColumnWidth(1, 80);
@@ -48,7 +55,7 @@ void QSVNMessageLogDialog::setUrlLocations(const QStringList &locations)
 {
     m_locations = locations;
 
-    emit messageLog(locations);
+    emit messageLog(locations, m_start, m_end, m_peg);
 }
 
 int QSVNMessageLogDialog::selectedRevision()
