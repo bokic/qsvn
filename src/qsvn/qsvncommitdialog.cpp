@@ -2,6 +2,8 @@
 #include "ui_qsvncommitdialog.h"
 #include "qsvncommititemsmodel.h"
 #include "qsvnmessagelogdialog.h"
+#include "qsvncommithistorydialog.h"
+#include "qsvnhistory.h"
 #include "helpers.h"
 
 #include <QMessageBox>
@@ -353,5 +355,31 @@ void QSVNCommitDialog::updateLabelsState()
     else
     {
         ui->directoriesFiles_label->setEnabled(false);
+    }
+}
+
+void QSVNCommitDialog::on_rescentMessage_toolButton_clicked()
+{
+    QSvnCommitHistoryDialog dlg(this);
+
+    QSvnHistory historyLog(m_thread.m_worker->urlFromPath(m_commonDir));
+
+    dlg.setItems(historyLog.items());
+
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        ui->message_plainTextEdit->setPlainText(dlg.selectedItem());
+    }
+}
+
+void QSVNCommitDialog::on_QSVNCommitDialog_accepted()
+{
+    const QString &messageLog = ui->message_plainTextEdit->toPlainText();
+
+    if (!messageLog.isEmpty())
+    {
+        QSvnHistory historyLog(m_thread.m_worker->urlFromPath(m_commonDir));
+
+        historyLog.add(messageLog);
     }
 }

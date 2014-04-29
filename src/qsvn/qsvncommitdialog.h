@@ -37,6 +37,10 @@ private slots:
     void filesChecked(int index, bool state);
     void label_clicked();
 
+    void on_rescentMessage_toolButton_clicked();
+
+    void on_QSVNCommitDialog_accepted();
+
 private:
     void updateTotalAndChecked();
     void removeNormalSvnFiles(QList<QSvnStatusItem> &items);
