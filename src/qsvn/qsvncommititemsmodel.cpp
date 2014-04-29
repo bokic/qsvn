@@ -162,6 +162,7 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
     }
     else if (role == Qt::TextColorRole)
     {
+        // SVNStatusListCtrl.cpp:4583 - CSVNStatusListCtrl::OnNMCustomdraw
         QColor color(Qt::black);
         const QSvnStatusItem *item = nullptr;
 
@@ -176,11 +177,19 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
 
         switch (item->m_nodeStatus)
         {
+        case svn_wc_status_added:
+            color = QColor(160, 32, 240); // 160-32-240
         case svn_wc_status_modified:
-            color = QColor(Qt::darkBlue);
+            color = QColor(Qt::blue);
             break;
         case svn_wc_status_missing:
-            color = QColor(Qt::darkRed);
+        case svn_wc_status_deleted:
+        case svn_wc_status_replaced:
+            color = QColor(139, 69, 19); // brown
+        case svn_wc_status_merged:
+            color = QColor(Qt::green);
+        case svn_wc_status_conflicted:
+            color = QColor(Qt::red);
         default:
             break;
         }
