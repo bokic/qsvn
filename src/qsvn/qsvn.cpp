@@ -210,41 +210,54 @@ void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 {
     QRepoBrowserResult ret;
     QSvnPool localpool(pool);
-    apr_hash_t *dirents;
-    apr_hash_index_t *hi;
+    svn_opt_revision_t peg;
 
     m_operation = QSvn::QSVNOperationRepoBrowser;
     m_cancelOperation = false;
 
+    peg.kind = svn_opt_revision_unspecified;
+    peg.value.number = 0;
+
     const char *l_url = svn_uri_canonicalize(url.toUtf8().constData(), localpool);
 
-    svn_error_t *err = svn_client_ls (&dirents,
-                                      l_url,
-                                      &revision,
-                                      recursion,
-                                      ctx, localpool);
+    m_localVar = &ret;
 
-    if (err == nullptr)
-    {
-        for (hi = apr_hash_first (localpool, dirents); hi; hi = apr_hash_next (hi))
-        {
-            const char *entryname;
-            svn_dirent_t *val;
+    svn_depth_t depth = recursion?svn_depth_infinity:svn_depth_immediates;
 
-            apr_hash_this (hi, (const void **)&entryname, NULL, (void **)&val);
+    svn_error_t *err = svn_client_list2(l_url,
+                                        &peg,
+                                        &revision,
+                                        depth,
+                                        0xFFFFFFFF, // all fields
+                                        false,
+                                        [](void *baton, const char *path, const svn_dirent_t *dirent, const svn_lock_t *lock, const char *abs_path, apr_pool_t *pool) -> svn_error_t * {
 
-            QRepoBrowserFile file;
+                                            Q_UNUSED(lock);
+                                            Q_UNUSED(abs_path);
+                                            Q_UNUSED(pool);
 
-            file.filename = QString::fromUtf8(entryname);
-            file.isdir = val->kind == svn_node_dir;
-            file.revision = val->created_rev;
-            file.author = QString::fromUtf8(val->last_author);
-            file.size = val->size;
-            file.modified = QDateTime::fromMSecsSinceEpoch(val->time / 1000);
+                                            if (strlen(path) != 0)
+                                            {
+                                                QRepoBrowserResult *ret = (QRepoBrowserResult *)(((QSvn *)baton)->m_localVar);
+                                                QRepoBrowserFile file;
 
-            ret.files.append(file);
-        }
-    }
+                                                file.filename = QString::fromUtf8(path);
+                                                file.isdir = dirent->kind == svn_node_dir;
+                                                file.revision = dirent->created_rev;
+                                                file.author = QString::fromUtf8(dirent->last_author);
+                                                file.size = dirent->size;
+                                                file.modified = QDateTime::fromMSecsSinceEpoch(dirent->time / 1000);
+
+                                                ret->files.append(file);
+                                            }
+
+                                            return SVN_NO_ERROR;
+                                        },
+                                        this,
+                                        ctx,
+                                        localpool);
+
+    m_localVar = nullptr;
 
     emit repoBrowserResult(ret, QSvnError(err));
 }
@@ -366,6 +379,9 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
   const char *message,
   apr_pool_t *pool)
 {
+    Q_UNUSED(changed_paths);
+    Q_UNUSED(pool);
+
     QSvn *svn = (QSvn *)baton;
 
     QMessageLogItem item;
@@ -454,12 +470,10 @@ svn_error_t * QSvn::conflict_func2(svn_wc_conflict_result_t **result,
 {
     Q_UNUSED(result);
     Q_UNUSED(description);
+    Q_UNUSED(baton);
     Q_UNUSED(result_pool);
     Q_UNUSED(scratch_pool);
 
-    QSvn *svn = (QSvn *)baton;
-
-    Q_UNUSED(svn);
     Q_UNIMPLEMENTED();
 
     return SVN_NO_ERROR;
@@ -469,7 +483,12 @@ svn_error_t * QSvn::commit_func2(const svn_commit_info_t *commit_info,
                                  void *baton,
                                  apr_pool_t *pool)
 {
-    // TODO: Implement me(commit_func2).
+    Q_UNUSED(commit_info);
+    Q_UNUSED(baton);
+    Q_UNUSED(pool);
+
+    Q_UNIMPLEMENTED();
+
     return NULL;
 }
 
@@ -522,6 +541,8 @@ svn_error_t *QSvn::svn_login_callback(svn_auth_cred_simple_t **cred,
                                       svn_boolean_t may_save,
                                       apr_pool_t *pool)
 {
+    Q_UNUSED(realm);
+
     QSvn *sender = (QSvn *)baton;
 
     sender->setCredentials(QString::fromUtf8(username), "", may_save, false);
@@ -546,7 +567,7 @@ void *QSvn::logMessage(QString message, char *baseDirectory)
 {
     message.remove('\r');
 
-    // FIXME: Check the pool usage in this function(might delete pool member)
+    // TODO: Check the pool usage in this function(might delete pool member)
     log_msg_baton3 *baton = (log_msg_baton3 *) apr_palloc (pool, sizeof (log_msg_baton3));
     baton->message = apr_pstrdup(pool, message.toUtf8().constData());
     baton->base_dir = baseDirectory ? baseDirectory : "";
