@@ -92,6 +92,8 @@ void QSvn::init()
     svn_auth_provider_object_t *provider;
     apr_array_header_t *providers = apr_array_make (pool, 3, sizeof (svn_auth_provider_object_t *));
 
+    svn_auth_get_platform_specific_client_providers (&providers, nullptr, pool);
+
     svn_auth_get_simple_prompt_provider (&provider,
                                          &svn_login_callback,
                                          this, /* baton */
