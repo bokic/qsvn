@@ -112,6 +112,8 @@ QString QSVNCommitDialog::ui_message() const
 
 void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, QSvnError error)
 {
+    Q_UNUSED(error);
+
     removeNormalSvnFiles(items);
 
     ui->changes_tableView->setModel(new QSVNCommitItemsModel(items, m_commonDir));

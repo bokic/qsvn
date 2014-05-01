@@ -24,6 +24,11 @@ QSVNSelectRevisionDialog::~QSVNSelectRevisionDialog()
     delete ui; ui = nullptr;
 }
 
+void QSVNSelectRevisionDialog::setLocations(const QStringList &locations)
+{
+    m_locations = locations;
+}
+
 int QSVNSelectRevisionDialog::revision()
 {
     if (ui->radioButton_Revision->isChecked())

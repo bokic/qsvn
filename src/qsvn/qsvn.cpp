@@ -2,6 +2,8 @@
 #include "qsvnpool.h"
 #include "qsvnerror.h"
 
+#include <svn_props.h>
+
 
 struct log_msg_baton3
 {
@@ -370,34 +372,9 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
     emit statusFinished(items, QSvnError(err));
 }
 
- svn_error_t *messageLog_callback(
-  void *baton,
-  apr_hash_t *changed_paths,
-  svn_revnum_t revision,
-  const char *author,
-  const char *date,  /* use svn_time_from_cstring() if need apr_time_t */
-  const char *message,
-  apr_pool_t *pool)
-{
-    Q_UNUSED(changed_paths);
-    Q_UNUSED(pool);
-
-    QSvn *svn = (QSvn *)baton;
-
-    QMessageLogItem item;
-
-    item.revision = revision;
-    item.author = QString::fromUtf8(author);
-    item.date = QDateTime::fromString(QString::fromUtf8(date), Qt::ISODate);
-    item.message = QString::fromUtf8(message);
-
-    ((QList<QMessageLogItem>*)svn->m_localVar)->append(item);
-
-    return NULL;
-}
-
 void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_revision_t end, svn_opt_revision_t peg)
 {
+    apr_array_header_t *revision_ranges = nullptr;
     svn_error_t *err = nullptr;
     QSvnPool localpool(pool);
 
@@ -409,22 +386,62 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
     apr_array_header_t *paths = apr_array_make (localpool, locations.count(), sizeof(const char *));
     foreach(const QString &location, locations)
     {
-        APR_ARRAY_PUSH(paths, char *) = apr_pstrdup (localpool, location.toUtf8().constData());
+        APR_ARRAY_PUSH(paths, char *) = (char *)svn_uri_canonicalize(location.toUtf8().constData(), localpool);
     }
 
     m_localVar = &list;
 
-    err = svn_client_log3(paths,
-                          &peg,
-                          &start,
-                          &end,
-                          0,    // limit
-                          TRUE, // discover_changed_paths
-                          TRUE, // strict_node_history
-                          &messageLog_callback,
-                          this, // receiver_baton
-                          ctx,
-                          localpool);
+    svn_opt_revision_range_t revision_range = {start, end};
+
+    revision_ranges = apr_array_make (localpool, 1, sizeof(apr_array_header_t*));
+    *(svn_opt_revision_range_t**)apr_array_push (revision_ranges) = &revision_range;
+
+    err = svn_client_log5 (paths,
+                           &peg,
+                           revision_ranges,
+                           0,    // limit
+                           TRUE, // discover_changed_paths
+                           TRUE, // strict_node_history
+                           TRUE, // include merged revisions
+                           nullptr, // revprops
+                           [] (void *baton, svn_log_entry_t *log_entry, apr_pool_t *pool) -> svn_error_t * {
+                                Q_UNUSED(pool);
+                                QList<QMessageLogItem> *items = (QList<QMessageLogItem> *)(((QSvn *)baton)->m_localVar);
+
+                                QMessageLogItem item;
+
+                                char *author = nullptr;
+                                char *date = nullptr;
+                                char *message = nullptr;
+
+                                if (log_entry->revprops)
+                                {
+                                    void *tmp = nullptr;
+
+                                    tmp = apr_hash_get (log_entry->revprops, SVN_PROP_REVISION_AUTHOR, APR_HASH_KEY_STRING);
+                                    if (tmp) author = *(char **)tmp;
+
+                                    tmp = apr_hash_get (log_entry->revprops, SVN_PROP_REVISION_DATE, APR_HASH_KEY_STRING);
+                                    if (tmp) date = *(char **)tmp;
+
+                                    tmp = apr_hash_get (log_entry->revprops, SVN_PROP_REVISION_LOG, APR_HASH_KEY_STRING);
+                                    if (tmp) message = *(char **)tmp;
+                                }
+
+                                item.revision = log_entry->revision;
+                                item.author = QString::fromUtf8(author);
+                                item.date = QDateTime::fromString(QString::fromUtf8(date), Qt::ISODate);
+                                item.message = QString::fromUtf8(message);
+
+                                items->append(item);
+
+                               return SVN_NO_ERROR;
+                           },
+                           this, // receiver_baton
+                           ctx,
+                           localpool);
+
+    m_localVar = nullptr;
 
     emit messageLogFinished(list, QSvnError(err));
 }

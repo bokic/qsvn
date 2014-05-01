@@ -37,6 +37,8 @@ QModelIndex QSVNCommitItemsModel::index(int row, int column, const QModelIndex &
 
 QModelIndex QSVNCommitItemsModel::parent(const QModelIndex &child) const
 {
+    Q_UNUSED(child);
+
     return QModelIndex();
 }
 

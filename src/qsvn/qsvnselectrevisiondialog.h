@@ -14,11 +14,11 @@ class QSVNSelectRevisionDialog : public QDialog
 public:
     explicit QSVNSelectRevisionDialog(QWidget *parent = 0, const QString &text = "");
     ~QSVNSelectRevisionDialog();
+    void setLocations(const QStringList &locations);
     int revision();
 
 private slots:
     void on_lineEdit_Revision_editingFinished();
-
     void on_pushButton_ShowLog_clicked();
 
 private:

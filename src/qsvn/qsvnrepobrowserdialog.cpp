@@ -221,6 +221,8 @@ void QSVNRepoBrowserDialog::on_pushButton_Head_clicked()
 {
     QSVNSelectRevisionDialog dlg(this, ui->pushButton_Head->text());
 
+    dlg.setLocations(QStringList() << ui->comboBox_URL->currentText());
+
     if (dlg.exec() == QDialog::Accepted)
     {
         int rev;
