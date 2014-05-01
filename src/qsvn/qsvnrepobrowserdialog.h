@@ -25,7 +25,7 @@ protected:
 
 private slots:
     void workerFinished();
-    void workerResult(QRepoBrowserResult items);
+    void workerResult(QRepoBrowserResult items, QSvnError err);
     void workerError(QString text);
     void on_comboBox_URL_push(const QString &text);
     void on_pushButton_Head_clicked();

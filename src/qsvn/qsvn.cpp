@@ -1,7 +1,6 @@
 #include "qsvn.h"
 #include "qsvnpool.h"
-
-#include <QDebug>
+#include "qsvnerror.h"
 
 
 struct log_msg_baton3
@@ -37,7 +36,7 @@ QSvn::~QSvn()
 
 void QSvn::init()
 {
-    svn_error_t *err;
+    svn_error_t *err = nullptr;
 
     pool = svn_pool_create(NULL);
 
@@ -123,7 +122,7 @@ bool QSvn::isBusy()
 QString QSvn::urlFromPath(const QString &path)
 {
     QString ret;
-    svn_error_t *err;
+    svn_error_t *err = nullptr;
     QSvnPool localpool(pool);
 
     svn_opt_revision_t rev;
@@ -162,7 +161,7 @@ QString QSvn::urlFromPath(const QString &path)
 
     if (err)
     {
-        qDebug() << err->message;
+        emit error(err->message);
     }
 
     return ret;
@@ -210,77 +209,59 @@ bool QSvn::validCredentials()
 void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 {
     QRepoBrowserResult ret;
+    QSvnPool localpool(pool);
     apr_hash_t *dirents;
     apr_hash_index_t *hi;
 
     m_operation = QSvn::QSVNOperationRepoBrowser;
     m_cancelOperation = false;
 
-    const char *l_url = svn_uri_canonicalize(url.toUtf8().constData(), pool);
+    const char *l_url = svn_uri_canonicalize(url.toUtf8().constData(), localpool);
 
-    // TODO: Replace svn_client_ls call with svn_client_list2
     svn_error_t *err = svn_client_ls (&dirents,
                                       l_url,
                                       &revision,
                                       recursion,
-                                      ctx, pool);
+                                      ctx, localpool);
 
-    /*svn_error_t *err = svn_client_list2(l_url,
-                                        &revision,
-                                        &revision,
-                                        svn_depth_infinity,
-                                        SVN_DIRENT_ALL,
-                                        FALSE,
-                                        NULL,
-                                        this,
-                                        ctx, pool);*/
-
-
-    //emit repoBrowserResult(QSvnFSList(pool, dirents), QSvnError(err, QObject::tr("svn_client_ls call failed.")));
-
-    if (err)
+    if (err == nullptr)
     {
-        ret.error = QObject::tr("svn_client_ls call failed.");
+        for (hi = apr_hash_first (localpool, dirents); hi; hi = apr_hash_next (hi))
+        {
+            const char *entryname;
+            svn_dirent_t *val;
 
-        emit repoBrowserResult(ret);
+            apr_hash_this (hi, (const void **)&entryname, NULL, (void **)&val);
 
-        return;
+            QRepoBrowserFile file;
+
+            file.filename = QString::fromUtf8(entryname);
+            file.isdir = val->kind == svn_node_dir;
+            file.revision = val->created_rev;
+            file.author = QString::fromUtf8(val->last_author);
+            file.size = val->size;
+            file.modified = QDateTime::fromMSecsSinceEpoch(val->time / 1000);
+
+            ret.files.append(file);
+        }
     }
 
-    for (hi = apr_hash_first (pool, dirents); hi; hi = apr_hash_next (hi))
-    {
-        const char *entryname;
-        svn_dirent_t *val;
-
-        apr_hash_this (hi, (const void **)&entryname, NULL, (void **)&val);
-
-        QRepoBrowserFile file;
-
-        file.filename = QString::fromUtf8(entryname);
-        file.isdir = val->kind == svn_node_dir;
-        file.revision = val->created_rev;
-        file.author = QString::fromUtf8(val->last_author);
-        file.size = val->size;
-        file.modified = QDateTime::fromMSecsSinceEpoch(val->time / 1000);
-
-        ret.files.append(file);
-    }
-
-    emit repoBrowserResult(ret);
+    emit repoBrowserResult(ret, QSvnError(err));
 }
 
 void QSvn::update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t depth, bool depthIsSticky, bool ignoreExternals, bool allowUnverObstructions, bool addsAsModification, bool makeParents)
 {
-    svn_error_t *err;
+    svn_error_t *err = nullptr;
+    QSvnPool localpool(pool);
 
     m_operation = QSvn::QSVNOperationUpdate;
     m_cancelOperation = false;
 
-    apr_array_header_t *paths = apr_array_make (pool, pathList.length(), sizeof(char *));
+    apr_array_header_t *paths = apr_array_make (localpool, pathList.length(), sizeof(char *));
 
     for(const QString path : pathList)
     {
-        APR_ARRAY_PUSH(paths, char *) = apr_pstrdup (pool, path.toUtf8().constData());
+        APR_ARRAY_PUSH(paths, char *) = apr_pstrdup (localpool, path.toUtf8().constData());
     }
 
     m_cancelOperation = false;
@@ -295,21 +276,22 @@ void QSvn::update(QStringList pathList, svn_opt_revision_t revision, svn_depth_t
                              addsAsModification,
                              makeParents,
                              ctx,
-                             pool);
+                             localpool);
 
-    emit finished(err == nullptr);
+    emit finished(QSvnError(err));
 }
 
 void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, svn_opt_revision_t revision, svn_depth_t depth, bool ignore_externals, bool allow_unver_obstructions)
 {
-    svn_error_t *err;
+    svn_error_t *err = nullptr;
+    QSvnPool localpool(pool);
     svn_revnum_t result_rev;
 
     m_operation = QSvn::QSVNOperationCheckout;
     m_cancelOperation = false;
 
     err = svn_client_checkout3(&result_rev,
-                               svn_uri_canonicalize(url.toUtf8().constData(), pool),
+                               svn_uri_canonicalize(url.toUtf8().constData(), localpool),
                                path.toUtf8().constData(),
                                &peg_revision,
                                &revision,
@@ -317,19 +299,17 @@ void QSvn::checkout(QString url, QString path, svn_opt_revision_t peg_revision, 
                                ignore_externals,
                                allow_unver_obstructions,
                                ctx,
-                               pool);
+                               localpool);
 
-    emit finished(err == nullptr);
+    emit finished(QSvnError(err));
 }
 
 void QSvn::commit(QStringList pathlist, QString message, QStringList changelists, bool keepchangelist, svn_depth_t depth, bool keep_locks, QHash<QString, QString> revProps)
 {
-    QSvnPool localpool(pool);
     svn_error_t *err = nullptr;
+    QSvnPool localpool(pool);
 
     ctx->log_msg_baton3 = logMessage(message);
-
-    //CHooks::Instance().PreConnect(pathlist);
 
     err = svn_client_commit5 (
                              makePathList(pathlist, localpool),
@@ -346,22 +326,16 @@ void QSvn::commit(QStringList pathlist, QString message, QStringList changelists
 
     ctx->log_msg_baton3 = nullptr;
 
-    if (err)
-    {
-        //err->
-    }
-
-    emit finished(err == nullptr);
+    emit finished(QSvnError(err));
 }
 
 void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky)
 {
-    svn_error_t *err;
+    svn_error_t *err = nullptr;
+    QSvnPool localpool(pool);
 
     m_operation = QSvn::QSVNOperationStatus;
     m_cancelOperation = false;
-
-    apr_pool_t *scratch_pool = svn_pool_create(NULL);
 
     QList<QSvnStatusItem> items;
 
@@ -378,11 +352,9 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
                              nullptr,
                              status_funct,
                              (void *)&items,
-                             scratch_pool);
+                             localpool);
 
-    apr_pool_destroy (scratch_pool);
-
-    emit statusFinished(items, err == nullptr);
+    emit statusFinished(items, QSvnError(err));
 }
 
  svn_error_t *messageLog_callback(
@@ -410,19 +382,18 @@ void QSvn::status(QString path, svn_opt_revision_t revision, svn_depth_t depth, 
 
 void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_revision_t end, svn_opt_revision_t peg)
 {
-    svn_error_t *err;
+    svn_error_t *err = nullptr;
+    QSvnPool localpool(pool);
 
     m_operation = QSvn::QSVNOperationMessageLog;
     m_cancelOperation = false;
 
-    apr_pool_t *scratch_pool = svn_pool_create(NULL);
-
     QList<QMessageLogItem> list;
 
-    apr_array_header_t *paths = apr_array_make (pool, locations.count(), sizeof(const char *));
+    apr_array_header_t *paths = apr_array_make (localpool, locations.count(), sizeof(const char *));
     foreach(const QString &location, locations)
     {
-        APR_ARRAY_PUSH(paths, char *) = apr_pstrdup (pool, location.toUtf8().constData());
+        APR_ARRAY_PUSH(paths, char *) = apr_pstrdup (localpool, location.toUtf8().constData());
     }
 
     m_localVar = &list;
@@ -437,16 +408,9 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
                           &messageLog_callback,
                           this, // receiver_baton
                           ctx,
-                          pool);
+                          localpool);
 
-    if (err)
-    {
-        emit error(QString::fromUtf8(err->message));
-    }
-
-    apr_pool_destroy (scratch_pool);
-
-    emit messageLogFinished(list);
+    emit messageLogFinished(list, QSvnError(err));
 }
 
 svn_error_t * QSvn::log_msg_func3(const char **log_msg,
@@ -582,6 +546,7 @@ void *QSvn::logMessage(QString message, char *baseDirectory)
 {
     message.remove('\r');
 
+    // FIXME: Check the pool usage in this function(might delete pool member)
     log_msg_baton3 *baton = (log_msg_baton3 *) apr_palloc (pool, sizeof (log_msg_baton3));
     baton->message = apr_pstrdup(pool, message.toUtf8().constData());
     baton->base_dir = baseDirectory ? baseDirectory : "";

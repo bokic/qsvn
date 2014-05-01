@@ -31,7 +31,7 @@ signals:
     void status(QString path, svn_opt_revision_t revision, svn_depth_t depth, svn_boolean_t get_all, svn_boolean_t update, svn_boolean_t no_ignore, svn_boolean_t ignore_externals, svn_boolean_t depth_as_sticky);
 
 private slots:
-    void statusFinished(QList<QSvnStatusItem> items, bool error);
+    void statusFinished(QList<QSvnStatusItem> items, QSvnError error);
     void on_showUnversioned_checkBox_stateChanged(int state);
     void on_showLog_pushButton_clicked();
     void filesChecked(int index, bool state);

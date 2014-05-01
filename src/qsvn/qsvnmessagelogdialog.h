@@ -25,7 +25,7 @@ signals:
     void messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_revision_t end, svn_opt_revision_t peg);
 
 private slots:
-    void messageLogFinished(QList<QMessageLogItem> items);
+    void messageLogFinished(QList<QMessageLogItem> items, QSvnError err);
     void on_tableWidget_revisions_itemSelectionChanged();
     void on_tableWidget_revisions_itemDoubleClicked(QTableWidgetItem *item);
 

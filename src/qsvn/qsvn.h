@@ -1,6 +1,7 @@
 #ifndef QSVN_H
 #define QSVN_H
 
+#include "qsvnerror.h"
 #include <QStringList>
 #include <QDateTime>
 #include <QString>
@@ -63,13 +64,13 @@ public:
 
 signals:
     void error(QString text);
-    void finished(bool result);
-    void repoBrowserResult(QRepoBrowserResult items);
+    void finished(QSvnError error);
+    void repoBrowserResult(QRepoBrowserResult items, QSvnError error);
     void logMsg();
     void notify(svn_wc_notify_t notify);
     void progress(int progress, int total);
-    void statusFinished(QList<QSvnStatusItem> items, bool error);
-    void messageLogFinished(QList<QMessageLogItem>);
+    void statusFinished(QList<QSvnStatusItem> items, QSvnError error);
+    void messageLogFinished(QList<QMessageLogItem> items, QSvnError error);
     void credentials();
 
 public slots:

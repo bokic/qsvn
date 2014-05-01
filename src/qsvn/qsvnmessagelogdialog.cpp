@@ -65,7 +65,7 @@ int QSVNMessageLogDialog::selectedRevision()
     return m_selectedRevision;
 }
 
-void QSVNMessageLogDialog::messageLogFinished(QList<QMessageLogItem> items)
+void QSVNMessageLogDialog::messageLogFinished(QList<QMessageLogItem> items, QSvnError err)
 {
     ui->tableWidget_revisions->setRowCount(items.count());
 

@@ -110,7 +110,7 @@ QString QSVNCommitDialog::ui_message() const
     return ui->message_plainTextEdit->toPlainText();
 }
 
-void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, bool error)
+void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, QSvnError error)
 {
     removeNormalSvnFiles(items);
 

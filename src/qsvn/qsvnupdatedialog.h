@@ -41,7 +41,7 @@ private slots:
     void workerFinished();
     void svnProgress(int progress, int total);
     void svnNotify(svn_wc_notify_t notify);
-    void svnFinished(bool result);
+    void svnFinished(QSvnError err);
     void svnCredentials();
     void svnError(QString text);
 

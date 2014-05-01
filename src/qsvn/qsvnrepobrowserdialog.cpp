@@ -54,7 +54,7 @@ void QSVNRepoBrowserDialog::workerFinished()
     close();
 }
 
-void QSVNRepoBrowserDialog::workerResult(QRepoBrowserResult items)
+void QSVNRepoBrowserDialog::workerResult(QRepoBrowserResult items, QSvnError err)
 {
     setCursor(Qt::ArrowCursor);
 
@@ -298,7 +298,7 @@ void QSVNRepoBrowserDialog::getUrlItems()
 
     if (m_cachedFolders.contains(url))
     {
-        workerResult(m_cachedFolders[url]);
+        workerResult(m_cachedFolders[url], QSvnError());
     }
     else
     {

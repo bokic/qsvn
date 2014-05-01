@@ -235,9 +235,9 @@ void QSVNUpdateDialog::svnNotify(svn_wc_notify_t notify)
     }
 }
 
-void QSVNUpdateDialog::svnFinished(bool result)
+void QSVNUpdateDialog::svnFinished(QSvnError err)
 {
-    Q_UNUSED(result);
+    Q_UNUSED(err);
 
     ui->pushButton_OK->setEnabled(true);
     ui->pushButton_Cancel->setEnabled(false);
