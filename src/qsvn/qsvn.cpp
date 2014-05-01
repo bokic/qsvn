@@ -1,6 +1,7 @@
 #include "qsvn.h"
 #include "qsvnpool.h"
 #include "qsvnerror.h"
+#include <QDir>
 
 #include <svn_props.h>
 
@@ -386,7 +387,15 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
     apr_array_header_t *paths = apr_array_make (localpool, locations.count(), sizeof(const char *));
     foreach(const QString &location, locations)
     {
-        APR_ARRAY_PUSH(paths, char *) = (char *)svn_uri_canonicalize(location.toUtf8().constData(), localpool);
+        if (QDir::isAbsolutePath(location))
+        {
+            QString url = this->urlFromPath(location);
+            APR_ARRAY_PUSH(paths, char *) = (char *)svn_uri_canonicalize(url.toUtf8().constData(), localpool);
+        }
+        else
+        {
+            APR_ARRAY_PUSH(paths, char *) = (char *)svn_uri_canonicalize(location.toUtf8().constData(), localpool);
+        }
     }
 
     m_localVar = &list;
@@ -399,7 +408,7 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
     err = svn_client_log5 (paths,
                            &peg,
                            revision_ranges,
-                           0,    // limit
+                           100,  // limit
                            TRUE, // discover_changed_paths
                            TRUE, // strict_node_history
                            TRUE, // include merged revisions
