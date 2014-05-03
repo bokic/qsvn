@@ -149,7 +149,7 @@ public:
     QSvnStatusItem()
     : m_nodeStatus(svn_wc_status_none)
     , m_kind(svn_node_none)
-    , m_selected(false)
+    , m_checked(false)
     {
     }
 
@@ -158,7 +158,7 @@ public:
         m_nodeStatus = other.m_nodeStatus;
         m_filename = other.m_filename;
         m_kind = other.m_kind;
-        m_selected = other.m_selected;
+        m_checked = other.m_checked;
     }
 
     QSvnStatusItem(const svn_client_status_t *item)
@@ -166,7 +166,7 @@ public:
         m_nodeStatus = item->node_status;
         m_filename = QString::fromUtf8(item->local_abspath);
         m_kind = item->kind;
-        m_selected = false;
+        m_checked = false;
     }
 
 #ifdef Q_COMPILER_RVALUE_REFS
@@ -175,7 +175,7 @@ public:
         qSwap(m_nodeStatus, other.m_nodeStatus);
         qSwap(m_filename, other.m_filename);
         qSwap(m_kind, other.m_kind);
-        qSwap(m_selected, other.m_selected);
+        qSwap(m_checked, other.m_checked);
 
         return *this;
     }
@@ -186,7 +186,7 @@ public:
         m_nodeStatus = other.m_nodeStatus;
         m_filename = other.m_filename;
         m_kind = other.m_kind;
-        m_selected = other.m_selected;
+        m_checked = other.m_checked;
 
         return *this;
     }
@@ -194,7 +194,7 @@ public:
     svn_wc_status_kind m_nodeStatus;
     QString m_filename;
     svn_node_kind_t m_kind;
-    bool m_selected;
+    bool m_checked;
 };
 
 struct QMessageLogItem

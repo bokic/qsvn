@@ -205,11 +205,11 @@ QVariant QSVNCommitItemsModel::data(const QModelIndex &index, int role) const
             bool checked;
             if (m_showUnversionedFiles)
             {
-                checked = m_items[index.row()].m_selected;
+                checked = m_items[index.row()].m_checked;
             }
             else
             {
-                checked = m_versionedItems[index.row()]->m_selected;
+                checked = m_versionedItems[index.row()]->m_checked;
             }
 
             if (checked)
@@ -243,16 +243,16 @@ bool QSVNCommitItemsModel::setData(const QModelIndex &index, const QVariant &val
 
         if (value == Qt::Checked)
         {
-            item->m_selected = true;
+            item->m_checked = true;
         }
         else
         {
-            item->m_selected = false;
+            item->m_checked = false;
         }
 
         emit dataChanged(index, index);
 
-        emit checked(index.row(), item->m_selected);
+        emit checked(index.row(), item->m_checked);
 
         return true;
     }
@@ -303,9 +303,9 @@ void QSVNCommitItemsModel::checkAllItems()
     {
         for(int c = 0; c < m_items.count(); c++)
         {
-            if (!m_items[c].m_selected)
+            if (!m_items[c].m_checked)
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -314,9 +314,9 @@ void QSVNCommitItemsModel::checkAllItems()
     {
         for(int c = 0; c < m_versionedItems.count(); c++)
         {
-            if (!m_versionedItems[c]->m_selected)
+            if (!m_versionedItems[c]->m_checked)
             {
-                m_versionedItems[c]->m_selected = true;
+                m_versionedItems[c]->m_checked = true;
                 changed = true;
             }
         }
@@ -337,9 +337,9 @@ void QSVNCommitItemsModel::uncheckAllItems()
     {
         for(int c = 0; c < m_items.count(); c++)
         {
-            if (m_items[c].m_selected)
+            if (m_items[c].m_checked)
             {
-                m_items[c].m_selected = false;
+                m_items[c].m_checked = false;
                 changed = true;
             }
         }
@@ -348,9 +348,9 @@ void QSVNCommitItemsModel::uncheckAllItems()
     {
         for(int c = 0; c < m_versionedItems.count(); c++)
         {
-            if (m_versionedItems[c]->m_selected)
+            if (m_versionedItems[c]->m_checked)
             {
-                m_versionedItems[c]->m_selected = false;
+                m_versionedItems[c]->m_checked = false;
                 changed = true;
             }
         }
@@ -373,7 +373,7 @@ void QSVNCommitItemsModel::checkNonVersionedItems()
         {
             if (m_items[c].m_nodeStatus == svn_wc_status_unversioned)
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -396,7 +396,7 @@ void QSVNCommitItemsModel::checkVersionedItems()
         {
             if (m_items[c].m_nodeStatus != svn_wc_status_unversioned)
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -407,7 +407,7 @@ void QSVNCommitItemsModel::checkVersionedItems()
         {
             if (m_versionedItems[c]->m_nodeStatus != svn_wc_status_unversioned)
             {
-                m_versionedItems[c]->m_selected = true;
+                m_versionedItems[c]->m_checked = true;
                 changed = true;
             }
         }
@@ -430,7 +430,7 @@ void QSVNCommitItemsModel::checkAddedItems()
         {
             if (m_items[c].m_nodeStatus == svn_wc_status_added)
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -441,7 +441,7 @@ void QSVNCommitItemsModel::checkAddedItems()
         {
             if (m_versionedItems[c]->m_nodeStatus == svn_wc_status_added)
             {
-                m_versionedItems[c]->m_selected = true;
+                m_versionedItems[c]->m_checked = true;
                 changed = true;
             }
         }
@@ -464,7 +464,7 @@ void QSVNCommitItemsModel::checkDeletedItems()
         {
             if (m_items[c].m_nodeStatus == svn_wc_status_missing)
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -475,7 +475,7 @@ void QSVNCommitItemsModel::checkDeletedItems()
         {
             if (m_versionedItems[c]->m_nodeStatus == svn_wc_status_deleted)
             {
-                m_versionedItems[c]->m_selected = true;
+                m_versionedItems[c]->m_checked = true;
                 changed = true;
             }
         }
@@ -498,7 +498,7 @@ void QSVNCommitItemsModel::checkModifiedItems()
         {
             if (m_items[c].m_nodeStatus == svn_wc_status_modified)
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -509,7 +509,7 @@ void QSVNCommitItemsModel::checkModifiedItems()
         {
             if (m_versionedItems[c]->m_nodeStatus == svn_wc_status_modified)
             {
-                m_versionedItems[c]->m_selected = true;
+                m_versionedItems[c]->m_checked = true;
                 changed = true;
             }
         }
@@ -532,7 +532,7 @@ void QSVNCommitItemsModel::checkFileItems()
         {
             if ((m_items[c].m_kind == svn_node_file)||(QFileInfo(m_items[c].m_filename).isFile()))
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -543,7 +543,7 @@ void QSVNCommitItemsModel::checkFileItems()
         {
             if ((m_versionedItems[c]->m_kind == svn_node_file)||(QFileInfo(m_versionedItems[c]->m_filename).isFile()))
             {
-                m_versionedItems[c]->m_selected = true;
+                m_versionedItems[c]->m_checked = true;
                 changed = true;
             }
         }
@@ -566,7 +566,7 @@ void QSVNCommitItemsModel::checkDirItems()
         {
             if ((m_items[c].m_kind == svn_node_dir)||(QFileInfo(m_items[c].m_filename).isDir()))
             {
-                m_items[c].m_selected = true;
+                m_items[c].m_checked = true;
                 changed = true;
             }
         }
@@ -577,7 +577,7 @@ void QSVNCommitItemsModel::checkDirItems()
         {
             if ((m_versionedItems[c]->m_kind == svn_node_dir)&&(QFileInfo(m_versionedItems[c]->m_filename).isDir()))
             {
-                m_versionedItems[c]->m_selected = true;
+                m_versionedItems[c]->m_checked = true;
                 changed = true;
             }
         }
@@ -598,7 +598,7 @@ QList<QSvnStatusItem> QSVNCommitItemsModel::checkedItems() const
     {
         foreach(const QSvnStatusItem &item, m_items)
         {
-            if (item.m_selected)
+            if (item.m_checked)
             {
                 ret.append(item);
             }
@@ -608,7 +608,7 @@ QList<QSvnStatusItem> QSVNCommitItemsModel::checkedItems() const
     {
         foreach(const QSvnStatusItem *item, m_versionedItems)
         {
-            if (item->m_selected)
+            if (item->m_checked)
             {
                 ret.append(*item);
             }
@@ -653,7 +653,7 @@ int QSVNCommitItemsModel::checkItemCount() const
     {
         foreach(const QSvnStatusItem &item, m_items)
         {
-            if (item.m_selected)
+            if (item.m_checked)
             {
                 ret++;
             }
@@ -663,7 +663,7 @@ int QSVNCommitItemsModel::checkItemCount() const
     {
         foreach(const QSvnStatusItem *item, m_versionedItems)
         {
-            if (item->m_selected)
+            if (item->m_checked)
             {
                 ret++;
             }
