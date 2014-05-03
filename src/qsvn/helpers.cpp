@@ -35,7 +35,17 @@ QString getCommonDir(const QStringList &items)
 
     foreach (const QString &item, items)
     {
-        const QString &path = QFileInfo(item).dir().path();
+        QFileInfo fi = QFileInfo(item);
+        QString path;
+
+        if (fi.isDir())
+        {
+            path = item;
+        }
+        else
+        {
+            path = QFileInfo(item).dir().path();
+        }
 
         if ((ret.isEmpty())||(path.length() < ret.length()))
         {
