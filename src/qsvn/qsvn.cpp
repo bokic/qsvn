@@ -209,6 +209,51 @@ bool QSvn::validCredentials()
     return m_validUserPass;
 }
 
+QSvnError QSvn::add(const QStringList &items, svn_depth_t depth, bool force, bool no_ignore, bool addparents)
+{
+    foreach(const QString &item, items)
+    {
+        QSvnPool localpool(pool);
+
+        QSvnError err = svn_client_add4(item.toUtf8().constData(), depth, force, no_ignore, addparents, ctx, localpool);
+
+        if (err.isError())
+        {
+            return err;
+        }
+    }
+
+    return QSvnError();
+}
+
+QSvnError QSvn::remove(const QStringList &items, bool force, bool keep_local, const QString &message)
+{
+    QSvnError ret;
+    QSvnPool localpool(pool);
+
+    ctx->log_msg_baton3 = logMessage(message);
+
+    ret = svn_client_delete4(
+                makePathList(items, localpool),
+                force,
+                keep_local,
+                nullptr,
+                [](const svn_commit_info_t *commit_info, void *baton, apr_pool_t *pool) -> svn_error_t *{
+                    Q_UNUSED(commit_info);
+                    Q_UNUSED(baton);
+                    Q_UNUSED(pool);
+
+                    return nullptr;
+                },
+                this,
+                ctx,
+                localpool);
+
+    ctx->log_msg_baton3 = nullptr;
+
+    return ret;
+}
+
 void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 {
     QRepoBrowserResult ret;

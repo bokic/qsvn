@@ -8,6 +8,7 @@ QSvnHistory::QSvnHistory(const QString &url)
     : m_url(url)
     , m_maxItems(25)
     , m_modified(false)
+    , m_loaded(false)
 {
 }
 
@@ -26,9 +27,11 @@ bool QSvnHistory::add(const QString &item)
         return false;
     }
 
-    if (m_items.isEmpty())
+    if (!m_loaded)
     {
         load();
+
+        m_loaded = true;
     }
 
     if (m_items.contains(item))
@@ -45,9 +48,11 @@ bool QSvnHistory::add(const QString &item)
 
 void QSvnHistory::remove(int index)
 {
-    if (m_items.isEmpty())
+    if (!m_loaded)
     {
         load();
+
+        m_loaded = true;
     }
 
     if (m_items.count() > index)
@@ -63,16 +68,25 @@ void QSvnHistory::setMaxItems(int max)
     m_maxItems = max;
 }
 
-int QSvnHistory::count() const
+int QSvnHistory::count()
 {
+    if (!m_loaded)
+    {
+        load();
+
+        m_loaded = true;
+    }
+
     return m_items.count();
 }
 
 QString QSvnHistory::item(int index)
 {
-    if (m_items.isEmpty())
+    if (!m_loaded)
     {
         load();
+
+        m_loaded = true;
     }
 
     if (m_items.count() > index)
@@ -83,8 +97,15 @@ QString QSvnHistory::item(int index)
     return QString();
 }
 
-QStringList QSvnHistory::items() const
+QStringList QSvnHistory::items()
 {
+    if (!m_loaded)
+    {
+        load();
+
+        m_loaded = true;
+    }
+
     return m_items;
 }
 
@@ -104,7 +125,7 @@ int QSvnHistory::load()
     {
         const QString &key = m_url + "_" + QString::number(c + 1);
 
-        if (settings.contains(key))
+        if (!settings.contains(key))
         {
             break;
         }
@@ -150,6 +171,10 @@ bool QSvnHistory::save() const
         if (settings.contains(key))
         {
             settings.remove(key);
+        }
+        else
+        {
+            break;
         }
     }
 

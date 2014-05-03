@@ -36,15 +36,13 @@ private slots:
     void on_showLog_pushButton_clicked();
     void filesChecked(int index, bool state);
     void label_clicked();
-
     void on_rescentMessage_toolButton_clicked();
-
-    void on_QSVNCommitDialog_accepted();
 
 private:
     void updateTotalAndChecked();
     void removeNormalSvnFiles(QList<QSvnStatusItem> &items);
     void updateLabelsState();
+    virtual void accept() override;
 
     Ui::QSVNCommitDialog *ui;
     QSVNThread m_thread;

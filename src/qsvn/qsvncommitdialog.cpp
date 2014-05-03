@@ -374,8 +374,129 @@ void QSVNCommitDialog::on_rescentMessage_toolButton_clicked()
     }
 }
 
-void QSVNCommitDialog::on_QSVNCommitDialog_accepted()
+void QSVNCommitDialog::accept()
 {
+    QList<quint32> arDeleted;
+    QList<QString> itemsToAdd;
+    QList<QString> itemsToRemove;
+    //QList<QString> itemsToUnlock;
+
+    //bool bHasConflicted = false;
+
+    setCursor(Qt::BusyCursor);
+
+    QSVNCommitItemsModel *model = (QSVNCommitItemsModel *)ui->changes_tableView->model();
+
+    for(int c = 0; c < model->items().count(); c++)
+    {
+        const QSvnStatusItem &item = model->items().at(c);
+
+        if (item.m_checked)
+        {
+            if (item.m_nodeStatus == svn_wc_status_unversioned)
+            {
+                itemsToAdd.append(item.m_filename);
+            }
+            //if (item.m_nodeStatus == svn_wc_status_conflicted)
+            //{
+            //    bHasConflicted = true;
+            //}
+            if (item.m_nodeStatus == svn_wc_status_missing)
+            {
+                itemsToRemove.append(item.m_filename);
+            }
+            if (item.m_nodeStatus == svn_wc_status_deleted)
+            {
+                arDeleted.append(c);
+            }
+            // TODO: Other stuff
+        }
+        else
+        {
+            // TODO: Some stuff
+        }
+    }
+
+    // Add unrevisioned files.
+    if (itemsToAdd.count() > 0)
+    {
+        // Sort by pathname.
+        qSort(itemsToAdd.begin(), itemsToAdd.end());
+
+        // add
+        QSvnError err = m_thread.m_worker->add(itemsToAdd, svn_depth_empty, true, false, true);
+
+        // on error show dialog
+        if (err.isError())
+        {
+            setCursor(Qt::ArrowCursor);
+
+            // TODO: Show error dialog.
+            return;
+        }
+    }
+
+    // Remove missing files
+    if (itemsToRemove.count() > 0)
+    {
+        // Sort by pathname inverted.
+        qSort(itemsToRemove.begin(), itemsToRemove.end(), [](const QString &s1, const QString &s2) -> bool {
+                  return s1 > s2;
+              });
+
+        // remove
+        QSvnError err = m_thread.m_worker->remove(itemsToRemove, true);
+
+        // on error show dialog
+        if (err.isError())
+        {
+            setCursor(Qt::ArrowCursor);
+
+            // TODO: Show error dialog.
+            return;
+        }
+    }
+
+    // Uncheck all deleted files if they're inside a deleted folder.
+    foreach(int i, arDeleted)
+    {
+        const QSvnStatusItem &dirItem = model->items().at(i);
+
+        if (!dirItem.m_checked)
+        {
+            continue;
+        }
+
+        const QString &path = dirItem.m_filename;
+
+        if (!QFileInfo(path).isDir())
+        {
+            continue;
+        }
+
+        foreach(int j, arDeleted)
+        {
+            if (i == j)
+            {
+                continue;
+            }
+
+            const QSvnStatusItem &fileItem = model->items().at(j);
+
+            if (fileItem.m_checked)
+            {
+                if (fileItem.m_filename.left(path.length()) == path)
+                {
+                    model->items()[j].m_checked = false;
+
+                    ui->changes_tableView->update();
+                }
+            }
+        }
+    }
+
+    setCursor(Qt::ArrowCursor);
+
     const QString &messageLog = ui->message_plainTextEdit->toPlainText();
 
     if (!messageLog.isEmpty())
@@ -384,4 +505,6 @@ void QSVNCommitDialog::on_QSVNCommitDialog_accepted()
 
         historyLog.add(messageLog);
     }
+
+    QDialog::accept();
 }

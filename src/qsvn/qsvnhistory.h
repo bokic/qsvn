@@ -14,9 +14,9 @@ public:
     bool add(const QString &item);
     void remove(int index);
     void setMaxItems(int max);
-    int count() const;
+    int count();
     QString item(int index);
-    QStringList items() const;
+    QStringList items();
 
 private:
     int load();
@@ -26,6 +26,7 @@ private:
     QStringList m_items;
     int m_maxItems;
     bool m_modified;
+    bool m_loaded;
 };
 
 #endif // QSVNHISTORY_H

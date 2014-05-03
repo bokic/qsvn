@@ -61,6 +61,8 @@ public:
     bool shouldSaveCredentials();
     void setCredentials(const QString &m_username, const QString &m_password, bool m_saveCredentials = false, bool m_validUserPass = true);
     bool validCredentials();
+    QSvnError add(const QStringList &items, svn_depth_t depth, bool force, bool no_ignore, bool addparents);
+    QSvnError remove(const QStringList &items, bool force, bool keep_local = true, const QString &message = "");
 
 signals:
     void error(QString text);
