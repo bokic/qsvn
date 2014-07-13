@@ -183,10 +183,12 @@ void QSVNUpdateDialog::svnNotify(svn_wc_notify_t notify)
 
     switch(notify.action)
     {
+    case svn_wc_notify_add:
     case svn_wc_notify_update_add:
         ui->tableWidget->item(newRow, 0)->setText(tr("add"));
         ui->tableWidget->item(newRow, 1)->setText(QString::fromUtf8(notify.path));
         break;
+
     case svn_wc_notify_update_completed:
         ui->tableWidget->item(newRow, 0)->setText(tr("completed"));
         break;
@@ -237,11 +239,19 @@ void QSVNUpdateDialog::svnNotify(svn_wc_notify_t notify)
 
 void QSVNUpdateDialog::svnFinished(QSvnError err)
 {
-    Q_UNUSED(err);
-
     ui->pushButton_OK->setEnabled(true);
     ui->pushButton_Cancel->setEnabled(false);
     ui->pushButton_ShowLog->setEnabled(true);
+
+    if (err.isError())
+    {
+        int newRow = ui->tableWidget->rowCount();
+
+        ui->tableWidget->insertRow(newRow);
+        ui->tableWidget->setItem(newRow, 0, new QTableWidgetItem(tr("Error")));
+        ui->tableWidget->setItem(newRow, 1, new QTableWidgetItem(err.error().first()));
+        ui->tableWidget->setItem(newRow, 2, new QTableWidgetItem());
+    }
 }
 
 void QSVNUpdateDialog::svnCredentials()
