@@ -468,6 +468,8 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
                                 char *date = nullptr;
                                 char *message = nullptr;
 
+                                Q_ASSERT(log_entry);
+
                                 if (log_entry->revprops)
                                 {
                                     void *tmp = nullptr;
@@ -486,6 +488,19 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
                                 item.author = QString::fromUtf8(author);
                                 item.date = QDateTime::fromString(QString::fromUtf8(date), Qt::ISODate);
                                 item.message = QString::fromUtf8(message);
+
+                                for (apr_hash_index_t *hi = apr_hash_first(pool, log_entry->changed_paths2); hi; hi = apr_hash_next(hi)) {
+                                    const svn_log_changed_path2_t *val;
+                                    const char *key;
+
+                                    apr_hash_this(hi, (const void **)&key, NULL, (void **)&val);
+                                    QMessageLogItemOperation file;
+
+                                    file.filename = QString::fromUtf8(key);
+                                    file.operation = val->action;
+
+                                    item.files.append(file);
+                                }
 
                                 items->append(item);
 

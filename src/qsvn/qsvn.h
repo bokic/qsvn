@@ -199,6 +199,13 @@ public:
     bool m_checked;
 };
 
+struct QMessageLogItemOperation
+{
+public:
+    char operation;
+    QString filename;
+};
+
 struct QMessageLogItem
 {
 public:
@@ -206,6 +213,7 @@ public:
     QString author;
     QDateTime date;
     QString message;
+    QList<QMessageLogItemOperation> files;
 };
 
 #endif // QSVN_H
