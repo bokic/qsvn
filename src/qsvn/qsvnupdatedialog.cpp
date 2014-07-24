@@ -52,7 +52,7 @@ QSVNUpdateDialog::QSVNUpdateDialog(QWidget *parent) :
 
 QSVNUpdateDialog::~QSVNUpdateDialog()
 {
-    emit m_thread.quit();
+    m_thread.quit();
     m_thread.wait();
 
     delete ui; ui = nullptr;

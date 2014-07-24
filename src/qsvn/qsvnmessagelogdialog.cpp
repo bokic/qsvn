@@ -47,7 +47,7 @@ QSVNMessageLogDialog::QSVNMessageLogDialog(QWidget *parent) :
 
 QSVNMessageLogDialog::~QSVNMessageLogDialog()
 {
-    emit m_thread.quit();
+    m_thread.quit();
     m_thread.wait();
 
     delete ui; ui = nullptr;

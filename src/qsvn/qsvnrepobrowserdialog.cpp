@@ -31,7 +31,7 @@ QSVNRepoBrowserDialog::QSVNRepoBrowserDialog(QWidget *parent) :
 
 QSVNRepoBrowserDialog::~QSVNRepoBrowserDialog()
 {
-    emit m_thread.quit();
+    m_thread.quit();
     m_thread.wait();
 
     delete ui; ui = nullptr;

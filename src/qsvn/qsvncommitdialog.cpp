@@ -59,7 +59,7 @@ QSVNCommitDialog::QSVNCommitDialog(const QStringList &items, QWidget *parent)
 
 QSVNCommitDialog::~QSVNCommitDialog()
 {
-    emit m_thread.quit();
+    m_thread.quit();
     m_thread.wait();
 
     delete ui; ui = nullptr;
