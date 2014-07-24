@@ -64,6 +64,13 @@ void QSVNRepoBrowserDialog::workerResult(QRepoBrowserResult items, QSvnError err
     ui->tableWidget_Files->setEnabled(true);
     ui->pushButton_Ok->setEnabled(true);
 
+    if (err.isError())
+    {
+        QMessageBox::critical(this, tr("SVN error"), tr("Error: %1").arg(err.error().last()));
+
+        return;
+    }
+
     if (!items.error.isEmpty())
     {
         QMessageBox::critical(this, tr("SVN error"), tr("Error: %1").arg(items.error));
