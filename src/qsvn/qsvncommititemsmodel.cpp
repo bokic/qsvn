@@ -286,6 +286,93 @@ QVariant QSVNCommitItemsModel::headerData(int section, Qt::Orientation orientati
     return QVariant();
 }
 
+void QSVNCommitItemsModel::sort(int column, Qt::SortOrder order)
+{
+    switch(column)
+    {
+    case 0:
+    case 3: // TODO: Implement commit property column
+    case 4: // TODO: Implement commit lock column
+        if (order == Qt::AscendingOrder)
+        {
+            qSort(m_items.begin(), m_items.end(),[](const QSvnStatusItem &item1, const QSvnStatusItem &item2)
+            {
+                return item1.m_filename > item2.m_filename;
+            });
+        }
+        else
+        {
+            qSort(m_items.begin(), m_items.end(),[](const QSvnStatusItem &item1, const QSvnStatusItem &item2)
+            {
+                return item1.m_filename < item2.m_filename;
+            });
+        }
+        break;
+    case 1:
+        if (order == Qt::AscendingOrder)
+        {
+            qSort(m_items.begin(), m_items.end(),[](const QSvnStatusItem &item1, const QSvnStatusItem &item2)
+            {
+                QString ext1 = QFileInfo(item1.m_filename).suffix();
+                QString ext2 = QFileInfo(item2.m_filename).suffix();
+
+                if (ext1 == ext2)
+                {
+                    return item1.m_filename > item2.m_filename;
+                }
+
+                return ext1 > ext2;
+            });
+        }
+        else
+        {
+            qSort(m_items.begin(), m_items.end(),[](const QSvnStatusItem &item1, const QSvnStatusItem &item2)
+            {
+                QString ext1 = QFileInfo(item1.m_filename).suffix();
+                QString ext2 = QFileInfo(item2.m_filename).suffix();
+
+                if (ext1 == ext2)
+                {
+                    return item1.m_filename < item2.m_filename;
+                }
+
+                return ext1 < ext2;
+            });
+        }
+        break;
+    case 2:
+        if (order == Qt::AscendingOrder)
+        {
+            qSort(m_items.begin(), m_items.end(),[](const QSvnStatusItem &item1, const QSvnStatusItem &item2)
+            {
+                if (item1.m_nodeStatus == item2.m_nodeStatus)
+                {
+                    return item1.m_filename > item2.m_filename;
+                }
+
+                return item1.m_nodeStatus > item2.m_nodeStatus;
+            });
+        }
+        else
+        {
+            qSort(m_items.begin(), m_items.end(),[](const QSvnStatusItem &item1, const QSvnStatusItem &item2)
+            {
+                if (item1.m_nodeStatus == item2.m_nodeStatus)
+                {
+                    return item1.m_filename < item2.m_filename;
+                }
+
+                return item1.m_nodeStatus < item2.m_nodeStatus;
+            });
+        }
+        break;
+    }
+
+    int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());
+
+    emit dataChanged(index(0, 0), index(current_rows, 4));
+}
+
 void QSVNCommitItemsModel::showUnversionedFiles(bool state)
 {
     int current_rows = (m_showUnversionedFiles?m_items.count():m_versionedItems.count());

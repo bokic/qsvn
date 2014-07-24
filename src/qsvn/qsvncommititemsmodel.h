@@ -23,6 +23,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
     void showUnversionedFiles(bool state);
 
     void checkAllItems();
