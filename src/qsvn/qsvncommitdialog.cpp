@@ -215,6 +215,8 @@ void QSVNCommitDialog::label_clicked()
     {
         qDebug() << "Unknown clickable label.";
     }
+
+    updateTotalAndChecked();
 }
 
 void QSVNCommitDialog::updateLabelsState()
