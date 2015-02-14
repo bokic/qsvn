@@ -86,7 +86,7 @@ enum path_status svn_get_dir_status(const char *path)
 
     err = svn_fs_initialize(pool);
 
-    err = svn_client_create_context(&ctx, pool);
+    err = svn_client_create_context2(&ctx, NULL, pool);
 
     err = svn_config_get_config(&(ctx->config), NULL, pool);
 
