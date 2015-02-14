@@ -7,9 +7,9 @@ TARGET       = qsvn
 DESTDIR      = ../../bin
 TEMPLATE     = app
 
-SOURCES     += main.cpp qsvncheckoutdialog.cpp qsvncommitdialog.cpp qsvncommithistorydialog.cpp qsvnupdatedialog.cpp qsvnrepobrowserdialog.cpp qsvnselectrevisiondialog.cpp qsvnupdatetorevisiondialog.cpp qsvnlogindialog.cpp qsvnmessagelogdialog.cpp qextcombobox.cpp qsvn.cpp qsvnthread.cpp qsvncommititemsmodel.cpp qsvnpool.cpp qclickablelabel.cpp qsvnhistory.cpp qsvnerror.cpp
-HEADERS     +=          qsvncheckoutdialog.h   qsvncommitdialog.h   qsvncommithistorydialog.h   qsvnupdatedialog.h   qsvnrepobrowserdialog.h   qsvnselectrevisiondialog.h   qsvnupdatetorevisiondialog.h   qsvnlogindialog.h   qsvnmessagelogdialog.h   qextcombobox.h   qsvn.h   qsvnthread.h   qsvncommititemsmodel.h   qsvnpool.h   qclickablelabel.h   qsvnhistory.h   qsvnerror.h
-FORMS       +=          qsvncheckoutdialog.ui  qsvncommitdialog.ui  qsvncommithistorydialog.ui  qsvnupdatedialog.ui  qsvnrepobrowserdialog.ui  qsvnselectrevisiondialog.ui  qsvnupdatetorevisiondialog.ui  qsvnlogindialog.ui  qsvnmessagelogdialog.ui
+SOURCES     += main.cpp qsvncheckoutdialog.cpp qsvncleanupdialog.cpp qsvncommitdialog.cpp qsvncommithistorydialog.cpp qsvnupdatedialog.cpp qsvnrepobrowserdialog.cpp qsvnselectrevisiondialog.cpp qsvnupdatetorevisiondialog.cpp qsvnlogindialog.cpp qsvnmessagelogdialog.cpp qextcombobox.cpp qsvn.cpp qsvnthread.cpp qsvncommititemsmodel.cpp qsvnpool.cpp qclickablelabel.cpp qsvnhistory.cpp qsvnerror.cpp
+HEADERS     +=          qsvncheckoutdialog.h   qsvncleanupdialog.h   qsvncommitdialog.h   qsvncommithistorydialog.h   qsvnupdatedialog.h   qsvnrepobrowserdialog.h   qsvnselectrevisiondialog.h   qsvnupdatetorevisiondialog.h   qsvnlogindialog.h   qsvnmessagelogdialog.h   qextcombobox.h   qsvn.h   qsvnthread.h   qsvncommititemsmodel.h   qsvnpool.h   qclickablelabel.h   qsvnhistory.h   qsvnerror.h
+FORMS       +=          qsvncheckoutdialog.ui  qsvncleanupdialog.ui  qsvncommitdialog.ui  qsvncommithistorydialog.ui  qsvnupdatedialog.ui  qsvnrepobrowserdialog.ui  qsvnselectrevisiondialog.ui  qsvnupdatetorevisiondialog.ui  qsvnlogindialog.ui  qsvnmessagelogdialog.ui
 
 SOURCES     += helpers.cpp
 HEADERS     += helpers.h

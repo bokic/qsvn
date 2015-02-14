@@ -28,6 +28,7 @@ enum GSVNOperationType {
 
 static gboolean svn_extension_are_items_under_svn  (GList                *files);
 static void     svn_extension_checkout_callback    (GtkWidget            *widget,    GList     *files);
+static void     svn_extension_cleanup_callback     (GtkWidget            *widget,    GList     *files);
 static void     svn_extension_update_callback      (GtkWidget            *widget,    GList     *files);
 static void     svn_extension_commit_callback      (GtkWidget            *widget,    GList     *files);
 static void     svn_extension_showlog_callback     (GtkWidget            *widget,    GList     *files);
@@ -93,6 +94,37 @@ svn_extension_are_items_under_svn(GList *files)
 	apr_pool_destroy (result_pool);
 
 	return ret;
+}
+
+static void
+svn_extension_cleanup_callback(GtkWidget *widget, GList *files)
+{
+    NautilusFileInfo *file_info = NULL;
+    char *uri = NULL, *path = NULL;
+    gchar *command = NULL;
+    GError *error = NULL;
+    GString *str = NULL;
+
+    str = g_string_new ("qsvn cleanup");
+
+    if ((files != NULL)||(g_list_length (files) > 0))
+    {
+        file_info = g_list_nth_data (files, 0);
+
+        uri = nautilus_file_info_get_uri (file_info);
+        path = g_filename_from_uri (uri, NULL, NULL);
+
+        g_string_append_printf (str, " \"%s\"", path);
+
+        g_free (uri); uri = NULL;
+        g_free (path); path = NULL;
+    }
+
+    command = g_string_free (str, FALSE); str = NULL;
+
+    g_spawn_command_line_async (command, &error);
+
+    g_free (command); command = NULL;
 }
 
 static void
@@ -542,10 +574,10 @@ svn_extension_create_menu_one_file_under_svn(GList *files)
                                   "cleanup...",
                                   "svn-cleanup");
 
-    //g_signal_connect (item,
-    //                  "activate",
-    //                  G_CALLBACK (svn_extension_cleanup_callback),
-    //                  nautilus_file_info_list_copy (files));
+    g_signal_connect (item,
+                      "activate",
+                      G_CALLBACK (svn_extension_cleanup_callback),
+                      nautilus_file_info_list_copy (files));
 
     nautilus_menu_append_item (submenu, item);
     //--->

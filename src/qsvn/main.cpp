@@ -1,4 +1,5 @@
 #include "qsvncheckoutdialog.h"
+#include "qsvncleanupdialog.h"
 #include "qsvncommitdialog.h"
 #include "qsvnupdatedialog.h"
 #include "qsvnrepobrowserdialog.h"
@@ -89,6 +90,24 @@ int main(int argc, char *argv[])
         {
             return 0;
         }
+    }
+    else if (strcmp(argv[1], "cleanup") == 0)
+    {
+        QStringList paths;
+
+        if (argc > 2)
+        {
+            for(int c = 2; c < argc; c++)
+            {
+                paths.append(QString::fromUtf8(argv[c]));
+            }
+        }
+        else
+        {
+            paths.append(QDir::currentPath());
+        }
+
+        dlg = new QSvnCleanupDialog(paths);
     }
     else if (strcmp(argv[1], "commit") == 0)
     {
