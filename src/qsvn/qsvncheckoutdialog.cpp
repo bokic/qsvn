@@ -43,7 +43,9 @@ void QSVNCheckoutDialog::loadSettings()
 
 void QSVNCheckoutDialog::setTargetDir(const QString &dir)
 {
-    ui->lineEdit_dir->setText(dir);
+    m_TargetDir = dir;
+
+    ui->lineEdit_dir->setText(m_TargetDir);
 }
 
 void QSVNCheckoutDialog::on_pushButton_URL_clicked()
@@ -175,6 +177,73 @@ void QSVNCheckoutDialog::on_pushButton_revision_clicked()
             ui->lineEdit_revision->setEnabled(true);
             ui->lineEdit_revision->setText(QString::number(selectedRevision));
             ui->pushButton_ok->setEnabled(true);
+        }
+    }
+}
+
+void QSVNCheckoutDialog::on_lineEdit_dir_textChanged(const QString &text)
+{
+    QDir dir(text);
+
+    if (text.isEmpty())
+    {
+        ui->lineEdit_dir->setStyleSheet("background: red");
+        ui->lineEdit_dir->setToolTip(tr("Checkout directory is invalid."));
+
+        return;
+    }
+
+    if (dir.exists())
+    {
+        QStringList files = dir.entryList();
+
+        if (files.count() > 2)
+        {
+            ui->lineEdit_dir->setStyleSheet("background: red");
+            ui->lineEdit_dir->setToolTip(tr("Checkout directory is not empty."));
+        }
+        else
+        {
+            ui->lineEdit_dir->setStyleSheet("");
+            ui->lineEdit_dir->setToolTip("");
+        }
+    }
+    else
+    {
+        if (dir.cdUp())
+        {
+            ui->lineEdit_dir->setStyleSheet("");
+            ui->lineEdit_dir->setToolTip("");
+        }
+        else
+        {
+            QDir invalidDir = QDir(dir.absolutePath() + "/..");
+
+            ui->lineEdit_dir->setStyleSheet("background: red");
+            ui->lineEdit_dir->setToolTip(tr("Checkout directory(%1) doesn't exist.").arg(invalidDir.absolutePath()));
+        }
+    }
+}
+
+void QSVNCheckoutDialog::on_comboBox_URL_currentTextChanged(const QString &text)
+{
+    if ((!m_TargetDir.isEmpty())&&(!text.isEmpty()))
+    {
+        QUrl url(text);
+        QString path = url.path();
+        QStringList paths = path.split('/', QString::SkipEmptyParts);
+
+        if (paths.last() == "trunk")
+        {
+            paths.removeLast();
+        }
+
+        QString newName = paths.last();
+        newName.remove(QRegExp("\\.git$"));
+
+        if (!newName.isEmpty())
+        {
+            ui->lineEdit_dir->setText(m_TargetDir + QDir::separator() + newName);
         }
     }
 }

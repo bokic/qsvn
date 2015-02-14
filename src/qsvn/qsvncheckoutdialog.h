@@ -33,11 +33,13 @@ private slots:
     void on_pushButton_dir_clicked();
     void on_radioButton_head_clicked();
     void on_radioButton_revision_clicked();
-
     void on_pushButton_revision_clicked();
+    void on_lineEdit_dir_textChanged(const QString &text);
+    void on_comboBox_URL_currentTextChanged(const QString &text);
 
 private:
     Ui::QSVNCheckoutDialog *ui;
+    QString m_TargetDir;
 };
 
 #endif // QSVNCHECKOUTDIALOG_H
