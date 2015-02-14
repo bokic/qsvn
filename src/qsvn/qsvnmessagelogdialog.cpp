@@ -27,10 +27,8 @@ QSVNMessageLogDialog::QSVNMessageLogDialog(QWidget *parent) :
     ui->tableWidget_revisions->setColumnWidth(4, 380);
 
     const QDate &today = QDate::currentDate();
-    const QDate &oneMonthFromToday = QDate::currentDate().addMonths(-1);
 
-
-    ui->dateEdit_from->setDate(oneMonthFromToday);
+    ui->dateEdit_from->setDate(today);
     ui->dateEdit_to->setDate(today);
 
     ui->dateEdit_from->setMaximumDate(ui->dateEdit_to->date());
@@ -58,6 +56,7 @@ void QSVNMessageLogDialog::setUrlLocations(const QStringList &locations)
     m_locations = locations;
 
     emit messageLog(locations, m_start, m_end, m_peg);
+    svnThreadIsWorking(true);
 }
 
 int QSVNMessageLogDialog::selectedRevision()
@@ -67,6 +66,10 @@ int QSVNMessageLogDialog::selectedRevision()
 
 void QSVNMessageLogDialog::messageLogFinished(QList<QMessageLogItem> items, QSvnError err)
 {
+    Q_UNUSED(err);
+
+    svnThreadIsWorking(false);
+
     ui->tableWidget_revisions->setRowCount(items.count());
 
     for(int c = 0; c < items.count(); c++)
@@ -100,4 +103,34 @@ void QSVNMessageLogDialog::on_tableWidget_revisions_itemDoubleClicked(QTableWidg
     Q_UNUSED(item);
 
     accept();
+}
+
+void QSVNMessageLogDialog::svnThreadIsWorking(bool working)
+{
+    if (working)
+    {
+        ui->lineEdit->setEnabled(false);
+        ui->dateEdit_from->setEnabled(false);
+        ui->dateEdit_to->setEnabled(false);
+        ui->checkBox_showOnlyAffectedPaths->setEnabled(false);
+        ui->checkBox_stopOnCopyRename->setEnabled(false);
+        ui->checkBox_includeMergerRevisions->setEnabled(false);
+        ui->pushButton_statistics->setEnabled(false);
+        ui->comboBox_showAll->setEnabled(false);
+        ui->pushButton_next100->setEnabled(false);
+        ui->pushButton_refresh->setEnabled(false);
+    }
+    else
+    {
+        ui->lineEdit->setEnabled(true);
+        ui->dateEdit_from->setEnabled(true);
+        ui->dateEdit_to->setEnabled(true);
+        ui->checkBox_showOnlyAffectedPaths->setEnabled(true);
+        ui->checkBox_stopOnCopyRename->setEnabled(true);
+        ui->checkBox_includeMergerRevisions->setEnabled(true);
+        ui->pushButton_statistics->setEnabled(true);
+        ui->comboBox_showAll->setEnabled(true);
+        ui->pushButton_next100->setEnabled(true);
+        ui->pushButton_refresh->setEnabled(true);
+    }
 }

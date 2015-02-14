@@ -30,6 +30,7 @@ private slots:
     void on_tableWidget_revisions_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
+    void svnThreadIsWorking(bool working);
     Ui::QSVNMessageLogDialog *ui;
     QSVNThread m_thread;
     QStringList m_locations;

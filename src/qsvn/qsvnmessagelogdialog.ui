@@ -113,7 +113,11 @@
         </property>
        </column>
       </widget>
-      <widget class="QTextEdit" name="textEdit_revisionText"/>
+      <widget class="QTextEdit" name="textEdit_revisionText">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
      <widget class="QTableWidget" name="tableWidget_revisionModifiedFiles">
       <column>
