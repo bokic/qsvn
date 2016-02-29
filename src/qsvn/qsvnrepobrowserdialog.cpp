@@ -105,7 +105,6 @@ void QSVNRepoBrowserDialog::workerResult(QRepoBrowserResult items, QSvnError err
     for(int c = 0; c < items.files.count(); c++)
     {
         const QRepoBrowserFile &item = items.files.at(c);
-        QTreeWidgetItem *treeChild;
 
         if (!item.isdir)
         {
@@ -115,7 +114,7 @@ void QSVNRepoBrowserDialog::workerResult(QRepoBrowserResult items, QSvnError err
         // Add tree item
         if (addTreeChildren)
         {
-            treeChild = new QTreeWidgetItem(QStringList() << item.filename);
+            QTreeWidgetItem *treeChild = new QTreeWidgetItem(QStringList() << item.filename);
 
             treeChild->setIcon(0, QIcon(":/icons/folder"));
 
