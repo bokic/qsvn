@@ -27,6 +27,4 @@ void QSvnCleanupDialog::accept()
     QDialog::accept();
 
     //svn_wc_cleanup3();
-
-    int a = 12;
 }
