@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         if (w.exec() == QDialog::Accepted)
         {
             dlg = new QSVNUpdateDialog();
-            ((QSVNUpdateDialog *)dlg)->setOperationCheckout(w);
+            static_cast<QSVNUpdateDialog *>(dlg)->setOperationCheckout(w);
         }
         else
         {
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
         if (w.exec() == QDialog::Accepted)
         {
             dlg = new QSVNUpdateDialog();
-            ((QSVNUpdateDialog *)dlg)->setOperationCommit(w);
+            static_cast<QSVNUpdateDialog *>(dlg)->setOperationCommit(w);
         }
         else
         {
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
         }
 
         dlg = new QSVNUpdateDialog();
-        ((QSVNUpdateDialog *)dlg)->setOperationUpdate(paths);
+        static_cast<QSVNUpdateDialog *>(dlg)->setOperationUpdate(paths);
     }
     else if (strcmp(argv[1], "update-to-revision") == 0)
     {
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
         if (w.exec() == QDialog::Accepted)
         {
             dlg = new QSVNUpdateDialog();
-            ((QSVNUpdateDialog *)dlg)->setOperationUpdateToRevision(w);
+            static_cast<QSVNUpdateDialog *>(dlg)->setOperationUpdateToRevision(w);
         }
         else
         {
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 
              dlg = new QSVNMessageLogDialog();
 
-             ((QSVNMessageLogDialog *)dlg)->setUrlLocations(paths);
+             static_cast<QSVNMessageLogDialog *>(dlg)->setUrlLocations(paths);
     }
     else
     {

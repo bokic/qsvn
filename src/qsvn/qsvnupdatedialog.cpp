@@ -257,7 +257,7 @@ void QSVNUpdateDialog::svnFinished(QSvnError err)
 void QSVNUpdateDialog::svnCredentials()
 {
     QSVNLoginDialog dlg(this);
-    QSvn *m_worker = (QSvn *)sender();
+    QSvn *m_worker = static_cast<QSvn *>(sender());
 
     dlg.setUsername(m_worker->username());
 

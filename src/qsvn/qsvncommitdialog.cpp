@@ -67,7 +67,7 @@ QSVNCommitDialog::~QSVNCommitDialog()
 
 QStringList QSVNCommitDialog::ui_checked_path_items() const
 {
-    QSVNCommitItemsModel *model = (QSVNCommitItemsModel *)ui->changes_tableView->model();
+    QSVNCommitItemsModel *model = static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model());
     QStringList ret;
 
     const QList<QSvnStatusItem> &items = model->checkedItems();
@@ -118,7 +118,7 @@ void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, QSvnError err
 
     ui->changes_tableView->setModel(new QSVNCommitItemsModel(items, m_commonDir));
 
-    connect((QSVNCommitItemsModel *)ui->changes_tableView->model(), &QSVNCommitItemsModel::checked, this, &QSVNCommitDialog::filesChecked);
+    connect(static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model()), &QSVNCommitItemsModel::checked, this, &QSVNCommitDialog::filesChecked);
 
     updateTotalAndChecked();
     updateLabelsState();
@@ -126,7 +126,7 @@ void QSVNCommitDialog::statusFinished(QList<QSvnStatusItem> items, QSvnError err
 
 void QSVNCommitDialog::on_showUnversioned_checkBox_stateChanged(int state)
 {
-    ((QSVNCommitItemsModel *)ui->changes_tableView->model())->showUnversionedFiles(state?true:false);
+    static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model())->showUnversionedFiles(state?true:false);
 
     updateTotalAndChecked();
     updateLabelsState();
@@ -145,8 +145,8 @@ void QSVNCommitDialog::on_showLog_pushButton_clicked()
 
 void QSVNCommitDialog::updateTotalAndChecked()
 {
-    int total = ((QSVNCommitItemsModel *)ui->changes_tableView->model())->totalItemCount();
-    int checked = ((QSVNCommitItemsModel *)ui->changes_tableView->model())->checkItemCount();
+    int total = static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model())->totalItemCount();
+    int checked = static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model())->checkItemCount();
 
     ui->selectedTotal_label->setText(tr("%1 files selected, %2 files total").arg(checked).arg(total));
 }
@@ -172,8 +172,8 @@ void QSVNCommitDialog::filesChecked(int index, bool state)
 
 void QSVNCommitDialog::label_clicked()
 {
-    QSVNCommitItemsModel *model = (QSVNCommitItemsModel*)ui->changes_tableView->model();
-    QClickableLabel *label = (QClickableLabel *)sender();
+    QSVNCommitItemsModel *model = static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model());
+    QClickableLabel *label = static_cast<QClickableLabel *>(sender());
 
     if (label == ui->allFiles_label)
     {
@@ -230,7 +230,7 @@ void QSVNCommitDialog::updateLabelsState()
     bool has_file = false;
     bool has_dir = false;
 
-    items = ((QSVNCommitItemsModel *)ui->changes_tableView->model())->items();
+    items = static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model())->items();
 
     if (items.count() == 0)
     {
@@ -387,7 +387,7 @@ void QSVNCommitDialog::accept()
 
     setCursor(Qt::BusyCursor);
 
-    QSVNCommitItemsModel *model = (QSVNCommitItemsModel *)ui->changes_tableView->model();
+    QSVNCommitItemsModel *model = static_cast<QSVNCommitItemsModel *>(ui->changes_tableView->model());
 
     for(int c = 0; c < model->items().count(); c++)
     {

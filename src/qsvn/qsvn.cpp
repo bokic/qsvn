@@ -286,7 +286,7 @@ void QSvn::repoBrowser(QString url, svn_opt_revision_t revision, bool recursion)
 
                                             if (strlen(path) != 0)
                                             {
-                                                QRepoBrowserResult *ret = (QRepoBrowserResult *)(((QSvn *)baton)->m_localVar);
+                                                QRepoBrowserResult *ret = static_cast<QRepoBrowserResult *>(static_cast<QSvn *>(baton)->m_localVar);
                                                 QRepoBrowserFile file;
 
                                                 file.filename = QString::fromUtf8(path);
@@ -460,7 +460,7 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
                            nullptr, // revprops
                            [] (void *baton, svn_log_entry_t *log_entry, apr_pool_t *pool) -> svn_error_t * {
                                 Q_UNUSED(pool);
-                                QList<QMessageLogItem> *items = (QList<QMessageLogItem> *)(((QSvn *)baton)->m_localVar);
+                                QList<QMessageLogItem> *items = static_cast<QList<QMessageLogItem> *>(static_cast<QSvn *>(baton)->m_localVar);
 
                                 QMessageLogItem item;
 
@@ -523,8 +523,8 @@ svn_error_t * QSvn::log_msg_func3(const char **log_msg,
 {
     Q_UNUSED(commit_items);
 
-    log_msg_baton3 *lmb = (log_msg_baton3 *) baton;
     *tmp_file = NULL;
+    log_msg_baton3 *lmb = static_cast<log_msg_baton3 *>(baton);
     if (lmb->message)
     {
         *log_msg = apr_pstrdup (pool, lmb->message);
@@ -540,7 +540,7 @@ void QSvn::notify_func2(void *baton,
     Q_UNUSED(notify);
     Q_UNUSED(pool);
 
-    QSvn *svn = (QSvn *)baton;
+    QSvn *svn = static_cast<QSvn *>(baton);
 
     if (svn)
     {
@@ -595,7 +595,7 @@ svn_error_t * QSvn::status_funct(void *baton,
 
 svn_error_t * QSvn::cancel_func(void *baton)
 {
-    QSvn *svn = (QSvn *)baton;
+    QSvn *svn = static_cast<QSvn *>(baton);
 
     if ((svn)&&(svn->m_cancelOperation))
     {
@@ -612,7 +612,7 @@ void QSvn::progress_func(apr_off_t progress,
 {
     Q_UNUSED(pool);
 
-    QSvn *svn = (QSvn *)baton;
+    QSvn *svn = static_cast<QSvn *>(baton);
 
     if (svn)
     {
@@ -629,7 +629,7 @@ svn_error_t *QSvn::svn_login_callback(svn_auth_cred_simple_t **cred,
 {
     Q_UNUSED(realm);
 
-    QSvn *sender = (QSvn *)baton;
+    QSvn *sender = static_cast<QSvn *>(baton);
 
     sender->setCredentials(QString::fromUtf8(username), "", may_save, false);
 
@@ -654,7 +654,7 @@ void *QSvn::logMessage(QString message, char *baseDirectory)
     message.remove('\r');
 
     // TODO: Check the pool usage in this function(might delete pool member)
-    log_msg_baton3 *baton = (log_msg_baton3 *) apr_palloc (pool, sizeof (log_msg_baton3));
+    log_msg_baton3 *baton = static_cast<log_msg_baton3 *>(apr_palloc (pool, sizeof (log_msg_baton3)));
     baton->message = apr_pstrdup(pool, message.toUtf8().constData());
     baton->base_dir = baseDirectory ? baseDirectory : "";
 
