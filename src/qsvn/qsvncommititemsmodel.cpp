@@ -14,7 +14,7 @@ QSVNCommitItemsModel::QSVNCommitItemsModel(const QList<QSvnStatusItem> &items, c
 {
     if ((m_items.count() > 0)&&(m_items.first().m_filename == m_dir.absolutePath())&&(m_items.first().m_nodeStatus == svn_wc_status_normal))
     {
-        m_items.takeFirst();
+        m_items.removeFirst();
     }
 
     for(int c = 0; c < m_items.count(); c++)
