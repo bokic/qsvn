@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QString>
+#include <QObject>
 #include <QList>
 
 #include "svn_client.h"
