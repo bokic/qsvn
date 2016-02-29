@@ -125,7 +125,7 @@ private:
                                             apr_pool_t *pool);
 
     /// Private helper functions
-    void *logMessage(QString message, char *baseDirectory = NULL);
+    void *logMessage(QString message, char *baseDirectory = nullptr);
     static apr_array_header_t *makePathList(const QStringList &paths, apr_pool_t *pool);
     static apr_array_header_t *makeChangeListArray(const QStringList &changelists, apr_pool_t *pool);
     static apr_hash_t *makeRevPropHash(const QHash<QString, QString> &revProps, apr_pool_t *pool);

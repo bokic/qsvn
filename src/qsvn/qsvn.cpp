@@ -41,7 +41,7 @@ void QSvn::init()
 {
     svn_error_t *err = nullptr;
 
-    pool = svn_pool_create(NULL);
+    pool = svn_pool_create(nullptr);
 
     err = svn_fs_initialize(pool);
     if (err)
@@ -51,7 +51,7 @@ void QSvn::init()
         return;
     }
 
-    err = svn_config_ensure(NULL, pool);
+    err = svn_config_ensure(nullptr, pool);
     if (err)
     {
         emit error(tr("Error calling svn_config_ensure."));
@@ -67,7 +67,7 @@ void QSvn::init()
         return;
     }
 
-    err = svn_config_get_config(&(ctx->config), NULL, pool);
+    err = svn_config_get_config(&(ctx->config), nullptr, pool);
     if (err)
     {
         emit error(tr("Error calling svn_config_get_config."));
@@ -493,7 +493,7 @@ void QSvn::messageLog(QStringList locations, svn_opt_revision_t start, svn_opt_r
                                     const svn_log_changed_path2_t *val;
                                     const char *key;
 
-                                    apr_hash_this(hi, (const void **)&key, NULL, (void **)&val);
+                                    apr_hash_this(hi, (const void **)&key, nullptr, (void **)&val);
                                     QMessageLogItemOperation file;
 
                                     file.filename = QString::fromUtf8(key);
@@ -523,8 +523,8 @@ svn_error_t * QSvn::log_msg_func3(const char **log_msg,
 {
     Q_UNUSED(commit_items);
 
-    *tmp_file = NULL;
     log_msg_baton3 *lmb = static_cast<log_msg_baton3 *>(baton);
+    *tmp_file = nullptr;
     if (lmb->message)
     {
         *log_msg = apr_pstrdup (pool, lmb->message);
@@ -575,7 +575,7 @@ svn_error_t * QSvn::commit_func2(const svn_commit_info_t *commit_info,
 
     Q_UNIMPLEMENTED();
 
-    return NULL;
+    return nullptr;
 }
 
 svn_error_t * QSvn::status_funct(void *baton,
@@ -599,7 +599,7 @@ svn_error_t * QSvn::cancel_func(void *baton)
 
     if ((svn)&&(svn->m_cancelOperation))
     {
-        return svn_error_create(SVN_ERR_CANCELLED, NULL, tr("User has canceled the operation.").toUtf8().constData());
+        return svn_error_create(SVN_ERR_CANCELLED, nullptr, tr("User has canceled the operation.").toUtf8().constData());
     }
 
     return SVN_NO_ERROR;
@@ -658,8 +658,8 @@ void *QSvn::logMessage(QString message, char *baseDirectory)
     baton->message = apr_pstrdup(pool, message.toUtf8().constData());
     baton->base_dir = baseDirectory ? baseDirectory : "";
 
-    baton->message_encoding = NULL;
-    baton->tmpfile_left = NULL;
+    baton->message_encoding = nullptr;
+    baton->tmpfile_left = nullptr;
     baton->pool = pool;
 
     return baton;
@@ -667,7 +667,7 @@ void *QSvn::logMessage(QString message, char *baseDirectory)
 
 apr_hash_t *QSvn::makeRevPropHash(const QHash<QString, QString> &revProps, apr_pool_t *pool)
 {
-    apr_hash_t * revprop_table = NULL;
+    apr_hash_t * revprop_table = nullptr;
 
     QList<QString> keys = revProps.keys();
 
